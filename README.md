@@ -74,6 +74,4 @@ A **restaurant management platform** with an **admin dashboard, reservation syst
 ## 📫 Connect With Me  
 🔗 **LinkedIn:** [Guillermo Astorga Calvo](https://www.linkedin.com/in/guillermoastorgacalvo/)  
 
----
-
 <a href="#" onclick="return false;"><img width=100% src="https://capsule-render.vercel.app/api?type=waving&color=90:92FE9D,10:00C9FF:&&height=140&section=footer"></a>
