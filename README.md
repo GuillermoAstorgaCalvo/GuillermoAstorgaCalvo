@@ -1,4 +1,8 @@
-# 👋 Hello World, I'm Guillermo!  
+<a href="#" onclick="return false;"><img width=100% src="https://capsule-render.vercel.app/api?type=waving&color=20:00C9FF,80:92FE9D&height=140&section=header"></a>
+
+<a href="#"
+    >![Typing SVG](https://readme-typing-svg.herokuapp.com/?size=40&center=true&vCenter=true&width=1000&duration=3000&repeat=fals&lines=Hello+World,+I'm+Guillermo+Astorga!)
+</a>
 
 🚀 **Frontend-Focused Developer** | Passionate about building **scalable** and **efficient web applications**.  
 💡 Junior **full-stack development**, my focus is on crafting **modern, high-performance websites**.  
@@ -71,3 +75,5 @@ A **restaurant management platform** with an **admin dashboard, reservation syst
 🔗 **LinkedIn:** [Guillermo Astorga Calvo](https://www.linkedin.com/in/guillermoastorgacalvo/)  
 
 ---
+
+<a href="#" onclick="return false;"><img width=100% src="https://capsule-render.vercel.app/api?type=waving&color=90:92FE9D,10:00C9FF:&&height=140&section=footer"></a>
