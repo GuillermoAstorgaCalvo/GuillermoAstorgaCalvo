@@ -62,7 +62,7 @@ A **restaurant management platform** with an **admin dashboard, reservation syst
 </p>
 
 <p align="center">
-  <img src="https://github-readme-streak-stats.herokuapp.com/?user=GuillermoAstorgaCalvo&theme=tokyonight&hide_border=true" alt="GitHub Streak" />
+  <img src="https://streak-stats.demolab.com/?user=GuillermoAstorgaCalvo&theme=tokyonight&hide_border=true" alt="GitHub Streak" />
 </p>
 
 <p align="center">
@@ -72,8 +72,7 @@ A **restaurant management platform** with an **admin dashboard, reservation syst
 ---
 
 ## 📫 Connect With Me  
-🔗 **GitHub:** [GuillermoAstorgaCalvo](https://github.com/GuillermoAstorgaCalvo)  
-🔗 **LinkedIn:** [Your LinkedIn Profile](https://www.linkedin.com/in/guillermoastorgacalvo/)  
+🔗 **LinkedIn:** [Guillermo Astorga Calvo](https://www.linkedin.com/in/guillermoastorgacalvo/)  
 
 ---
 
