@@ -1,4 +1,4 @@
-# 👋 Hey, I'm Guillermo Astorga Calvo!  
+# 👋 Hello World, I'm Guillermo Astorga Calvo!  
 
 🚀 **Frontend-Focused Developer** | Passionate about building **scalable** and **efficient web applications**.  
 💡 Junior in **full-stack development**, but my focus is on crafting **modern, high-performance UIs**.  
@@ -62,10 +62,6 @@ A **restaurant management platform** with an **admin dashboard, reservation syst
 </p>
 
 <p align="center">
-  <img src="https://streak-stats.demolab.com/?user=GuillermoAstorgaCalvo&theme=tokyonight&hide_border=true" alt="GitHub Streak" />
-</p>
-
-<p align="center">
   <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=GuillermoAstorgaCalvo&layout=compact&theme=tokyonight&hide_border=true" alt="Top Languages" />
 </p>
 
@@ -75,5 +71,3 @@ A **restaurant management platform** with an **admin dashboard, reservation syst
 🔗 **LinkedIn:** [Guillermo Astorga Calvo](https://www.linkedin.com/in/guillermoastorgacalvo/)  
 
 ---
-
-🚀 **Always learning & improving!** Let’s build something amazing! 🎯  
