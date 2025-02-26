@@ -4,7 +4,7 @@
     >![Typing SVG](https://readme-typing-svg.herokuapp.com/?size=40&center=true&vCenter=true&width=1000&duration=3000&repeat=fals&lines=Hello+World,+I'm+Guillermo+Astorga!)
 </a>
 
-🚀 **Frontend-Focused Developer** | Passionate about building **scalable** and **efficient web applications**.  
+💻 **Frontend-Focused Developer** | Passionate about building **scalable** and **efficient web applications**.  
 💡 Junior **full-stack development**, my focus is on crafting **modern, high-performance websites**.  
 
 ---
@@ -12,7 +12,7 @@
 ## 🌟 About Me  
 - 🔭 Currently working on **[Restaurant App](https://restauranteguillermoastorga.up.railway.app/)** – my first **full-stack restaurant management system** with **reservations, menu management, and admin dashboard**.  
 - ⚡ I specialize in **frontend development**, but I also handle backend tasks when needed.  
-- 🛠️ Love using **Docker** for containerization and working in **Linux environments**.  
+- 🐋 Love using **Docker** for containerization and working in **Linux environments**.  
 
 ---
 
