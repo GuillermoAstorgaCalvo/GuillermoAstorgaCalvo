@@ -1,12 +1,12 @@
-# 👋 Hello World, I'm Guillermo Astorga Calvo!  
+# 👋 Hello World, I'm Guillermo!  
 
 🚀 **Frontend-Focused Developer** | Passionate about building **scalable** and **efficient web applications**.  
-💡 Junior in **full-stack development**, but my focus is on crafting **modern, high-performance UIs**.  
+💡 Junior **full-stack development**, my focus is on crafting **modern, high-performance websites**.  
 
 ---
 
 ## 🌟 About Me  
-- 🔭 Currently working on **[Restaurant App](https://restauranteguillermoastorga.up.railway.app/)** – a **full-stack restaurant management system** with **reservations, menu management, and admin dashboard**.  
+- 🔭 Currently working on **[Restaurant App](https://restauranteguillermoastorga.up.railway.app/)** – my first **full-stack restaurant management system** with **reservations, menu management, and admin dashboard**.  
 - ⚡ I specialize in **frontend development**, but I also handle backend tasks when needed.  
 - 🛠️ Love using **Docker** for containerization and working in **Linux environments**.  
 
