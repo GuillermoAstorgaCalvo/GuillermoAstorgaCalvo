@@ -22,10 +22,10 @@ jobs:
         env:
           TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
         run: |
-          # Reemplaza estos con tus repositorios reales
-          git clone https://x-access-token:${TOKEN}@github.com/guillermo-affiliaction/housing-hub-saas.git repo1
-          git clone https://x-access-token:${TOKEN}@github.com/guillermo-affiliaction/backend-housing-hub-saas.git repo2
-          git clone https://x-access-token:${TOKEN}@github.com/guillermo-affiliaction/IAbackend-inmoIA.git repo3
+          # Clonar repositorios desde la rama develop
+          git clone --branch develop https://x-access-token:${TOKEN}@github.com/guillermo-affiliaction/housing-hub-saas.git repo1
+          git clone --branch develop https://x-access-token:${TOKEN}@github.com/guillermo-affiliaction/backend-housing-hub-saas.git repo2
+          git clone --branch develop https://x-access-token:${TOKEN}@github.com/guillermo-affiliaction/IAbackend-inmoIA.git repo3
 
       - name: Generar estadísticas unificadas
         run: |
@@ -68,9 +68,9 @@ jobs:
               
               # Repo name mapping
               repo_names = {
-                  'repo1': 'InmoIA Frontend',
-                  'repo2': 'Typescript Backend', 
-                  'repo3': 'Python AI MCP Backend'
+                  'repo1': 'InmoIA Frontend (housing-hub-saas)',
+                  'repo2': 'Typescript Backend (backend-housing-hub-saas)', 
+                  'repo3': 'Python AI MCP Backend (IAbackend-inmoIA)'
               }
               
               for repo_name, data in repos_data.items():
@@ -142,7 +142,7 @@ jobs:
               else:
                   loc_pct = commits_pct = files_pct = 0
               
-              report += "## 👨‍💻 Contribuciones por Repositorio\n\n"
+              report += "## 👨‍💻 Contribuciones por Repositorio y Autor\n\n"
               report += "| Repositorio | Autor | Líneas | Commits | Archivos | Distribución |\n"
               report += "|:------------|:------|-------:|--------:|---------:|:-------------|\n"
               
