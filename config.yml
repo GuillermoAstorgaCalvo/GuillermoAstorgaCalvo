@@ -17,11 +17,11 @@ repositories:
   # Your personal repositories
   - name: "FacturaIA"
     display_name: "FacturaIA"
-    branch: "main"
+    branch: "develop"
     artifact_name: "repo4-stats"
   - name: "restaurant-app"
     display_name: "Restaurant App"
-    branch: "main"
+    branch: "develop"
     artifact_name: "repo5-stats"
 
 # GitHub organization/user settings
