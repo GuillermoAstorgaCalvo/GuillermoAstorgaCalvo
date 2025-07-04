@@ -18,7 +18,7 @@ from stats_processor import StatsProcessor, AuthorMatcher, RepositoryStats, Auth
 from report_generator import MarkdownReportGenerator, JSONReportGenerator
 
 
-def load_repository_stats(stats_dir: str = "repo-stats") -> List[RepositoryStats]:
+def load_repository_stats(stats_dir: str = None) -> List[RepositoryStats]:
     """
     Load repository statistics from artifact files.
     
@@ -29,14 +29,27 @@ def load_repository_stats(stats_dir: str = "repo-stats") -> List[RepositoryStats
         List of RepositoryStats objects
     """
     stats_data = []
-    stats_path = Path(stats_dir)
     
-    if not stats_path.exists():
+    # Default to parent directory where artifacts are downloaded
+    if stats_dir is None:
+        stats_dir = script_dir.parent / "repo-stats"
+    else:
+        stats_dir = Path(stats_dir)
+    
+    print(f"Looking for statistics in: {stats_dir}")
+    
+    if not stats_dir.exists():
         print(f"❌ Statistics directory not found: {stats_dir}")
+        print(f"Current working directory: {Path.cwd()}")
+        print(f"Available files in parent directory:")
+        parent_dir = script_dir.parent
+        if parent_dir.exists():
+            for item in parent_dir.iterdir():
+                print(f"  - {item.name}")
         return []
     
     # Process each artifact directory
-    for artifact_dir in stats_path.iterdir():
+    for artifact_dir in stats_dir.iterdir():
         if artifact_dir.is_dir():
             stats_file = artifact_dir / 'repo_stats.json'
             if stats_file.exists():
