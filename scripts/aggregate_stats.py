@@ -16,6 +16,7 @@ sys.path.insert(0, str(script_dir))
 from config_manager import get_config_manager
 from stats_processor import StatsProcessor, AuthorMatcher, RepositoryStats, AuthorStats
 from report_generator import MarkdownReportGenerator, JSONReportGenerator
+from language_mapper import get_language_mapper
 
 
 def load_repository_stats(stats_dir: str = None) -> List[RepositoryStats]:
@@ -61,7 +62,8 @@ def load_repository_stats(stats_dir: str = None) -> List[RepositoryStats]:
                     repo_stats = RepositoryStats(
                         display_name=data['display_name'],
                         guillermo_stats=AuthorStats(**data['guillermo_stats']),
-                        repo_totals=AuthorStats(**data['repo_totals'])
+                        repo_totals=AuthorStats(**data['repo_totals']),
+                        language_stats=data.get('language_stats', {})
                     )
                     
                     stats_data.append(repo_stats)
@@ -95,6 +97,7 @@ def main():
             bot_patterns=config.get_bot_patterns()
         )
         stats_processor = StatsProcessor(author_matcher)
+        language_mapper = get_language_mapper()
         
         # Load repository statistics from artifacts
         print("Loading repository statistics...")
@@ -132,7 +135,10 @@ def main():
         # Generate markdown report in scripts directory
         markdown_filename = config.get_report_filename()
         markdown_path = script_dir / markdown_filename
-        markdown_generator.save_report(unified_stats, str(markdown_path))
+        
+        # Get full config for analytics
+        full_config = config.get_full_config()
+        markdown_generator.save_report(unified_stats, str(markdown_path), full_config)
         print(f"✅ Markdown report saved to: {markdown_path}")
         
         # Generate JSON report in scripts directory

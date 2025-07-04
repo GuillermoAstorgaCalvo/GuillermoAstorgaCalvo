@@ -22,13 +22,14 @@ class GitFameParser:
         """
         self.timeout_seconds = timeout_seconds
     
-    def execute_git_fame(self, repo_path: str, output_format: str = "json") -> Optional[Dict[str, Any]]:
+    def execute_git_fame(self, repo_path: str, output_format: str = "json", by_type: bool = False) -> Optional[Dict[str, Any]]:
         """
         Execute git fame on a repository and return parsed data.
         
         Args:
             repo_path: Path to the git repository
             output_format: Output format for git fame (default: json)
+            by_type: Whether to include --bytype flag for per-extension stats
             
         Returns:
             Parsed git fame data or None if execution failed
@@ -41,9 +42,14 @@ class GitFameParser:
             
             os.chdir(repo_path)
             
+            # Build git fame command
+            cmd = ['git', 'fame', '--format', output_format]
+            if by_type:
+                cmd.append('--bytype')
+            
             # Execute git fame
             result = subprocess.run(
-                ['git', 'fame', '--format', output_format], 
+                cmd, 
                 capture_output=True, 
                 text=True, 
                 timeout=self.timeout_seconds
@@ -156,4 +162,33 @@ class GitFameParser:
             if parsed_author:
                 authors.append(parsed_author)
         
-        return authors 
+        return authors
+    
+    def extract_extension_stats(self, data: Dict[str, Any]) -> Dict[str, Dict[str, int]]:
+        """
+        Extract per-extension statistics from git fame --bytype output.
+        
+        Args:
+            data: Parsed git fame data with --bytype flag
+            
+        Returns:
+            Dictionary with extension as key and stats as value
+        """
+        extension_stats = {}
+        
+        for item in data.get('data', []):
+            if isinstance(item, dict):
+                # Extract extension and stats
+                extension = item.get('type', '')
+                loc = item.get('loc', 0)
+                commits = item.get('coms', 0)  # git fame uses 'coms' for commits
+                files = item.get('fils', 0)   # git fame uses 'fils' for files
+                
+                if extension:
+                    extension_stats[extension] = {
+                        'loc': loc,
+                        'commits': commits,
+                        'files': files
+                    }
+        
+        return extension_stats 

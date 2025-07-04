@@ -130,10 +130,22 @@ jobs:
           cd scripts
           python3 aggregate_stats.py
 
+      - name: Save analytics history
+        run: |
+          if [[ -f "scripts/analytics_history.json" ]]; then
+            cp scripts/analytics_history.json ./analytics_history.json
+          fi
+
       - name: Move generated reports to root
         run: |
           mv scripts/STATS.md ./
           mv scripts/unified_stats.json ./ 2>/dev/null || true
+
+      - name: Restore analytics history
+        run: |
+          if [[ -f "analytics_history.json" ]]; then
+            cp analytics_history.json scripts/analytics_history.json
+          fi
 
       - name: Validate generated file
         run: |
@@ -158,7 +170,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add STATS.md unified_stats.json
+          git add STATS.md unified_stats.json analytics_history.json
           git commit -m "📊 Update unified statistics - $(date '+%Y-%m-%d %H:%M UTC')"
 
           git push

@@ -45,3 +45,48 @@ artifacts:
   retention_days: 1
   stats_filename: "repo_stats.json"
   report_filename: "STATS.md"
+
+# Analytics and historical tracking
+analytics:
+  track_history: true
+  retention_days: 90
+  trend_analysis: true
+  goal_tracking: true
+
+  # Growth tracking settings
+  growth_tracking:
+    enabled: true
+    metrics:
+      - "total_loc"
+      - "total_commits"
+      - "total_files"
+      - "guillermo_loc"
+      - "guillermo_commits"
+      - "guillermo_files"
+
+  # Velocity metrics (weekly/monthly rates)
+  velocity_metrics:
+    enabled: true
+    periods:
+      - "weekly"
+      - "monthly"
+      - "quarterly"
+
+  # Goal tracking
+  goals:
+    enabled: true
+    targets:
+      total_loc: 150000
+      total_commits: 500
+      guillermo_loc: 100000
+      guillermo_commits: 300
+    milestones:
+      - name: "100k LOC"
+        target: 100000
+        metric: "total_loc"
+      - name: "500 Commits"
+        target: 500
+        metric: "total_commits"
+      - name: "50k Guillermo LOC"
+        target: 50000
+        metric: "guillermo_loc"

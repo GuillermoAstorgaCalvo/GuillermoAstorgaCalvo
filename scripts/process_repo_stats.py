@@ -16,6 +16,7 @@ sys.path.insert(0, str(script_dir))
 from config_manager import get_config_manager
 from git_fame_parser import GitFameParser
 from stats_processor import StatsProcessor, AuthorMatcher
+from language_mapper import get_language_mapper
 
 
 def main():
@@ -55,6 +56,7 @@ def main():
             bot_patterns=config.get_bot_patterns()
         )
         stats_processor = StatsProcessor(author_matcher)
+        language_mapper = get_language_mapper()
         
         # Process repository
         print(f"Processing repository: {display_name}")
@@ -74,6 +76,7 @@ def main():
                     print(f"  - {item.name}")
             sys.exit(1)
         
+        # Get regular git fame data (by author)
         git_fame_data = git_fame_parser.execute_git_fame(
             str(repo_path), 
             config.get_git_fame_format()
@@ -95,8 +98,28 @@ def main():
             print("❌ No author data found")
             sys.exit(1)
         
+        # Get language breakdown data
+        print("📊 Getting language breakdown...")
+        git_fame_bytype_data = git_fame_parser.execute_git_fame(
+            str(repo_path),
+            config.get_git_fame_format(),
+            by_type=True
+        )
+        
+        language_stats = {}
+        if git_fame_bytype_data:
+            # Extract extension stats
+            extension_stats = git_fame_parser.extract_extension_stats(git_fame_bytype_data)
+            
+            # Convert to language stats
+            language_stats = language_mapper.get_language_stats(extension_stats)
+            print(f"✅ Found {len(language_stats)} languages")
+        else:
+            print("⚠️ Could not get language breakdown data")
+        
         # Process repository statistics
         repo_stats = stats_processor.process_repository_data(authors, display_name)
+        repo_stats.language_stats = language_stats
         
         # Convert to dictionary for JSON serialization
         stats_dict = repo_stats.to_dict()

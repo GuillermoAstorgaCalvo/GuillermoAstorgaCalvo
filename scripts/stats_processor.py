@@ -36,13 +36,19 @@ class RepositoryStats:
     display_name: str
     guillermo_stats: AuthorStats
     repo_totals: AuthorStats
+    language_stats: Dict[str, Dict[str, int]] = None
+    
+    def __post_init__(self):
+        if self.language_stats is None:
+            self.language_stats = {}
     
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
             'display_name': self.display_name,
             'guillermo_stats': self.guillermo_stats.to_dict(),
-            'repo_totals': self.repo_totals.to_dict()
+            'repo_totals': self.repo_totals.to_dict(),
+            'language_stats': self.language_stats
         }
 
 
@@ -55,12 +61,15 @@ class UnifiedStats:
     repos_processed: int = 0
     guillermo_unified: AuthorStats = None
     repo_breakdown: Dict[str, RepositoryStats] = None
+    unified_language_stats: Dict[str, Dict[str, int]] = None
     
     def __post_init__(self):
         if self.guillermo_unified is None:
             self.guillermo_unified = AuthorStats()
         if self.repo_breakdown is None:
             self.repo_breakdown = {}
+        if self.unified_language_stats is None:
+            self.unified_language_stats = {}
 
 
 class AuthorMatcher:
@@ -183,6 +192,7 @@ class StatsProcessor:
         unified_stats.repos_processed = len(repository_stats_list)
         unified_stats.guillermo_unified = AuthorStats()
         unified_stats.repo_breakdown = {}
+        unified_stats.unified_language_stats = {}
         
         for repo_stats in repository_stats_list:
             # Add to unified totals
@@ -192,6 +202,19 @@ class StatsProcessor:
             
             # Add to Guillermo's unified stats
             unified_stats.guillermo_unified.add(repo_stats.guillermo_stats)
+            
+            # Aggregate language stats
+            for language, stats in repo_stats.language_stats.items():
+                if language not in unified_stats.unified_language_stats:
+                    unified_stats.unified_language_stats[language] = {
+                        'loc': 0,
+                        'commits': 0,
+                        'files': 0
+                    }
+                
+                unified_stats.unified_language_stats[language]['loc'] += stats.get('loc', 0)
+                unified_stats.unified_language_stats[language]['commits'] += stats.get('commits', 0)
+                unified_stats.unified_language_stats[language]['files'] += stats.get('files', 0)
             
             # Store individual repository breakdown
             unified_stats.repo_breakdown[repo_stats.display_name] = repo_stats

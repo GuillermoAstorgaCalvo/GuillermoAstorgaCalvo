@@ -6,6 +6,8 @@ Handles generation of markdown reports from statistics data.
 from datetime import datetime
 from typing import Dict, Any
 from stats_processor import UnifiedStats, AuthorStats
+from analytics_manager import get_analytics_manager
+from analytics_reporter import get_analytics_reporter
 
 
 class MarkdownReportGenerator:
@@ -149,8 +151,27 @@ class MarkdownReportGenerator:
         # Add separator row
         table += "| | | | | | |\n"
         
-        # Add individual repository rows
-        for repo_name, repo_data in stats.repo_breakdown.items():
+        # Sort repositories in specific order: Frontend, Backend, AI Backend
+        def get_repo_order_key(repo_name):
+            """Get sorting key to ensure specific repository order."""
+            repo_name_lower = repo_name.lower()
+            if 'frontend' in repo_name_lower:
+                return 1  # First
+            elif 'backend' in repo_name_lower and 'ai' not in repo_name_lower:
+                return 2  # Second
+            elif 'ai' in repo_name_lower:
+                return 3  # Third
+            else:
+                return 4  # Any others last
+        
+        # Sort repositories by the defined order
+        sorted_repos = sorted(
+            stats.repo_breakdown.items(),
+            key=lambda x: get_repo_order_key(x[0])
+        )
+        
+        # Add individual repository rows in sorted order
+        for repo_name, repo_data in sorted_repos:
             g_stats = repo_data.guillermo_stats
             repo_totals = repo_data.repo_totals
             
@@ -167,6 +188,106 @@ class MarkdownReportGenerator:
         
         return table
     
+    def generate_language_breakdown_table(self, stats: UnifiedStats) -> str:
+        """
+        Generate the language breakdown table section.
+        
+        Args:
+            stats: Unified statistics data
+            
+        Returns:
+            Markdown string for language breakdown table
+        """
+        if not stats.unified_language_stats:
+            return ""
+        
+        table = "## 🔤 Language Breakdown\n\n"
+        table += "| Language | Lines | Commits | Files | % of Total LOC |\n"
+        table += "|:---------|------:|--------:|------:|:---------------|\n"
+        
+        # Sort languages by LOC (descending)
+        sorted_languages = sorted(
+            stats.unified_language_stats.items(),
+            key=lambda x: x[1]['loc'],
+            reverse=True
+        )
+        
+        total_loc = stats.total_loc
+        
+        for language, lang_stats in sorted_languages:
+            loc = lang_stats['loc']
+            commits = lang_stats['commits']
+            files = lang_stats['files']
+            
+            # Calculate percentage of total LOC
+            loc_pct = (loc / total_loc * 100) if total_loc > 0 else 0
+            
+            # Add language emoji based on language
+            emoji = self._get_language_emoji(language)
+            
+            table += f"| {emoji} **{language}** | {self.format_number(loc)} | "
+            table += f"{self.format_number(commits)} | {self.format_number(files)} | "
+            table += f"{self.format_percentage(loc_pct)} |\n"
+        
+        return table
+    
+    def _get_language_emoji(self, language: str) -> str:
+        """Get emoji for a programming language."""
+        language_emojis = {
+            'Python': '🐍',
+            'JavaScript': '🟨',
+            'TypeScript': '🔷',
+            'Java': '☕',
+            'C': '🔵',
+            'C++': '🔵',
+            'C#': '💜',
+            'PHP': '🐘',
+            'Ruby': '💎',
+            'Go': '🐹',
+            'Rust': '🦀',
+            'Swift': '🍎',
+            'Kotlin': '🟠',
+            'Scala': '🔴',
+            'HTML': '🌐',
+            'CSS': '🎨',
+            'Shell': '🐚',
+            'PowerShell': '💻',
+            'SQL': '🗄️',
+            'R': '📊',
+            'MATLAB': '📈',
+            'Julia': '🔬',
+            'Dart': '🎯',
+            'Lua': '🌙',
+            'Perl': '🐪',
+            'Haskell': 'λ',
+            'Clojure': '🍃',
+            'Elixir': '💧',
+            'Erlang': '☎️',
+            'OCaml': '🐫',
+            'F#': '🔷',
+            'Assembly': '⚙️',
+            'VHDL': '🔌',
+            'Verilog': '🔌',
+            'TeX': '📝',
+            'Markdown': '📄',
+            'YAML': '📋',
+            'JSON': '📄',
+            'XML': '📄',
+            'CSV': '📊',
+            'Dockerfile': '🐳',
+            'Makefile': '🔨',
+            'CMake': '🔨',
+            'Gradle': '🔨',
+            'Maven': '🔨',
+            'Documentation': '📚',
+            'Configuration': '⚙️',
+            'Data': '📊',
+            'Assets': '🎨',
+            'Unknown': '❓'
+        }
+        
+        return language_emojis.get(language, '📄')
+    
     def generate_footer(self) -> str:
         """Generate the report footer."""
         footer = "\n---\n"
@@ -174,12 +295,13 @@ class MarkdownReportGenerator:
         
         return footer
     
-    def generate_report(self, stats: UnifiedStats) -> str:
+    def generate_report(self, stats: UnifiedStats, config: Dict[str, Any] = None) -> str:
         """
         Generate the complete markdown report.
         
         Args:
             stats: Unified statistics data
+            config: Configuration dictionary for analytics
             
         Returns:
             Complete markdown report string
@@ -188,19 +310,64 @@ class MarkdownReportGenerator:
         report += self.generate_header()
         report += self.generate_global_summary(stats)
         report += self.generate_contributions_table(stats)
+        report += self.generate_language_breakdown_table(stats)
+        
+        # Add analytics section if enabled
+        if config and config.get('analytics', {}).get('track_history', False):
+            try:
+                # Initialize analytics
+                analytics_manager = get_analytics_manager()
+                analytics_reporter = get_analytics_reporter()
+                
+                # Convert stats to dictionary format for analytics
+                stats_dict = {
+                    'total_loc': stats.total_loc,
+                    'total_commits': stats.total_commits,
+                    'total_files': stats.total_files,
+                    'guillermo_unified': {
+                        'loc': stats.guillermo_unified.loc,
+                        'commits': stats.guillermo_unified.commits,
+                        'files': stats.guillermo_unified.files
+                    },
+                    'repos_processed': stats.repos_processed
+                }
+                
+                # Add current data point to history
+                analytics_manager.add_data_point(stats_dict)
+                
+                # Get trend analysis
+                trends = analytics_manager.get_trend_analysis()
+                
+                # Track goals
+                goals_config = config.get('analytics', {}).get('goals', {})
+                goals = analytics_manager.track_goals(stats_dict, goals_config)
+                
+                # Generate analytics report
+                analytics_section = analytics_reporter.generate_analytics_summary(trends, goals)
+                report += analytics_section
+                
+                # Cleanup old data
+                retention_days = config.get('analytics', {}).get('retention_days', 90)
+                analytics_manager.cleanup_old_data(retention_days)
+                
+            except Exception as e:
+                print(f"⚠️ Analytics error: {e}")
+                report += "\n### 📊 Analytics\n\n⚠️ Analytics temporarily unavailable.\n\n"
+        
         report += self.generate_footer()
         
         return report
     
-    def save_report(self, stats: UnifiedStats, filename: str = "STATS.md") -> None:
+    def save_report(self, stats: UnifiedStats, filename: str = "STATS.md", config: Dict[str, Any] = None) -> None:
         """
         Generate and save a markdown report to file.
         
         Args:
             stats: Unified statistics data
             filename: Output filename
+            config: Configuration dictionary for analytics
         """
-        report = self.generate_report(stats)
+        report = self.generate_report(stats, config)
         
         with open(filename, 'w', encoding='utf-8') as f:
             f.write(report)
@@ -232,7 +399,8 @@ class JSONReportGenerator:
                 'total_loc': stats.total_loc
             },
             'guillermo_unified': stats.guillermo_unified.to_dict(),
-            'repository_breakdown': {}
+            'repository_breakdown': {},
+            'language_breakdown': stats.unified_language_stats
         }
         
         # Add repository breakdown

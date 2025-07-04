@@ -120,6 +120,10 @@ class ConfigManager:
         """Get report output filename."""
         return self.get_artifacts_config().get('report_filename', 'STATS.md')
     
+    def get_full_config(self) -> Dict[str, Any]:
+        """Get the complete configuration dictionary."""
+        return self.config
+    
     def get_clone_url(self, repository_name: str) -> str:
         """
         Generate git clone URL for a repository.
