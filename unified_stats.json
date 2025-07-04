@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-07-04T14:01:27.423439Z",
+  "timestamp": "2025-07-04T14:07:12.161232Z",
   "global_summary": {
     "repositories_processed": 5,
     "total_commits": 492,
@@ -7,17 +7,17 @@
     "total_loc": 145894
   },
   "guillermo_unified": {
-    "loc": 93225,
-    "commits": 268,
-    "files": 945
+    "loc": 133955,
+    "commits": 308,
+    "files": 1324
   },
   "repository_breakdown": {
     "FacturaIA": {
       "display_name": "FacturaIA",
       "guillermo_stats": {
-        "loc": 557,
-        "commits": 1,
-        "files": 9
+        "loc": 16151,
+        "commits": 3,
+        "files": 148
       },
       "repo_totals": {
         "loc": 16151,
@@ -205,9 +205,9 @@
     "Restaurant App": {
       "display_name": "Restaurant App",
       "guillermo_stats": {
-        "loc": 0,
-        "commits": 0,
-        "files": 0
+        "loc": 25136,
+        "commits": 38,
+        "files": 240
       },
       "repo_totals": {
         "loc": 25136,

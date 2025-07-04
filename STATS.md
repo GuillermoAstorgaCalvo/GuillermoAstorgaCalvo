@@ -1,6 +1,6 @@
 # 📊 Unified Code Statistics
 
-*Last updated: July 4, 2025 at 14:01 UTC*
+*Last updated: July 4, 2025 at 14:07 UTC*
 
 ## 🔍 Global Summary
 
@@ -13,16 +13,16 @@
 
 | Repository | Author | Lines | Commits | Files | Distribution % |
 |:-----------|:-------|------:|--------:|------:|:---------------|
-| **🌟 TOTAL UNIFIED** | **Guillermo** | **93,225** | **268** | **945** | **63.9/54.5/58.0** |
+| **🌟 TOTAL UNIFIED** | **Guillermo** | **133,955** | **308** | **1,324** | **91.8/62.6/81.3** |
 | | | | | | |
 | 📁 **InmoIA Frontend** | Guillermo | 60,899 | 242 | 771 | 83.6/56.9/71.8 |
 | 📁 **TypeScript Backend** | Guillermo | 14,103 | 23 | 137 | 99.8/95.8/98.6 |
-| 📁 **FacturaIA** | Guillermo | 557 | 1 | 9 | 3.4/33.3/6.1 |
+| 📁 **FacturaIA** | Guillermo | 16,151 | 3 | 148 | 100.0/100.0/100.0 |
 | 📁 **Python AI MCP Backend** | Guillermo | 17,666 | 2 | 28 | 100.0/100.0/100.0 |
-| 📁 **Restaurant App** | Guillermo | 0 | 0 | 0 | 0.0/0.0/0.0 |
+| 📁 **Restaurant App** | Guillermo | 25,136 | 38 | 240 | 100.0/100.0/100.0 |
 ## 📊 Enhanced Analytics & Insights
 
-*Generated on July 04, 2025 at 14:01 UTC*
+*Generated on July 04, 2025 at 14:07 UTC*
 
 ### 📈 Growth Trends
 
