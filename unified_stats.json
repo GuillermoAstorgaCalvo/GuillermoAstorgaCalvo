@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-07-04T12:47:00.167758Z",
+  "timestamp": "2025-07-04T13:10:15.653615Z",
   "global_summary": {
     "repositories_processed": 3,
     "total_commits": 451,
@@ -23,7 +23,8 @@
         "loc": 14134,
         "commits": 24,
         "files": 139
-      }
+      },
+      "language_stats": {}
     },
     "InmoIA Frontend": {
       "display_name": "InmoIA Frontend",
@@ -36,7 +37,8 @@
         "loc": 72807,
         "commits": 425,
         "files": 1074
-      }
+      },
+      "language_stats": {}
     },
     "Python AI MCP Backend": {
       "display_name": "Python AI MCP Backend",
@@ -49,7 +51,9 @@
         "loc": 17666,
         "commits": 2,
         "files": 28
-      }
+      },
+      "language_stats": {}
     }
-  }
+  },
+  "language_breakdown": {}
 }
