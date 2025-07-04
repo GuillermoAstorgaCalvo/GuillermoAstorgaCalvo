@@ -1,12 +1,12 @@
 [
   {
-    "timestamp": "2025-07-04T13:27:13.786096Z",
-    "total_loc": 104607,
-    "total_commits": 451,
-    "total_files": 1241,
-    "guillermo_loc": 92668,
-    "guillermo_commits": 267,
-    "guillermo_files": 936,
-    "repos_processed": 3
+    "timestamp": "2025-07-04T14:01:27.423021Z",
+    "total_loc": 145894,
+    "total_commits": 492,
+    "total_files": 1629,
+    "guillermo_loc": 93225,
+    "guillermo_commits": 268,
+    "guillermo_files": 945,
+    "repos_processed": 5
   }
 ]

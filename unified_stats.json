@@ -1,17 +1,77 @@
 {
-  "timestamp": "2025-07-04T13:27:13.786547Z",
+  "timestamp": "2025-07-04T14:01:27.423439Z",
   "global_summary": {
-    "repositories_processed": 3,
-    "total_commits": 451,
-    "total_files": 1241,
-    "total_loc": 104607
+    "repositories_processed": 5,
+    "total_commits": 492,
+    "total_files": 1629,
+    "total_loc": 145894
   },
   "guillermo_unified": {
-    "loc": 92668,
-    "commits": 267,
-    "files": 936
+    "loc": 93225,
+    "commits": 268,
+    "files": 945
   },
   "repository_breakdown": {
+    "FacturaIA": {
+      "display_name": "FacturaIA",
+      "guillermo_stats": {
+        "loc": 557,
+        "commits": 1,
+        "files": 9
+      },
+      "repo_totals": {
+        "loc": 16151,
+        "commits": 3,
+        "files": 148
+      },
+      "language_stats": {
+        "Unknown": {
+          "loc": 1482,
+          "commits": 16,
+          "files": 5
+        },
+        "Configuration": {
+          "loc": 378,
+          "commits": 3,
+          "files": 3
+        },
+        "Documentation": {
+          "loc": 1907,
+          "commits": 19,
+          "files": 4
+        },
+        "Python": {
+          "loc": 6106,
+          "commits": 61,
+          "files": 12
+        },
+        "JavaScript": {
+          "loc": 35,
+          "commits": 1,
+          "files": 1
+        },
+        "HTML": {
+          "loc": 24,
+          "commits": 1,
+          "files": 1
+        },
+        "Assets": {
+          "loc": 1,
+          "commits": 1,
+          "files": 1
+        },
+        "CSS": {
+          "loc": 298,
+          "commits": 2,
+          "files": 1
+        },
+        "TypeScript": {
+          "loc": 5920,
+          "commits": 59,
+          "files": 12
+        }
+      }
+    },
     "TypeScript Backend": {
       "display_name": "TypeScript Backend",
       "guillermo_stats": {
@@ -141,53 +201,103 @@
           "files": 32
         }
       }
+    },
+    "Restaurant App": {
+      "display_name": "Restaurant App",
+      "guillermo_stats": {
+        "loc": 0,
+        "commits": 0,
+        "files": 0
+      },
+      "repo_totals": {
+        "loc": 25136,
+        "commits": 38,
+        "files": 240
+      },
+      "language_stats": {
+        "Unknown": {
+          "loc": 185,
+          "commits": 5,
+          "files": 5
+        },
+        "Configuration": {
+          "loc": 16472,
+          "commits": 165,
+          "files": 33
+        },
+        "JavaScript": {
+          "loc": 184,
+          "commits": 2,
+          "files": 2
+        },
+        "TypeScript": {
+          "loc": 8000,
+          "commits": 79,
+          "files": 15
+        },
+        "Assets": {
+          "loc": 9,
+          "commits": 1,
+          "files": 1
+        },
+        "CSS": {
+          "loc": 114,
+          "commits": 1,
+          "files": 1
+        },
+        "Documentation": {
+          "loc": 172,
+          "commits": 1,
+          "files": 1
+        }
+      }
     }
   },
   "language_breakdown": {
     "Unknown": {
-      "loc": 6011,
-      "commits": 71,
-      "files": 25
-    },
-    "Documentation": {
-      "loc": 265,
-      "commits": 4,
-      "files": 4
+      "loc": 7678,
+      "commits": 92,
+      "files": 35
     },
     "Configuration": {
-      "loc": 16640,
-      "commits": 166,
-      "files": 36
+      "loc": 33490,
+      "commits": 334,
+      "files": 72
     },
-    "TypeScript": {
-      "loc": 92196,
-      "commits": 920,
-      "files": 183
+    "Documentation": {
+      "loc": 2344,
+      "commits": 24,
+      "files": 9
+    },
+    "Python": {
+      "loc": 7659,
+      "commits": 76,
+      "files": 15
     },
     "JavaScript": {
-      "loc": 192,
-      "commits": 2,
-      "files": 2
+      "loc": 411,
+      "commits": 5,
+      "files": 5
     },
     "HTML": {
-      "loc": 202,
-      "commits": 2,
-      "files": 1
-    },
-    "CSS": {
-      "loc": 1240,
-      "commits": 12,
+      "loc": 226,
+      "commits": 3,
       "files": 2
     },
     "Assets": {
-      "loc": 257,
-      "commits": 2,
-      "files": 1
-    },
-    "Python": {
-      "loc": 1553,
-      "commits": 15,
+      "loc": 267,
+      "commits": 4,
       "files": 3
+    },
+    "CSS": {
+      "loc": 1652,
+      "commits": 15,
+      "files": 4
+    },
+    "TypeScript": {
+      "loc": 106116,
+      "commits": 1058,
+      "files": 210
     }
   }
 }

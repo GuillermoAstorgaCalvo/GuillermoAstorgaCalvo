@@ -1,39 +1,28 @@
 # 📊 Unified Code Statistics
 
-*Last updated: July 4, 2025 at 13:27 UTC*
+*Last updated: July 4, 2025 at 14:01 UTC*
 
 ## 🔍 Global Summary
 
-- **Repositories processed:** 3
-- **Total commits:** 451
-- **Total files:** 1,241
-- **Total lines of code:** 104,607
+- **Repositories processed:** 5
+- **Total commits:** 492
+- **Total files:** 1,629
+- **Total lines of code:** 145,894
 
 ## 👨‍💻 Contributions by Repository and Author
 
 | Repository | Author | Lines | Commits | Files | Distribution % |
 |:-----------|:-------|------:|--------:|------:|:---------------|
-| **🌟 TOTAL UNIFIED** | **Guillermo** | **92,668** | **267** | **936** | **88.6/59.2/75.4** |
+| **🌟 TOTAL UNIFIED** | **Guillermo** | **93,225** | **268** | **945** | **63.9/54.5/58.0** |
 | | | | | | |
 | 📁 **InmoIA Frontend** | Guillermo | 60,899 | 242 | 771 | 83.6/56.9/71.8 |
 | 📁 **TypeScript Backend** | Guillermo | 14,103 | 23 | 137 | 99.8/95.8/98.6 |
+| 📁 **FacturaIA** | Guillermo | 557 | 1 | 9 | 3.4/33.3/6.1 |
 | 📁 **Python AI MCP Backend** | Guillermo | 17,666 | 2 | 28 | 100.0/100.0/100.0 |
-## 🔤 Language Breakdown
-
-| Language | Lines | Commits | Files | % of Total LOC |
-|:---------|------:|--------:|------:|:---------------|
-| 🔷 **TypeScript** | 92,196 | 920 | 183 | 88.1 |
-| ⚙️ **Configuration** | 16,640 | 166 | 36 | 15.9 |
-| ❓ **Unknown** | 6,011 | 71 | 25 | 5.7 |
-| 🐍 **Python** | 1,553 | 15 | 3 | 1.5 |
-| 🎨 **CSS** | 1,240 | 12 | 2 | 1.2 |
-| 📚 **Documentation** | 265 | 4 | 4 | 0.3 |
-| 🎨 **Assets** | 257 | 2 | 1 | 0.2 |
-| 🌐 **HTML** | 202 | 2 | 1 | 0.2 |
-| 🟨 **JavaScript** | 192 | 2 | 2 | 0.2 |
+| 📁 **Restaurant App** | Guillermo | 0 | 0 | 0 | 0.0/0.0/0.0 |
 ## 📊 Enhanced Analytics & Insights
 
-*Generated on July 04, 2025 at 13:27 UTC*
+*Generated on July 04, 2025 at 14:01 UTC*
 
 ### 📈 Growth Trends
 
@@ -41,45 +30,33 @@
 
 ### 🔤 Language Usage Analysis
 
-**📊 Summary:** 9 languages detected across 118,556 lines of code
+**📊 Summary:** 9 languages detected across 159,843 lines of code
 
 #### 🏆 Top Languages by Lines of Code
 
 | Rank | Language | Lines | Commits | Files | % of Total |
 |:-----|:---------|------:|--------:|------:|:-----------|
-| 1 | 🔷 **TypeScript** | 92,196 | 920 | 183 | 77.8% |
-| 2 | ⚙️ **Configuration** | 16,640 | 166 | 36 | 14.0% |
-| 3 | ❓ **Unknown** | 6,011 | 71 | 25 | 5.1% |
-| 4 | 🐍 **Python** | 1,553 | 15 | 3 | 1.3% |
-| 5 | 🎨 **CSS** | 1,240 | 12 | 2 | 1.0% |
-| 6 | 📚 **Documentation** | 265 | 4 | 4 | 0.2% |
-| 7 | 🎨 **Assets** | 257 | 2 | 1 | 0.2% |
-| 8 | 🌐 **HTML** | 202 | 2 | 1 | 0.2% |
-| 9 | 🟨 **JavaScript** | 192 | 2 | 2 | 0.2% |
+| 1 | 🔷 **TypeScript** | 106,116 | 1,058 | 210 | 66.4% |
+| 2 | ⚙️ **Configuration** | 33,490 | 334 | 72 | 21.0% |
+| 4 | 🐍 **Python** | 7,659 | 76 | 15 | 4.8% |
+| 5 | 📚 **Documentation** | 2,344 | 24 | 9 | 1.5% |
+| 6 | 🎨 **CSS** | 1,652 | 15 | 4 | 1.0% |
+| 7 | 🟨 **JavaScript** | 411 | 5 | 5 | 0.3% |
 
 #### 💡 Language Insights
 
-🎯 **TypeScript dominates** with 77.8% of all code
+🎯 **TypeScript dominates** with 66.4% of all code
 
 **Top 3 Languages:**
-- 1. TypeScript (77.8%)
-- 2. Configuration (14.0%)
-- 3. Unknown (5.1%)
+- 1. TypeScript (66.4%)
+- 2. Configuration (21.0%)
+- 3. Unknown (4.8%)
 
 ### 📊 Trend Visualization
 
 ### 💡 Insights & Recommendations
 
 🔄 **Multi-language project** - 9 languages in use
-
-🎯 **TypeScript focused** - 77.8% of codebase
-
-#### 📋 Recommendations
-
-- 📈 **Continue tracking** - More data points will provide better insights
-- 🔤 **Language diversity** - Consider expanding your tech stack
-- 📊 **Monitor trends** - Watch for patterns in development activity
-- 🔄 **Regular reviews** - Weekly analytics reviews can help maintain momentum
 
 
 ---
