@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-07-04T13:16:47.421346Z",
+  "timestamp": "2025-07-04T13:27:13.786547Z",
   "global_summary": {
     "repositories_processed": 3,
     "total_commits": 451,
@@ -24,7 +24,33 @@
         "commits": 24,
         "files": 139
       },
-      "language_stats": {}
+      "language_stats": {
+        "Unknown": {
+          "loc": 3922,
+          "commits": 42,
+          "files": 12
+        },
+        "Documentation": {
+          "loc": 160,
+          "commits": 1,
+          "files": 1
+        },
+        "Configuration": {
+          "loc": 194,
+          "commits": 2,
+          "files": 2
+        },
+        "TypeScript": {
+          "loc": 9775,
+          "commits": 97,
+          "files": 19
+        },
+        "JavaScript": {
+          "loc": 83,
+          "commits": 1,
+          "files": 1
+        }
+      }
     },
     "InmoIA Frontend": {
       "display_name": "InmoIA Frontend",
@@ -38,7 +64,48 @@
         "commits": 425,
         "files": 1074
       },
-      "language_stats": {}
+      "language_stats": {
+        "Unknown": {
+          "loc": 2054,
+          "commits": 28,
+          "files": 12
+        },
+        "Documentation": {
+          "loc": 69,
+          "commits": 1,
+          "files": 1
+        },
+        "Configuration": {
+          "loc": 404,
+          "commits": 4,
+          "files": 2
+        },
+        "JavaScript": {
+          "loc": 109,
+          "commits": 1,
+          "files": 1
+        },
+        "HTML": {
+          "loc": 202,
+          "commits": 2,
+          "files": 1
+        },
+        "CSS": {
+          "loc": 1240,
+          "commits": 12,
+          "files": 2
+        },
+        "TypeScript": {
+          "loc": 82421,
+          "commits": 823,
+          "files": 164
+        },
+        "Assets": {
+          "loc": 257,
+          "commits": 2,
+          "files": 1
+        }
+      }
     },
     "Python AI MCP Backend": {
       "display_name": "Python AI MCP Backend",
@@ -52,8 +119,75 @@
         "commits": 2,
         "files": 28
       },
-      "language_stats": {}
+      "language_stats": {
+        "Unknown": {
+          "loc": 35,
+          "commits": 1,
+          "files": 1
+        },
+        "Documentation": {
+          "loc": 36,
+          "commits": 2,
+          "files": 2
+        },
+        "Python": {
+          "loc": 1553,
+          "commits": 15,
+          "files": 3
+        },
+        "Configuration": {
+          "loc": 16042,
+          "commits": 160,
+          "files": 32
+        }
+      }
     }
   },
-  "language_breakdown": {}
+  "language_breakdown": {
+    "Unknown": {
+      "loc": 6011,
+      "commits": 71,
+      "files": 25
+    },
+    "Documentation": {
+      "loc": 265,
+      "commits": 4,
+      "files": 4
+    },
+    "Configuration": {
+      "loc": 16640,
+      "commits": 166,
+      "files": 36
+    },
+    "TypeScript": {
+      "loc": 92196,
+      "commits": 920,
+      "files": 183
+    },
+    "JavaScript": {
+      "loc": 192,
+      "commits": 2,
+      "files": 2
+    },
+    "HTML": {
+      "loc": 202,
+      "commits": 2,
+      "files": 1
+    },
+    "CSS": {
+      "loc": 1240,
+      "commits": 12,
+      "files": 2
+    },
+    "Assets": {
+      "loc": 257,
+      "commits": 2,
+      "files": 1
+    },
+    "Python": {
+      "loc": 1553,
+      "commits": 15,
+      "files": 3
+    }
+  }
 }
