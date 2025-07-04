@@ -1,5 +1,6 @@
 # Repository Statistics Configuration
 repositories:
+  # Existing repositories
   - name: "housing-hub-saas"
     display_name: "InmoIA Frontend"
     branch: "develop"
@@ -13,9 +14,19 @@ repositories:
     branch: "develop"
     artifact_name: "repo3-stats"
 
+  # Your personal repositories
+  - name: "FacturaIA"
+    display_name: "FacturaIA"
+    branch: "main"
+    artifact_name: "repo4-stats"
+  - name: "restaurant-app"
+    display_name: "Restaurant App"
+    branch: "main"
+    artifact_name: "repo5-stats"
+
 # GitHub organization/user settings
 github:
-  organization: "guillermo-affiliaction"
+  organization: "guillermo-affiliaction" # Keep this for existing repos
   base_url: "https://github.com"
 
 # Author pattern matching

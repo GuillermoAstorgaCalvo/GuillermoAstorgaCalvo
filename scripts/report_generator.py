@@ -319,7 +319,7 @@ class MarkdownReportGenerator:
         else:
             print("⚠️ No language stats found in unified stats")
         
-        report += self.generate_language_breakdown_table(stats)
+        # Language breakdown section removed as requested
         
         # Add analytics section if enabled
         if config and config.get('analytics', {}).get('track_history', False):

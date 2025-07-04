@@ -72,13 +72,20 @@ jobs:
 
       - name: Clone repository
         env:
-          GITHUB_TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_REPOS_TOKEN }}
           REPO_NAME: ${{ matrix.repository.name }}
           BRANCH_NAME: ${{ matrix.repository.branch }}
         run: |
           set -e
+          # Determine the organization based on repository name
+          if [[ "${REPO_NAME}" == "FacturaIA" || "${REPO_NAME}" == "restaurant-app" ]]; then
+            ORG="guillermo-affiliaction"
+          else
+            ORG="guillermo-affiliaction"
+          fi
+
           git clone --branch "${BRANCH_NAME}" --single-branch \
-            "https://x-access-token:${GITHUB_TOKEN}@github.com/guillermo-affiliaction/${REPO_NAME}.git" \
+            "https://x-access-token:${GITHUB_TOKEN}@github.com/${ORG}/${REPO_NAME}.git" \
             repo
 
       - name: Process repository statistics

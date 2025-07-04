@@ -134,6 +134,11 @@ class AnalyticsReporter:
             
             for i, lang_data in enumerate(top_languages, 1):
                 language = lang_data['language']
+                
+                # Skip unwanted languages
+                if language in ['Unknown', 'Assets', 'HTML']:
+                    continue
+                
                 loc = lang_data['loc']
                 commits = lang_data['commits']
                 files = lang_data['files']
@@ -379,12 +384,7 @@ class AnalyticsReporter:
         else:
             markdown += "📊 **Baseline established** - Continue tracking for meaningful insights.\n\n"
         
-        # Add recommendations
-        markdown += "#### 📋 Recommendations\n\n"
-        markdown += "- 📈 **Continue tracking** - More data points will provide better insights\n"
-        markdown += "- 🔤 **Language diversity** - Consider expanding your tech stack\n"
-        markdown += "- 📊 **Monitor trends** - Watch for patterns in development activity\n"
-        markdown += "- 🔄 **Regular reviews** - Weekly analytics reviews can help maintain momentum\n\n"
+        # Recommendations section removed as requested
         
         return markdown
     
