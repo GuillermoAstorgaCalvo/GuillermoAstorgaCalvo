@@ -68,9 +68,9 @@ jobs:
               
               # Repo name mapping
               repo_names = {
-                  'repo1': 'InmoIA Frontend (housing-hub-saas)',
-                  'repo2': 'Typescript Backend (backend-housing-hub-saas)', 
-                  'repo3': 'Python AI MCP Backend (IAbackend-inmoIA)'
+                  'repo1': 'InmoIA Frontend',
+                  'repo2': 'Typescript Backend', 
+                  'repo3': 'Python AI MCP Backend'
               }
               
               for repo_name, data in repos_data.items():
@@ -94,31 +94,44 @@ jobs:
                   }
                   
                   for author_data in data.get('data', []):
-                      author_name = author_data.get('author', '')
+                      # Handle different git fame JSON formats
+                      if isinstance(author_data, dict):
+                          author_name = author_data.get('author', '')
+                          loc = author_data.get('loc', 0)
+                          commits = author_data.get('commits', 0)
+                          files = author_data.get('files', 0)
+                      elif isinstance(author_data, list) and len(author_data) >= 4:
+                          # Format: [author, loc, commits, files, ...]
+                          author_name = author_data[0] if len(author_data) > 0 else ''
+                          loc = int(author_data[1]) if len(author_data) > 1 and str(author_data[1]).isdigit() else 0
+                          commits = int(author_data[2]) if len(author_data) > 2 and str(author_data[2]).isdigit() else 0
+                          files = int(author_data[3]) if len(author_data) > 3 and str(author_data[3]).isdigit() else 0
+                      else:
+                          continue  # Skip invalid data
                       
                       # Check if this is a Guillermo variant
-                      is_guillermo = any(re.search(pattern, author_name, re.IGNORECASE) 
+                      is_guillermo = any(re.search(pattern, str(author_name), re.IGNORECASE) 
                                        for pattern in guillermo_patterns)
                       
                       if is_guillermo:
                           # Add to unified Guillermo stats
-                          unified_stats['guillermo_unified']['loc'] += author_data.get('loc', 0)
-                          unified_stats['guillermo_unified']['commits'] += author_data.get('commits', 0)
-                          unified_stats['guillermo_unified']['files'] += author_data.get('files', 0)
+                          unified_stats['guillermo_unified']['loc'] += loc
+                          unified_stats['guillermo_unified']['commits'] += commits
+                          unified_stats['guillermo_unified']['files'] += files
                           
                           # Add to per-repo Guillermo stats
-                          unified_stats['repo_breakdown'][display_name]['guillermo_stats']['loc'] += author_data.get('loc', 0)
-                          unified_stats['repo_breakdown'][display_name]['guillermo_stats']['commits'] += author_data.get('commits', 0)
-                          unified_stats['repo_breakdown'][display_name]['guillermo_stats']['files'] += author_data.get('files', 0)
+                          unified_stats['repo_breakdown'][display_name]['guillermo_stats']['loc'] += loc
+                          unified_stats['repo_breakdown'][display_name]['guillermo_stats']['commits'] += commits
+                          unified_stats['repo_breakdown'][display_name]['guillermo_stats']['files'] += files
                       else:
                           # Aggregate other authors
                           if author_name not in unified_stats['other_authors']:
                               unified_stats['other_authors'][author_name] = {
                                   'loc': 0, 'commits': 0, 'files': 0
                               }
-                          unified_stats['other_authors'][author_name]['loc'] += author_data.get('loc', 0)
-                          unified_stats['other_authors'][author_name]['commits'] += author_data.get('commits', 0)
-                          unified_stats['other_authors'][author_name]['files'] += author_data.get('files', 0)
+                          unified_stats['other_authors'][author_name]['loc'] += loc
+                          unified_stats['other_authors'][author_name]['commits'] += commits
+                          unified_stats['other_authors'][author_name]['files'] += files
               
               return unified_stats
 
