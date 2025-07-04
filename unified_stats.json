@@ -1,0 +1,55 @@
+{
+  "timestamp": "2025-07-04T12:47:00.167758Z",
+  "global_summary": {
+    "repositories_processed": 3,
+    "total_commits": 451,
+    "total_files": 1241,
+    "total_loc": 104607
+  },
+  "guillermo_unified": {
+    "loc": 92668,
+    "commits": 267,
+    "files": 936
+  },
+  "repository_breakdown": {
+    "TypeScript Backend": {
+      "display_name": "TypeScript Backend",
+      "guillermo_stats": {
+        "loc": 14103,
+        "commits": 23,
+        "files": 137
+      },
+      "repo_totals": {
+        "loc": 14134,
+        "commits": 24,
+        "files": 139
+      }
+    },
+    "InmoIA Frontend": {
+      "display_name": "InmoIA Frontend",
+      "guillermo_stats": {
+        "loc": 60899,
+        "commits": 242,
+        "files": 771
+      },
+      "repo_totals": {
+        "loc": 72807,
+        "commits": 425,
+        "files": 1074
+      }
+    },
+    "Python AI MCP Backend": {
+      "display_name": "Python AI MCP Backend",
+      "guillermo_stats": {
+        "loc": 17666,
+        "commits": 2,
+        "files": 28
+      },
+      "repo_totals": {
+        "loc": 17666,
+        "commits": 2,
+        "files": 28
+      }
+    }
+  }
+}

@@ -1,6 +1,6 @@
 # 📊 Unified Code Statistics
 
-*Last updated: July 4, 2025 at 11:35 UTC*
+*Last updated: July 4, 2025 at 12:47 UTC*
 
 ## 🔍 Global Summary
 
@@ -15,8 +15,8 @@
 |:-----------|:-------|------:|--------:|------:|:---------------|
 | **🌟 TOTAL UNIFIED** | **Guillermo** | **92,668** | **267** | **936** | **88.6/59.2/75.4** |
 | | | | | | |
-| 📁 **InmoIA Frontend** | Guillermo | 60,899 | 242 | 771 | 83.6/56.9/71.8 |
 | 📁 **TypeScript Backend** | Guillermo | 14,103 | 23 | 137 | 99.8/95.8/98.6 |
+| 📁 **InmoIA Frontend** | Guillermo | 60,899 | 242 | 771 | 83.6/56.9/71.8 |
 | 📁 **Python AI MCP Backend** | Guillermo | 17,666 | 2 | 28 | 100.0/100.0/100.0 |
 
 ---
