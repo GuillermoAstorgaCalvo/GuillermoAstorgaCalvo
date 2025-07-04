@@ -8,10 +8,15 @@ on:
 jobs:
   update-stats:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
 
     steps:
       - name: Checkout perfil público
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Instalar dependencias
         run: |
@@ -56,7 +61,6 @@ jobs:
                       'commits': 0,
                       'files': 0
                   },
-                  'other_authors': {},
                   'repo_breakdown': {}
               }
               
@@ -64,6 +68,12 @@ jobs:
               guillermo_patterns = [
                   r'guillermo.*affiliaction',
                   r'Guillermo.*Affiliaction'
+              ]
+              
+              # Patterns to identify bots (exclude from totals)
+              bot_patterns = [
+                  r'.*\[bot\]$',
+                  r'gpt-engineer-app.*'
               ]
               
               # Repo name mapping
@@ -79,18 +89,10 @@ jobs:
                       
                   display_name = repo_names.get(repo_name, repo_name)
                   unified_stats['repos_processed'] += 1
-                  unified_stats['total_commits'] += data.get('total_commits', 0)
-                  unified_stats['total_files'] += data.get('total_files', 0) 
-                  unified_stats['total_loc'] += data.get('total_loc', 0)
                   
                   # Initialize repo breakdown
                   unified_stats['repo_breakdown'][display_name] = {
-                      'guillermo_stats': {'loc': 0, 'commits': 0, 'files': 0},
-                      'total_stats': {
-                          'loc': data.get('total_loc', 0),
-                          'commits': data.get('total_commits', 0),
-                          'files': data.get('total_files', 0)
-                      }
+                      'guillermo_stats': {'loc': 0, 'commits': 0, 'files': 0}
                   }
                   
                   for author_data in data.get('data', []):
@@ -109,9 +111,19 @@ jobs:
                       else:
                           continue  # Skip invalid data
                       
+                      # Check if this is a bot (exclude from totals)
+                      is_bot = any(re.search(pattern, str(author_name), re.IGNORECASE) 
+                                 for pattern in bot_patterns)
+                      
                       # Check if this is a Guillermo variant
                       is_guillermo = any(re.search(pattern, str(author_name), re.IGNORECASE) 
                                        for pattern in guillermo_patterns)
+                      
+                      # Add to totals (all human contributors, including Guillermo)
+                      if not is_bot:
+                          unified_stats['total_loc'] += loc
+                          unified_stats['total_commits'] += commits
+                          unified_stats['total_files'] += files
                       
                       if is_guillermo:
                           # Add to unified Guillermo stats
@@ -123,15 +135,6 @@ jobs:
                           unified_stats['repo_breakdown'][display_name]['guillermo_stats']['loc'] += loc
                           unified_stats['repo_breakdown'][display_name]['guillermo_stats']['commits'] += commits
                           unified_stats['repo_breakdown'][display_name]['guillermo_stats']['files'] += files
-                      else:
-                          # Aggregate other authors
-                          if author_name not in unified_stats['other_authors']:
-                              unified_stats['other_authors'][author_name] = {
-                                  'loc': 0, 'commits': 0, 'files': 0
-                              }
-                          unified_stats['other_authors'][author_name]['loc'] += loc
-                          unified_stats['other_authors'][author_name]['commits'] += commits
-                          unified_stats['other_authors'][author_name]['files'] += files
               
               return unified_stats
 
@@ -142,11 +145,11 @@ jobs:
               
               report += "## 🔍 Resumen Global\n\n"
               report += f"- **Repositorios procesados:** {stats['repos_processed']}\n"
-              report += f"- **Total commits:** {stats['total_commits']:,}\n"
-              report += f"- **Total archivos:** {stats['total_files']:,}\n"
-              report += f"- **Total líneas de código:** {stats['total_loc']:,}\n\n"
+              report += f"- **Total commits:** {stats['total_commits']:,} *(todos los contribuidores humanos)*\n"
+              report += f"- **Total archivos:** {stats['total_files']:,} *(todos los contribuidores humanos)*\n"
+              report += f"- **Total líneas de código:** {stats['total_loc']:,} *(todos los contribuidores humanos)*\n\n"
               
-              # Calculate Guillermo's percentages
+              # Calculate Guillermo's percentages against all human contributors
               guillermo = stats['guillermo_unified']
               if stats['total_loc'] > 0:
                   loc_pct = (guillermo['loc'] / stats['total_loc']) * 100
@@ -166,6 +169,7 @@ jobs:
               # Per-repository breakdown for Guillermo
               for repo_name, repo_data in stats['repo_breakdown'].items():
                   g_stats = repo_data['guillermo_stats']
+                  # Calculate each repo's percentage of total project (all human contributors)
                   if stats['total_loc'] > 0:
                       repo_loc_pct = (g_stats['loc'] / stats['total_loc']) * 100
                       repo_commits_pct = (g_stats['commits'] / stats['total_commits']) * 100
@@ -174,22 +178,7 @@ jobs:
                       repo_loc_pct = repo_commits_pct = repo_files_pct = 0
                       
                   report += f"| 📁 **{repo_name}** | Guillermo | {g_stats['loc']:,} | {g_stats['commits']:,} | {g_stats['files']:,} | {repo_loc_pct:.1f}/{repo_commits_pct:.1f}/{repo_files_pct:.1f} |\n"
-              
-              # Other authors sorted by LOC
-              if stats['other_authors']:
-                  report += "| | | | | | |\n"  # Empty row for separation
-                  sorted_others = sorted(stats['other_authors'].items(), 
-                                       key=lambda x: x[1]['loc'], reverse=True)
-                  
-                  for author, data in sorted_others:
-                      if stats['total_loc'] > 0:
-                          a_loc_pct = (data['loc'] / stats['total_loc']) * 100
-                          a_commits_pct = (data['commits'] / stats['total_commits']) * 100  
-                          a_files_pct = (data['files'] / stats['total_files']) * 100
-                      else:
-                          a_loc_pct = a_commits_pct = a_files_pct = 0
-                          
-                      report += f"| 🔄 **Cross-Repository** | {author} | {data['loc']:,} | {data['commits']:,} | {data['files']:,} | {a_loc_pct:.1f}/{a_commits_pct:.1f}/{a_files_pct:.1f} |\n"
+
               
               report += "\n---\n"
               report += "*Generado automáticamente por GitHub Actions*"
