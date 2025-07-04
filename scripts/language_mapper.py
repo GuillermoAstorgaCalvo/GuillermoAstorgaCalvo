@@ -3,7 +3,7 @@ Language Mapper Module
 Maps file extensions to programming languages using GitHub Linguist's mapping.
 """
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 
 
 class LanguageMapper:
