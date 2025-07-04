@@ -29,7 +29,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          key: ${{ runner.os }}-pip-git-fame-pandas-v1
           restore-keys: |
             ${{ runner.os }}-pip-
 
