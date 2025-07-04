@@ -60,9 +60,22 @@ def main():
         print(f"Processing repository: {display_name}")
         
         # Execute git fame and parse data
-        repo_path = "repo"  # Default clone directory (relative to parent directory)
+        # Repository is cloned to parent directory (root), not in scripts/
+        repo_path = script_dir.parent / "repo"
+        print(f"Looking for repository at: {repo_path}")
+        
+        if not repo_path.exists():
+            print(f"❌ Repository directory not found at: {repo_path}")
+            print(f"Current working directory: {Path.cwd()}")
+            print(f"Available files in parent directory:")
+            parent_dir = script_dir.parent
+            if parent_dir.exists():
+                for item in parent_dir.iterdir():
+                    print(f"  - {item.name}")
+            sys.exit(1)
+        
         git_fame_data = git_fame_parser.execute_git_fame(
-            repo_path, 
+            str(repo_path), 
             config.get_git_fame_format()
         )
         
