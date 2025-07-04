@@ -1,0 +1,219 @@
+name: Update Statistics
+
+on:
+  workflow_dispatch: # puedes lanzarlo manualmente
+  schedule:
+    - cron: "0 3 * * 1" # cada lunes a las 3:00 AM UTC (opcional)
+
+jobs:
+  update-stats:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout perfil público
+        uses: actions/checkout@v3
+
+      - name: Instalar dependencias
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install git-fame pandas
+
+      - name: Clonar repositorios privados
+        env:
+          TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
+        run: |
+          # Reemplaza estos con tus repositorios reales
+          git clone https://x-access-token:${TOKEN}@github.com/guillermo-affiliaction/housing-hub-saas.git repo1
+          git clone https://x-access-token:${TOKEN}@github.com/guillermo-affiliaction/backend-housing-hub-saas.git repo2
+          git clone https://x-access-token:${TOKEN}@github.com/guillermo-affiliaction/IAbackend-inmoIA.git repo3
+
+      - name: Generar estadísticas unificadas
+        run: |
+          cat > process_stats.py << 'EOF'
+          import json
+          import re
+          import os
+          from pathlib import Path
+
+          def get_git_fame_json(repo_path):
+              """Get git fame data as JSON from a repository"""
+              os.chdir(repo_path)
+              import subprocess
+              result = subprocess.run(['git', 'fame', '--format', 'json'], 
+                                    capture_output=True, text=True)
+              os.chdir('..')
+              return json.loads(result.stdout) if result.returncode == 0 else None
+
+          def unify_guillermo_stats(repos_data):
+              """Unify stats for all Guillermo variants"""
+              unified_stats = {
+                  'total_commits': 0,
+                  'total_files': 0,
+                  'total_loc': 0,
+                  'repos_processed': 0,
+                  'guillermo_unified': {
+                      'loc': 0,
+                      'commits': 0,
+                      'files': 0
+                  },
+                  'other_authors': {},
+                  'repo_breakdown': {}
+              }
+              
+              # Patterns to identify Guillermo variants
+              guillermo_patterns = [
+                  r'guillermo.*affiliaction',
+                  r'Guillermo.*Affiliaction'
+              ]
+              
+              # Repo name mapping
+              repo_names = {
+                  'repo1': 'InmoIA Frontend',
+                  'repo2': 'Typescript Backend', 
+                  'repo3': 'Python AI MCP Backend'
+              }
+              
+              for repo_name, data in repos_data.items():
+                  if not data:
+                      continue
+                      
+                  display_name = repo_names.get(repo_name, repo_name)
+                  unified_stats['repos_processed'] += 1
+                  unified_stats['total_commits'] += data.get('total_commits', 0)
+                  unified_stats['total_files'] += data.get('total_files', 0) 
+                  unified_stats['total_loc'] += data.get('total_loc', 0)
+                  
+                  # Initialize repo breakdown
+                  unified_stats['repo_breakdown'][display_name] = {
+                      'guillermo_stats': {'loc': 0, 'commits': 0, 'files': 0},
+                      'total_stats': {
+                          'loc': data.get('total_loc', 0),
+                          'commits': data.get('total_commits', 0),
+                          'files': data.get('total_files', 0)
+                      }
+                  }
+                  
+                  for author_data in data.get('data', []):
+                      author_name = author_data.get('author', '')
+                      
+                      # Check if this is a Guillermo variant
+                      is_guillermo = any(re.search(pattern, author_name, re.IGNORECASE) 
+                                       for pattern in guillermo_patterns)
+                      
+                      if is_guillermo:
+                          # Add to unified Guillermo stats
+                          unified_stats['guillermo_unified']['loc'] += author_data.get('loc', 0)
+                          unified_stats['guillermo_unified']['commits'] += author_data.get('commits', 0)
+                          unified_stats['guillermo_unified']['files'] += author_data.get('files', 0)
+                          
+                          # Add to per-repo Guillermo stats
+                          unified_stats['repo_breakdown'][display_name]['guillermo_stats']['loc'] += author_data.get('loc', 0)
+                          unified_stats['repo_breakdown'][display_name]['guillermo_stats']['commits'] += author_data.get('commits', 0)
+                          unified_stats['repo_breakdown'][display_name]['guillermo_stats']['files'] += author_data.get('files', 0)
+                      else:
+                          # Aggregate other authors
+                          if author_name not in unified_stats['other_authors']:
+                              unified_stats['other_authors'][author_name] = {
+                                  'loc': 0, 'commits': 0, 'files': 0
+                              }
+                          unified_stats['other_authors'][author_name]['loc'] += author_data.get('loc', 0)
+                          unified_stats['other_authors'][author_name]['commits'] += author_data.get('commits', 0)
+                          unified_stats['other_authors'][author_name]['files'] += author_data.get('files', 0)
+              
+              return unified_stats
+
+          def generate_markdown_report(stats):
+              """Generate markdown report from unified stats"""
+              report = "# 📊 Estadísticas Unificadas de Código\n\n"
+              report += f"*Última actualización: $(date)*\n\n"
+              
+              report += "## 🔍 Resumen Global\n\n"
+              report += f"- **Repositorios procesados:** {stats['repos_processed']}\n"
+              report += f"- **Total commits:** {stats['total_commits']:,}\n"
+              report += f"- **Total archivos:** {stats['total_files']:,}\n"
+              report += f"- **Total líneas de código:** {stats['total_loc']:,}\n\n"
+              
+              # Calculate Guillermo's percentages
+              guillermo = stats['guillermo_unified']
+              if stats['total_loc'] > 0:
+                  loc_pct = (guillermo['loc'] / stats['total_loc']) * 100
+                  commits_pct = (guillermo['commits'] / stats['total_commits']) * 100
+                  files_pct = (guillermo['files'] / stats['total_files']) * 100
+              else:
+                  loc_pct = commits_pct = files_pct = 0
+              
+              report += "## 👨‍💻 Contribuciones por Repositorio\n\n"
+              report += "| Repositorio | Autor | Líneas | Commits | Archivos | Distribución |\n"
+              report += "|:------------|:------|-------:|--------:|---------:|:-------------|\n"
+              
+              # Summary row - Total across all repos
+              report += f"| **🌟 TOTAL UNIFICADO** | **Guillermo** | **{guillermo['loc']:,}** | **{guillermo['commits']:,}** | **{guillermo['files']:,}** | **{loc_pct:.1f}/{commits_pct:.1f}/{files_pct:.1f}** |\n"
+              report += "| | | | | | |\n"  # Empty row for separation
+              
+              # Per-repository breakdown for Guillermo
+              for repo_name, repo_data in stats['repo_breakdown'].items():
+                  g_stats = repo_data['guillermo_stats']
+                  if stats['total_loc'] > 0:
+                      repo_loc_pct = (g_stats['loc'] / stats['total_loc']) * 100
+                      repo_commits_pct = (g_stats['commits'] / stats['total_commits']) * 100
+                      repo_files_pct = (g_stats['files'] / stats['total_files']) * 100
+                  else:
+                      repo_loc_pct = repo_commits_pct = repo_files_pct = 0
+                      
+                  report += f"| 📁 **{repo_name}** | Guillermo | {g_stats['loc']:,} | {g_stats['commits']:,} | {g_stats['files']:,} | {repo_loc_pct:.1f}/{repo_commits_pct:.1f}/{repo_files_pct:.1f} |\n"
+              
+              # Other authors sorted by LOC
+              if stats['other_authors']:
+                  report += "| | | | | | |\n"  # Empty row for separation
+                  sorted_others = sorted(stats['other_authors'].items(), 
+                                       key=lambda x: x[1]['loc'], reverse=True)
+                  
+                  for author, data in sorted_others:
+                      if stats['total_loc'] > 0:
+                          a_loc_pct = (data['loc'] / stats['total_loc']) * 100
+                          a_commits_pct = (data['commits'] / stats['total_commits']) * 100  
+                          a_files_pct = (data['files'] / stats['total_files']) * 100
+                      else:
+                          a_loc_pct = a_commits_pct = a_files_pct = 0
+                          
+                      report += f"| 🔄 **Cross-Repository** | {author} | {data['loc']:,} | {data['commits']:,} | {data['files']:,} | {a_loc_pct:.1f}/{a_commits_pct:.1f}/{a_files_pct:.1f} |\n"
+              
+              report += "\n---\n"
+              report += "*Generado automáticamente por GitHub Actions*"
+              
+              return report
+
+          # Main execution
+          repos_data = {}
+
+          # Process each repository
+          for repo in ['repo1', 'repo2', 'repo3']:
+              if Path(repo).exists():
+                  print(f"Processing {repo}...")
+                  repos_data[repo] = get_git_fame_json(repo)
+              else:
+                  print(f"Repository {repo} not found, skipping...")
+
+          # Generate unified stats
+          unified_stats = unify_guillermo_stats(repos_data)
+
+          # Generate markdown report
+          markdown_report = generate_markdown_report(unified_stats)
+
+          # Save report
+          with open('STATS.md', 'w', encoding='utf-8') as f:
+              f.write(markdown_report)
+
+          print("✅ Unified stats generated successfully!")
+          print(f"📊 Guillermo total: {unified_stats['guillermo_unified']['loc']:,} LOC across {unified_stats['repos_processed']} repos")
+          EOF
+
+          python3 process_stats.py
+
+      - name: Añadir resultados al perfil
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add STATS.md
+          git commit -m "📊 Actualiza estadísticas unificadas de Guillermo" || echo "Sin cambios"
+          git push
