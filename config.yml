@@ -34,6 +34,12 @@ author_patterns:
   guillermo:
     - "guillermo.*affiliaction"
     - "Guillermo.*Affiliaction"
+    - "GuillermoAstorgaCalvo"
+    - "guillermoastorgacalvo"
+    - "Guillermo Astorga"
+    - "Guillermo Astorga Calvo"
+    - "guillermo.*astorga"
+    - "Guillermo.*Astorga"
   bots:
     - ".*\\[bot\\]$"
     - "gpt-engineer-app.*"
