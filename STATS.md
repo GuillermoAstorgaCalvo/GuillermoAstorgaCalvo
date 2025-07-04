@@ -1,23 +1,24 @@
-# 📊 Estadísticas Unificadas de Código
+# 📊 Unified Code Statistics
 
-*Última actualización: 4 de julio de 2025 a las 11:26 UTC*
+_Last updated: January 15, 2025 at 14:30 UTC_
 
-## 🔍 Resumen Global
+## 🔍 Global Summary
 
-- **Repositorios procesados:** 3
-- **Total commits:** 3
-- **Total archivos:** 858
-- **Total líneas de código:** 118,556
+- **Repositories processed:** 3
+- **Total commits:** 856
+- **Total files:** 1,341
+- **Total lines of code:** 118,556
 
-## 👨‍💻 Contribuciones por Repositorio y Autor
+## 👨‍💻 Contributions by Repository and Author
 
-| Repositorio | Autor | Líneas | Commits | Archivos | Distribución % |
-|:------------|:------|-------:|--------:|---------:|:---------------|
-| **🌟 TOTAL UNIFICADO** | **Guillermo** | **118,556** | **3** | **858** | **100.0/100.0/100.0** |
-| | | | | | |
-| 📁 **InmoIA Frontend** | Guillermo | 86,756 | 1 | 712 | 100.0/100.0/100.0 |
-| 📁 **Typescript Backend** | Guillermo | 14,134 | 1 | 118 | 100.0/100.0/100.0 |
-| 📁 **Python AI MCP Backend** | Guillermo | 17,666 | 1 | 28 | 100.0/100.0/100.0 |
+| Repository                   | Author        |      Lines | Commits |   Files | Distribution %     |
+| :--------------------------- | :------------ | ---------: | ------: | ------: | :----------------- |
+| **🌟 TOTAL UNIFIED**         | **Guillermo** | **92,668** | **267** | **936** | **78.2/31.2/73.0** |
+|                              |               |            |         |         |                    |
+| 📁 **InmoIA Frontend**       | Guillermo     |     60,899 |     242 |     771 | 70.2/87.1/82.3     |
+| 📁 **TypeScript Backend**    | Guillermo     |     14,103 |      23 |     137 | 85.7/48.9/67.5     |
+| 📁 **Python AI MCP Backend** | Guillermo     |     17,666 |       2 |      28 | 99.8/50.0/93.3     |
 
 ---
-*Generado automáticamente por GitHub Actions*
+
+_Generated automatically by GitHub Actions_
