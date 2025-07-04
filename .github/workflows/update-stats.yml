@@ -51,8 +51,8 @@ jobs:
               3) repo_url="IAbackend-inmoIA" && repo_name="repo3" ;;
             esac
             
-            echo "📥 Cloning $repo_url..."
-            if ! git clone --depth 1 --branch develop --single-branch https://x-access-token:${TOKEN}@github.com/guillermo-affiliaction/${repo_url}.git ${repo_name}; then
+            echo "📥 Cloning $repo_url with full history..."
+            if ! git clone --branch develop --single-branch https://x-access-token:${TOKEN}@github.com/guillermo-affiliaction/${repo_url}.git ${repo_name}; then
               echo "❌ Error cloning $repo_url"
               exit 1
             fi
@@ -73,8 +73,15 @@ jobs:
               try:
                   os.chdir(repo_path)
                   import subprocess
+                  
+                  # First check the repository status
+                  git_log = subprocess.run(['git', 'rev-list', '--all', '--count'], 
+                                         capture_output=True, text=True)
+                  commit_count = int(git_log.stdout.strip()) if git_log.stdout.strip().isdigit() else 0
+                  print(f"🔍 {repo_path}: Repository has {commit_count} commits in history")
+                  
                   result = subprocess.run(['git', 'fame', '--format', 'json'], 
-                                        capture_output=True, text=True, timeout=60)
+                                        capture_output=True, text=True, timeout=120)
                   os.chdir('..')
                   
                   if result.returncode != 0:
@@ -82,7 +89,12 @@ jobs:
                       return None
                       
                   data = json.loads(result.stdout)
-                  print(f"📊 {repo_path} stats: {data.get('total_loc', 0):,} LOC, {data.get('total_commits', 0)} commits")
+                  print(f"📊 {repo_path} raw data:")
+                  print(f"   - Total LOC: {data.get('total_loc', 0):,}")
+                  print(f"   - Total commits: {data.get('total_commits', 0)}")
+                  print(f"   - Total files: {data.get('total_files', 0)}")
+                  print(f"   - Authors: {len(data.get('data', []))}")
+                  
                   return data
               except Exception as e:
                   print(f"❌ Exception in {repo_path}: {str(e)}")
@@ -147,15 +159,17 @@ jobs:
                           commits = max(0, int(author_data[2]) if str(author_data[2]).isdigit() else 0)
                           files = max(0, int(author_data[3]) if str(author_data[3]).isdigit() else 0)
                       else:
+                          print(f"   ⚠️ Skipping invalid author data: {author_data}")
                           continue
-                      
-                      print(f"   Author: {author_name} - {loc} LOC, {commits} commits")
                       
                       is_bot = any(re.search(pattern, str(author_name), re.IGNORECASE) 
                                  for pattern in bot_patterns)
                       
                       is_guillermo = any(re.search(pattern, str(author_name), re.IGNORECASE) 
                                        for pattern in guillermo_patterns)
+                      
+                      status = "🤖 Bot" if is_bot else ("👤 Guillermo" if is_guillermo else "👥 Other")
+                      print(f"   {status}: {author_name} - {loc:,} LOC, {commits} commits, {files} files")
                       
                       if not is_bot:
                           unified_stats['total_loc'] += loc
@@ -165,16 +179,19 @@ jobs:
                           unified_stats['repo_breakdown'][display_name]['repo_totals']['loc'] += loc
                           unified_stats['repo_breakdown'][display_name]['repo_totals']['commits'] += commits
                           unified_stats['repo_breakdown'][display_name]['repo_totals']['files'] += files
-                      
-                      if is_guillermo:
-                          unified_stats['guillermo_unified']['loc'] += loc
-                          unified_stats['guillermo_unified']['commits'] += commits
-                          unified_stats['guillermo_unified']['files'] += files
                           
-                          unified_stats['repo_breakdown'][display_name]['guillermo_stats']['loc'] += loc
-                          unified_stats['repo_breakdown'][display_name]['guillermo_stats']['commits'] += commits
-                          unified_stats['repo_breakdown'][display_name]['guillermo_stats']['files'] += files
-                          print(f"   ✅ Guillermo match: +{loc} LOC, +{commits} commits")
+                          if is_guillermo:
+                              unified_stats['guillermo_unified']['loc'] += loc
+                              unified_stats['guillermo_unified']['commits'] += commits
+                              unified_stats['guillermo_unified']['files'] += files
+                              
+                              unified_stats['repo_breakdown'][display_name]['guillermo_stats']['loc'] += loc
+                              unified_stats['repo_breakdown'][display_name]['guillermo_stats']['commits'] += commits
+                              unified_stats['repo_breakdown'][display_name]['guillermo_stats']['files'] += files
+                  
+                  print(f"   📋 {display_name} totals:")
+                  print(f"      Human contributors: {unified_stats['repo_breakdown'][display_name]['repo_totals']['loc']:,} LOC, {unified_stats['repo_breakdown'][display_name]['repo_totals']['commits']} commits")
+                  print(f"      Guillermo: {unified_stats['repo_breakdown'][display_name]['guillermo_stats']['loc']:,} LOC, {unified_stats['repo_breakdown'][display_name]['guillermo_stats']['commits']} commits")
               
               return unified_stats
 
@@ -264,6 +281,16 @@ jobs:
           if not validate_stats(unified_stats):
               print("❌ Error: Statistics validation failed")
               sys.exit(1)
+
+          print("\n🎯 Final Unified Statistics:")
+          print(f"   Global totals: {unified_stats['total_loc']:,} LOC, {unified_stats['total_commits']} commits, {unified_stats['total_files']} files")
+          print(f"   Guillermo totals: {unified_stats['guillermo_unified']['loc']:,} LOC, {unified_stats['guillermo_unified']['commits']} commits, {unified_stats['guillermo_unified']['files']} files")
+
+          guillermo = unified_stats['guillermo_unified']
+          if unified_stats['total_loc'] > 0:
+              loc_pct = (guillermo['loc'] / unified_stats['total_loc']) * 100
+              commits_pct = (guillermo['commits'] / unified_stats['total_commits']) * 100
+              print(f"   Distribution: {loc_pct:.1f}% LOC, {commits_pct:.1f}% commits")
 
           markdown_report = generate_markdown_report(unified_stats)
 
