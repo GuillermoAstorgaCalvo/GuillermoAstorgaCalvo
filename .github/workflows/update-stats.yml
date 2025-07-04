@@ -170,7 +170,8 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add STATS.md unified_stats.json analytics_history.json
+                    git add STATS.md unified_stats.json analytics_history.json
+
           git commit -m "📊 Update unified statistics - $(date '+%Y-%m-%d %H:%M UTC')"
 
           git push

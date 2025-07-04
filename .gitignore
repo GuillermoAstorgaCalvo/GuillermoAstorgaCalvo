@@ -1,5 +1,4 @@
-# Ignore analytics history and test artifacts
-analytics_history.json
+# Ignore test artifacts only
 scripts/test_analytics_history.json
 scripts/test_analytics_report.md
 
