@@ -10,7 +10,8 @@ import os
 from pathlib import Path
 
 # Add scripts directory to Python path for imports
-sys.path.insert(0, str(Path(__file__).parent))
+script_dir = Path(__file__).parent
+sys.path.insert(0, str(script_dir))
 
 from config_manager import get_config_manager
 from git_fame_parser import GitFameParser
@@ -59,7 +60,7 @@ def main():
         print(f"Processing repository: {display_name}")
         
         # Execute git fame and parse data
-        repo_path = "repo"  # Default clone directory
+        repo_path = "repo"  # Default clone directory (relative to parent directory)
         git_fame_data = git_fame_parser.execute_git_fame(
             repo_path, 
             config.get_git_fame_format()
@@ -87,9 +88,10 @@ def main():
         # Convert to dictionary for JSON serialization
         stats_dict = repo_stats.to_dict()
         
-        # Save results to JSON file
+        # Save results to JSON file in scripts directory
         output_filename = config.get_stats_filename()
-        with open(output_filename, 'w', encoding='utf-8') as f:
+        output_path = script_dir / output_filename
+        with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(stats_dict, f, indent=2, ensure_ascii=False)
         
         print("✅ Repository statistics processed successfully!")

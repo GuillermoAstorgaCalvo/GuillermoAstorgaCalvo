@@ -10,7 +10,8 @@ from pathlib import Path
 from typing import List
 
 # Add scripts directory to Python path for imports
-sys.path.insert(0, str(Path(__file__).parent))
+script_dir = Path(__file__).parent
+sys.path.insert(0, str(script_dir))
 
 from config_manager import get_config_manager
 from stats_processor import StatsProcessor, AuthorMatcher, RepositoryStats, AuthorStats
@@ -115,15 +116,17 @@ def main():
         )
         json_generator = JSONReportGenerator()
         
-        # Generate markdown report
+        # Generate markdown report in scripts directory
         markdown_filename = config.get_report_filename()
-        markdown_generator.save_report(unified_stats, markdown_filename)
-        print(f"✅ Markdown report saved to: {markdown_filename}")
+        markdown_path = script_dir / markdown_filename
+        markdown_generator.save_report(unified_stats, str(markdown_path))
+        print(f"✅ Markdown report saved to: {markdown_path}")
         
-        # Generate JSON report (optional)
+        # Generate JSON report in scripts directory
         json_filename = "unified_stats.json"
-        json_generator.save_report(unified_stats, json_filename)
-        print(f"✅ JSON report saved to: {json_filename}")
+        json_path = script_dir / json_filename
+        json_generator.save_report(unified_stats, str(json_path))
+        print(f"✅ JSON report saved to: {json_path}")
         
         # Print summary
         guillermo = unified_stats.guillermo_unified

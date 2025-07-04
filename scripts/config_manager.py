@@ -12,13 +12,21 @@ from typing import Dict, List, Any, Optional
 class ConfigManager:
     """Manages configuration loading and access for the statistics workflow."""
     
-    def __init__(self, config_path: str = "config.yml"):
+    def __init__(self, config_path: str = None):
         """
         Initialize the configuration manager.
         
         Args:
-            config_path: Path to the configuration YAML file
+            config_path: Path to the configuration YAML file (defaults to config.yml in root)
         """
+        if config_path is None:
+            # Look for config.yml in parent directory (root) when running from scripts/
+            current_dir = Path.cwd()
+            if current_dir.name == 'scripts':
+                config_path = current_dir.parent / 'config.yml'
+            else:
+                config_path = 'config.yml'
+        
         self.config_path = Path(config_path)
         self._config: Optional[Dict[str, Any]] = None
         self.load_config()
@@ -167,12 +175,12 @@ class ConfigManager:
         return errors
 
 
-def get_config_manager(config_path: str = "config.yml") -> ConfigManager:
+def get_config_manager(config_path: str = None) -> ConfigManager:
     """
     Factory function to create and return a ConfigManager instance.
     
     Args:
-        config_path: Path to the configuration file
+        config_path: Path to the configuration file (defaults to config.yml in root)
         
     Returns:
         ConfigManager instance
