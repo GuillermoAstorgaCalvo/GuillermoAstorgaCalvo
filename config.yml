@@ -1,0 +1,47 @@
+# Repository Statistics Configuration
+repositories:
+  - name: "housing-hub-saas"
+    display_name: "InmoIA Frontend"
+    branch: "develop"
+    artifact_name: "repo1-stats"
+  - name: "backend-housing-hub-saas"
+    display_name: "TypeScript Backend"
+    branch: "develop"
+    artifact_name: "repo2-stats"
+  - name: "IAbackend-inmoIA"
+    display_name: "Python AI MCP Backend"
+    branch: "develop"
+    artifact_name: "repo3-stats"
+
+# GitHub organization/user settings
+github:
+  organization: "guillermo-affiliaction"
+  base_url: "https://github.com"
+
+# Author pattern matching
+author_patterns:
+  guillermo:
+    - "guillermo.*affiliaction"
+    - "Guillermo.*Affiliaction"
+  bots:
+    - ".*\\[bot\\]$"
+    - "gpt-engineer-app.*"
+
+# Processing settings
+processing:
+  timeout_seconds: 120
+  git_fame_format: "json"
+
+# Report settings
+report:
+  title: "📊 Unified Code Statistics"
+  sections:
+    - "Global Summary"
+    - "Contributions by Repository and Author"
+  date_format: "%B %d, %Y at %H:%M UTC"
+
+# Artifact settings
+artifacts:
+  retention_days: 1
+  stats_filename: "repo_stats.json"
+  report_filename: "STATS.md"
