@@ -47,19 +47,7 @@ class VelocityMetrics:
         return asdict(self)
 
 
-@dataclass
-class GoalProgress:
-    """Represents progress towards a specific goal."""
-    goal_name: str
-    current_value: int
-    target_value: int
-    percentage_complete: float
-    remaining: int
-    estimated_completion: Optional[str] = None
-    
-    def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for JSON serialization."""
-        return asdict(self)
+
 
 
 class AnalyticsManager:
@@ -231,56 +219,70 @@ class AnalyticsManager:
         
         return velocity_metrics
     
-    def track_goals(self, current_stats: Dict[str, Any], goals_config: Dict[str, Any]) -> List[GoalProgress]:
+    def track_language_usage(self, current_stats: Dict[str, Any], language_config: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Track progress towards configured goals.
+        Track language usage statistics.
         
         Args:
-            current_stats: Current statistics
-            goals_config: Goals configuration from config file
+            current_stats: Current statistics including language breakdown
+            language_config: Language tracking configuration from config file
             
         Returns:
-            List of goal progress objects
+            Dictionary with language usage analysis
         """
-        if not goals_config.get('enabled', False):
-            return []
+        if not language_config.get('enabled', False):
+            return {}
         
-        goals = []
-        targets = goals_config.get('targets', {})
-        milestones = goals_config.get('milestones', [])
+        language_stats = current_stats.get('unified_language_stats', {})
+        if not language_stats:
+            return {}
         
-        # Track basic targets
-        for metric, target in targets.items():
-            current_value = self._get_current_value(current_stats, metric)
-            if current_value is not None:
-                progress = GoalProgress(
-                    goal_name=f"{metric.replace('_', ' ').title()}",
-                    current_value=current_value,
-                    target_value=target,
-                    percentage_complete=(current_value / target * 100) if target > 0 else 0,
-                    remaining=max(0, target - current_value)
-                )
-                goals.append(progress)
+        # Sort languages by LOC
+        sorted_languages = sorted(
+            language_stats.items(),
+            key=lambda x: x[1]['loc'],
+            reverse=True
+        )
         
-        # Track milestones
-        for milestone in milestones:
-            metric = milestone.get('metric')
-            target = milestone.get('target')
-            name = milestone.get('name')
+        # Get top languages
+        top_count = language_config.get('track_top_languages', 10)
+        top_languages = sorted_languages[:top_count]
+        
+        # Calculate total LOC for percentage calculation
+        total_loc = sum(stats['loc'] for _, stats in language_stats.items())
+        
+        # Build language usage analysis
+        language_analysis = {
+            'total_languages': len(language_stats),
+            'top_languages': [],
+            'total_loc': total_loc,
+            'language_distribution': {}
+        }
+        
+        for language, stats in top_languages:
+            loc = stats['loc']
+            commits = stats['commits']
+            files = stats['files']
             
-            if metric and target:
-                current_value = self._get_current_value(current_stats, metric)
-                if current_value is not None:
-                    progress = GoalProgress(
-                        goal_name=name,
-                        current_value=current_value,
-                        target_value=target,
-                        percentage_complete=(current_value / target * 100) if target > 0 else 0,
-                        remaining=max(0, target - current_value)
-                    )
-                    goals.append(progress)
+            # Calculate percentage
+            percentage = (loc / total_loc * 100) if total_loc > 0 else 0
+            
+            language_analysis['top_languages'].append({
+                'language': language,
+                'loc': loc,
+                'commits': commits,
+                'files': files,
+                'percentage': percentage
+            })
+            
+            language_analysis['language_distribution'][language] = {
+                'loc': loc,
+                'commits': commits,
+                'files': files,
+                'percentage': percentage
+            }
         
-        return goals
+        return language_analysis
     
     def _get_current_value(self, stats: Dict[str, Any], metric: str) -> Optional[int]:
         """Extract current value for a given metric."""

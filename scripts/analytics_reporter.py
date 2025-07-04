@@ -104,50 +104,128 @@ class AnalyticsReporter:
         
         return markdown
     
-    def generate_goal_tracking_section(self, goals: List[Any]) -> str:
+    def generate_language_usage_section(self, language_analysis: Dict[str, Any]) -> str:
         """
-        Generate markdown section for goal tracking.
+        Generate markdown section for language usage analysis.
         
         Args:
-            goals: List of goal progress objects (dict or GoalProgress)
+            language_analysis: Language usage analysis data
             
         Returns:
-            Markdown string for goal tracking section
+            Markdown string for language usage section
         """
-        if not goals:
+        if not language_analysis:
             return ""
         
-        markdown = "### 🎯 Goal Tracking\n\n"
+        markdown = "### 🔤 Language Usage Analysis\n\n"
         
-        for goal in goals:
-            # Convert to dict if needed
-            if not isinstance(goal, dict):
-                goal = goal.to_dict()
-            # Create progress bar
-            progress_bar = self._create_progress_bar(goal['percentage_complete'])
+        # Summary stats
+        total_languages = language_analysis.get('total_languages', 0)
+        total_loc = language_analysis.get('total_loc', 0)
+        
+        markdown += f"**📊 Summary:** {total_languages} languages detected across {total_loc:,} lines of code\n\n"
+        
+        # Top languages table
+        top_languages = language_analysis.get('top_languages', [])
+        if top_languages:
+            markdown += "#### 🏆 Top Languages by Lines of Code\n\n"
+            markdown += "| Rank | Language | Lines | Commits | Files | % of Total |\n"
+            markdown += "|:-----|:---------|------:|--------:|------:|:-----------|\n"
             
-            # Determine status emoji
-            if goal['percentage_complete'] >= 100:
-                status_emoji = "✅"
-            elif goal['percentage_complete'] >= 75:
-                status_emoji = "🟡"
-            elif goal['percentage_complete'] >= 50:
-                status_emoji = "🟠"
+            for i, lang_data in enumerate(top_languages, 1):
+                language = lang_data['language']
+                loc = lang_data['loc']
+                commits = lang_data['commits']
+                files = lang_data['files']
+                percentage = lang_data['percentage']
+                
+                # Get language emoji
+                emoji = self._get_language_emoji(language)
+                
+                markdown += f"| {i} | {emoji} **{language}** | {loc:,} | {commits:,} | {files:,} | {percentage:.1f}% |\n"
+            
+            markdown += "\n"
+        
+        # Language distribution insights
+        markdown += "#### 💡 Language Insights\n\n"
+        
+        if top_languages:
+            primary_lang = top_languages[0]
+            primary_percentage = primary_lang['percentage']
+            
+            if primary_percentage > 50:
+                markdown += f"🎯 **{primary_lang['language']} dominates** with {primary_percentage:.1f}% of all code\n\n"
+            elif primary_percentage > 30:
+                markdown += f"📈 **{primary_lang['language']} is primary** with {primary_percentage:.1f}% of codebase\n\n"
             else:
-                status_emoji = "🔴"
+                markdown += f"🔄 **Diverse codebase** - {primary_lang['language']} leads with {primary_percentage:.1f}%\n\n"
             
-            markdown += f"#### {status_emoji} {goal['goal_name']}\n\n"
-            markdown += f"**Progress:** {goal['current_value']:,} / {goal['target_value']:,} ({goal['percentage_complete']:.1f}%)\n\n"
-            markdown += f"{progress_bar}\n\n"
-            
-            if goal['remaining'] > 0:
-                markdown += f"**Remaining:** {goal['remaining']:,}\n\n"
-            else:
-                markdown += "**🎉 Goal Achieved!**\n\n"
-            
-            markdown += "---\n\n"
+            # Show top 3 languages
+            if len(top_languages) >= 3:
+                top3 = top_languages[:3]
+                markdown += "**Top 3 Languages:**\n"
+                for i, lang in enumerate(top3, 1):
+                    markdown += f"- {i}. {lang['language']} ({lang['percentage']:.1f}%)\n"
+                markdown += "\n"
         
         return markdown
+    
+    def _get_language_emoji(self, language: str) -> str:
+        """Get emoji for a programming language."""
+        language_emojis = {
+            'Python': '🐍',
+            'JavaScript': '🟨',
+            'TypeScript': '🔷',
+            'Java': '☕',
+            'C': '🔵',
+            'C++': '🔵',
+            'C#': '💜',
+            'PHP': '🐘',
+            'Ruby': '💎',
+            'Go': '🐹',
+            'Rust': '🦀',
+            'Swift': '🍎',
+            'Kotlin': '🟠',
+            'Scala': '🔴',
+            'HTML': '🌐',
+            'CSS': '🎨',
+            'Shell': '🐚',
+            'PowerShell': '💻',
+            'SQL': '🗄️',
+            'R': '📊',
+            'MATLAB': '📈',
+            'Julia': '🔬',
+            'Dart': '🎯',
+            'Lua': '🌙',
+            'Perl': '🐪',
+            'Haskell': 'λ',
+            'Clojure': '🍃',
+            'Elixir': '💧',
+            'Erlang': '☎️',
+            'OCaml': '🐫',
+            'F#': '🔷',
+            'Assembly': '⚙️',
+            'VHDL': '🔌',
+            'Verilog': '🔌',
+            'TeX': '📝',
+            'Markdown': '📄',
+            'YAML': '📋',
+            'JSON': '📄',
+            'XML': '📄',
+            'CSV': '📊',
+            'Dockerfile': '🐳',
+            'Makefile': '🔨',
+            'CMake': '🔨',
+            'Gradle': '🔨',
+            'Maven': '🔨',
+            'Documentation': '📚',
+            'Configuration': '⚙️',
+            'Data': '📊',
+            'Assets': '🎨',
+            'Unknown': '❓'
+        }
+        
+        return language_emojis.get(language, '📄')
     
     def _create_progress_bar(self, percentage: float) -> str:
         """Create a visual progress bar for goal tracking."""
@@ -227,21 +305,18 @@ class AnalyticsReporter:
         
         return markdown
     
-    def generate_insights_section(self, trends: Dict[str, Any], goals: List[Any]) -> str:
+    def generate_insights_section(self, trends: Dict[str, Any], language_analysis: Dict[str, Any]) -> str:
         """
         Generate insights and recommendations based on analytics data.
         
         Args:
             trends: Trend analysis data
-            goals: Goal progress data (dict or GoalProgress)
+            language_analysis: Language usage analysis data
             
         Returns:
             Markdown string for insights section
         """
         markdown = "### 💡 Insights & Recommendations\n\n"
-        
-        # Convert goals to dicts if needed
-        goals_dicts = [g if isinstance(g, dict) else g.to_dict() for g in goals]
         
         insights = []
         
@@ -267,15 +342,24 @@ class AnalyticsReporter:
                 elif commits_growth < 5:
                     insights.append("📝 **Low commit activity** - Consider more frequent commits.")
         
-        # Analyze goal progress
-        completed_goals = [g for g in goals_dicts if g['percentage_complete'] >= 100]
-        near_completion = [g for g in goals_dicts if 75 <= g['percentage_complete'] < 100]
-        
-        if completed_goals:
-            insights.append(f"🎉 **{len(completed_goals)} goal(s) achieved!** - Great progress!")
-        
-        if near_completion:
-            insights.append(f"🎯 **{len(near_completion)} goal(s) near completion** - Keep up the momentum!")
+        # Analyze language usage
+        if language_analysis:
+            total_languages = language_analysis.get('total_languages', 0)
+            top_languages = language_analysis.get('top_languages', [])
+            
+            if total_languages > 10:
+                insights.append(f"🌍 **Diverse tech stack** - {total_languages} languages detected!")
+            elif total_languages > 5:
+                insights.append(f"🔄 **Multi-language project** - {total_languages} languages in use")
+            
+            if top_languages:
+                primary_lang = top_languages[0]
+                primary_percentage = primary_lang['percentage']
+                
+                if primary_percentage > 70:
+                    insights.append(f"🎯 **{primary_lang['language']} focused** - {primary_percentage:.1f}% of codebase")
+                elif primary_percentage < 30:
+                    insights.append("🔄 **Balanced codebase** - Good language distribution")
         
         # Velocity insights
         if 'velocity' in trends:
@@ -298,19 +382,19 @@ class AnalyticsReporter:
         # Add recommendations
         markdown += "#### 📋 Recommendations\n\n"
         markdown += "- 📈 **Continue tracking** - More data points will provide better insights\n"
-        markdown += "- 🎯 **Set new goals** - Consider setting stretch targets based on current velocity\n"
+        markdown += "- 🔤 **Language diversity** - Consider expanding your tech stack\n"
         markdown += "- 📊 **Monitor trends** - Watch for patterns in development activity\n"
         markdown += "- 🔄 **Regular reviews** - Weekly analytics reviews can help maintain momentum\n\n"
         
         return markdown
     
-    def generate_analytics_summary(self, trends: Dict[str, Any], goals: List[Any]) -> str:
+    def generate_analytics_summary(self, trends: Dict[str, Any], language_analysis: Dict[str, Any]) -> str:
         """
         Generate a comprehensive analytics summary.
         
         Args:
             trends: Trend analysis data
-            goals: Goal progress data (dict or GoalProgress)
+            language_analysis: Language usage analysis data
             
         Returns:
             Complete analytics report as markdown
@@ -325,14 +409,14 @@ class AnalyticsReporter:
         if 'velocity' in trends:
             markdown += self.generate_velocity_metrics_section(trends['velocity'])
         
-        # Add goal tracking
-        markdown += self.generate_goal_tracking_section(goals)
+        # Add language usage analysis
+        markdown += self.generate_language_usage_section(language_analysis)
         
         # Add trend visualization
         markdown += self.generate_trend_visualization_section(trends)
         
         # Add insights
-        markdown += self.generate_insights_section(trends, goals)
+        markdown += self.generate_insights_section(trends, language_analysis)
         
         return markdown
 

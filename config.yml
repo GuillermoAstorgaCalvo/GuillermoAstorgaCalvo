@@ -51,7 +51,7 @@ analytics:
   track_history: true
   retention_days: 90
   trend_analysis: true
-  goal_tracking: true
+  language_tracking: true
 
   # Growth tracking settings
   growth_tracking:
@@ -72,21 +72,9 @@ analytics:
       - "monthly"
       - "quarterly"
 
-  # Goal tracking
-  goals:
+  # Language usage tracking
+  language_usage:
     enabled: true
-    targets:
-      total_loc: 150000
-      total_commits: 500
-      guillermo_loc: 100000
-      guillermo_commits: 300
-    milestones:
-      - name: "100k LOC"
-        target: 100000
-        metric: "total_loc"
-      - name: "500 Commits"
-        target: 500
-        metric: "total_commits"
-      - name: "50k Guillermo LOC"
-        target: 50000
-        metric: "guillermo_loc"
+    track_top_languages: 10
+    show_percentage: true
+    include_unknown: false

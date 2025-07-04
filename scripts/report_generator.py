@@ -338,12 +338,12 @@ class MarkdownReportGenerator:
                 # Get trend analysis
                 trends = analytics_manager.get_trend_analysis()
                 
-                # Track goals
-                goals_config = config.get('analytics', {}).get('goals', {})
-                goals = analytics_manager.track_goals(stats_dict, goals_config)
+                # Track language usage
+                language_config = config.get('analytics', {}).get('language_usage', {})
+                language_analysis = analytics_manager.track_language_usage(stats_dict, language_config)
                 
                 # Generate analytics report
-                analytics_section = analytics_reporter.generate_analytics_summary(trends, goals)
+                analytics_section = analytics_reporter.generate_analytics_summary(trends, language_analysis)
                 report += analytics_section
                 
                 # Cleanup old data
