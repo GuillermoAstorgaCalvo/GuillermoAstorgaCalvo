@@ -59,11 +59,14 @@ def load_repository_stats(stats_dir: str = None) -> List[RepositoryStats]:
                         data = json.load(f)
                     
                     # Convert dictionary back to RepositoryStats object
+                    language_stats = data.get('language_stats', {})
+                    print(f"📊 Loading language stats for {data['display_name']}: {len(language_stats)} languages")
+                    
                     repo_stats = RepositoryStats(
                         display_name=data['display_name'],
                         guillermo_stats=AuthorStats(**data['guillermo_stats']),
                         repo_totals=AuthorStats(**data['repo_totals']),
-                        language_stats=data.get('language_stats', {})
+                        language_stats=language_stats
                     )
                     
                     stats_data.append(repo_stats)
@@ -112,6 +115,14 @@ def main():
         # Aggregate statistics
         print("Aggregating unified statistics...")
         unified_stats = stats_processor.aggregate_repository_stats(repository_stats_list)
+        
+        # Debug: Check aggregated language stats
+        if hasattr(unified_stats, 'unified_language_stats') and unified_stats.unified_language_stats:
+            print(f"✅ Aggregated language stats: {len(unified_stats.unified_language_stats)} languages")
+            for lang, stats_data in unified_stats.unified_language_stats.items():
+                print(f"  - {lang}: {stats_data['loc']} LOC")
+        else:
+            print("⚠️ No aggregated language stats found")
         
         # Validate aggregated statistics
         validation_errors = stats_processor.validate_unified_stats(unified_stats)

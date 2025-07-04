@@ -310,6 +310,15 @@ class MarkdownReportGenerator:
         report += self.generate_header()
         report += self.generate_global_summary(stats)
         report += self.generate_contributions_table(stats)
+        
+        # Debug: Check if language stats exist
+        if hasattr(stats, 'unified_language_stats') and stats.unified_language_stats:
+            print(f"✅ Language stats found: {len(stats.unified_language_stats)} languages")
+            for lang, stats_data in stats.unified_language_stats.items():
+                print(f"  - {lang}: {stats_data['loc']} LOC")
+        else:
+            print("⚠️ No language stats found in unified stats")
+        
         report += self.generate_language_breakdown_table(stats)
         
         # Add analytics section if enabled
@@ -329,7 +338,8 @@ class MarkdownReportGenerator:
                         'commits': stats.guillermo_unified.commits,
                         'files': stats.guillermo_unified.files
                     },
-                    'repos_processed': stats.repos_processed
+                    'repos_processed': stats.repos_processed,
+                    'unified_language_stats': stats.unified_language_stats
                 }
                 
                 # Add current data point to history

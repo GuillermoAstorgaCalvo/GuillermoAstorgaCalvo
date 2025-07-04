@@ -110,12 +110,21 @@ def main():
         if git_fame_bytype_data:
             # Extract extension stats
             extension_stats = git_fame_parser.extract_extension_stats(git_fame_bytype_data)
+            print(f"📊 Extracted {len(extension_stats)} file extensions")
             
             # Convert to language stats
             language_stats = language_mapper.get_language_stats(extension_stats)
             print(f"✅ Found {len(language_stats)} languages")
+            
+            # Debug: Show top languages
+            if language_stats:
+                sorted_langs = sorted(language_stats.items(), key=lambda x: x[1]['loc'], reverse=True)
+                print("🏆 Top languages:")
+                for lang, stats in sorted_langs[:5]:
+                    print(f"  - {lang}: {stats['loc']} LOC")
         else:
             print("⚠️ Could not get language breakdown data")
+            print("🔍 Debug: git fame --bytype output was empty or failed")
         
         # Process repository statistics
         repo_stats = stats_processor.process_repository_data(authors, display_name)
