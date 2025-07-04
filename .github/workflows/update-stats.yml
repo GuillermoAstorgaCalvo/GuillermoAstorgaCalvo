@@ -80,7 +80,7 @@ jobs:
           set -e
           # Determine the organization and token based on repository name
           if [[ "${REPO_NAME}" == "FacturaIA" || "${REPO_NAME}" == "restaurant-app" ]]; then
-            ORG="guillermo-affiliaction"
+            ORG="GuillermoAstorgaCalvo"
             TOKEN="${PERSONAL_TOKEN}"
           else
             ORG="guillermo-affiliaction"
