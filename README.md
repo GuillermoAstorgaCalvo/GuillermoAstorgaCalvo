@@ -92,6 +92,10 @@ I started coding because I wanted to build things that could actually help peopl
 • Diverse technology stack across multiple programming languages
 
 
+
+
+
+
 These numbers tell the real story - late nights debugging, moments of breakthrough, and a lot of trial and error. Every line of code represents a problem solved or something new learned. The private repos are where the magic happens!
 
 ---
