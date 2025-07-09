@@ -182,9 +182,7 @@ jobs:
 
       - name: Generate language ranking SVG
         run: |
-          cd scripts
-          python3 generate_language_svg.py
-          mv ../language_ranking.svg ../language_ranking.svg || true
+          python3 scripts/generate_language_svg.py
 
       - name: Commit results to profile
         env:
