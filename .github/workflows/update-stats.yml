@@ -53,12 +53,11 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: "pip"
 
       - name: Install dependencies
         run: |
-          python3 -m pip install --upgrade pip --prefer-binary --no-cache-dir
-          pip install --prefer-binary --no-cache-dir -r requirements.txt
+          python3 -m pip install --upgrade pip --prefer-binary
+          pip install --prefer-binary -r requirements.txt
 
       - name: Install cloc
         run: |
@@ -124,12 +123,11 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: "pip"
 
       - name: Install dependencies
         run: |
-          python3 -m pip install --upgrade pip --no-cache-dir
-          pip install --no-cache-dir -r requirements.txt
+          python3 -m pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Download all repository statistics
         uses: actions/download-artifact@v4
