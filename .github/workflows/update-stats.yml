@@ -65,13 +65,17 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python3 -m pip install --upgrade pip --no-cache-dir
-          pip install --no-cache-dir -r requirements.txt
+          python3 -m pip install --upgrade pip --prefer-binary --no-cache-dir
+          pip install --prefer-binary --no-cache-dir -r requirements.txt
 
       - name: Install cloc
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y cloc
+
+      - name: Run cloc (optimized)
+        run: |
+          cloc --skip-uniqueness --exclude-dir=.git,node_modules,venv,.venv,build,dist . || true
 
       - name: Clone repository
         env:

@@ -13,8 +13,13 @@ def generate_language_svg_bar_chart(language_stats: dict, output_path: str):
     try:
         import svgwrite
         
-        # Filter out languages with 0 lines, 'Unknown', 'Text', and 'JSON'
-        valid_langs = [(lang, stats) for lang, stats in language_stats.items() if stats.get('lines', 0) > 0 and lang not in ('Unknown', 'Text', 'JSON')]
+        # Define config types to exclude
+        config_types = {'Configuration', 'YAML', 'JSON', 'TOML', 'INI', 'Properties'}
+        # Filter out config types, 'Unknown', and any with 0 lines
+        valid_langs = [
+            (lang, stats) for lang, stats in language_stats.items()
+            if stats.get('lines', 0) > 0 and lang not in config_types and lang != 'Unknown'
+        ]
         sorted_langs = sorted(valid_langs, key=lambda x: x[1]['lines'], reverse=True)
         
         if not sorted_langs:
@@ -26,7 +31,7 @@ def generate_language_svg_bar_chart(language_stats: dict, output_path: str):
         # Calculate chart dimensions
         width = 700  # Increased width for better spacing
         bar_height = 35
-        chart_width = width - 250  # Space for labels and values
+        max_bar_width = width - 250  # Space for labels and values
         height = bar_height * len(sorted_langs) + 80
         
         dwg = svgwrite.Drawing(output_path, size=(width, height))
@@ -87,9 +92,12 @@ def generate_language_svg_bar_chart(language_stats: dict, output_path: str):
             # Calculate bar width based on percentage of total (not max)
             if total_loc > 0:
                 bar_ratio = loc / total_loc
-                bar_width = max(25, int(bar_ratio * chart_width))  # Minimum 25px width
+                bar_width = int(bar_ratio * max_bar_width)  # Minimum 25px width
             else:
-                bar_width = 25
+                bar_width = 0
+            
+            # Clamp bar width to max_bar_width
+            bar_width = min(bar_width, max_bar_width)
             
             # Calculate percentage based on total LOC (not max LOC)
             percentage = (loc / total_loc) * 100 if total_loc > 0 else 0
