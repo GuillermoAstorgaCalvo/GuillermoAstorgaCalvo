@@ -201,11 +201,12 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
 
           # Add files that exist
-          git add unified_stats.json analytics_history.json README.md language_ranking.svg
+          git add unified_stats.json analytics_history.json README.md
           # Add SVG if it exists
           if [[ -f "assets/language_stats.svg" ]]; then
             git add assets/language_stats.svg
           fi
+
 
           git commit -m "📊 Update README and language ranking SVG - $(date '+%Y-%m-%d %H:%M UTC')"
 
