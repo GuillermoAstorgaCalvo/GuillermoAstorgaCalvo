@@ -169,10 +169,10 @@ jobs:
             exit 1
           fi
 
-      - name: Generate dynamic README
+      - name: Generate enhanced dynamic README
         run: |
           cd scripts
-          python3 generate_readme.py
+          python3 enhanced_readme_generator.py
 
       - name: Validate README generation
         run: |
