@@ -125,9 +125,9 @@ class MarkdownReportGenerator:
         Returns:
             Markdown string for contributions table
         """
-        table = "## 👨‍💻 Contributions by Repository and Author\n\n"
-        table += "| Repository | Author | Lines | Commits | Files | Distribution % |\n"
-        table += "|:-----------|:-------|------:|--------:|------:|:---------------|\n"
+        table = "## 👨‍💻 Contributions by Repository\n\n"
+        table += "| Repository | Lines | Commits | Files | Distribution % |\n"
+        table += "|:-----------|------:|--------:|------:|:---------------|\n"
         
         # Calculate global distribution percentages
         guillermo = stats.guillermo_unified
@@ -142,14 +142,14 @@ class MarkdownReportGenerator:
         )
         
         # Add unified total row
-        table += f"| **🌟 TOTAL UNIFIED** | **Guillermo** | "
+        table += f"| **🌟 TOTAL UNIFIED** | "
         table += f"**{self.format_number(guillermo.loc)}** | "
         table += f"**{self.format_number(guillermo.commits)}** | "
         table += f"**{self.format_number(guillermo.files)}** | "
         table += f"**{self.format_percentage(loc_pct)}/{self.format_percentage(commits_pct)}/{self.format_percentage(files_pct)}** |\n"
         
         # Add separator row
-        table += "| | | | | | |\n"
+        table += "| | | | | |\n"
         
         # Sort repositories in specific order: Frontend, Backend, AI Backend
         def get_repo_order_key(repo_name):
@@ -180,7 +180,7 @@ class MarkdownReportGenerator:
                 g_stats, repo_totals
             )
             
-            table += f"| 📁 **{repo_name}** | Guillermo | "
+            table += f"| 📁 **{repo_name}** | "
             table += f"{self.format_number(g_stats.loc)} | "
             table += f"{self.format_number(g_stats.commits)} | "
             table += f"{self.format_number(g_stats.files)} | "
