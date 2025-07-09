@@ -8,6 +8,7 @@ import json
 import sys
 import os
 from pathlib import Path
+import subprocess
 
 # Add scripts directory to Python path for imports
 script_dir = Path(__file__).parent
@@ -17,6 +18,20 @@ from config_manager import get_config_manager
 from git_fame_parser import GitFameParser
 from stats_processor import StatsProcessor, AuthorMatcher
 from language_mapper import get_language_mapper
+
+
+def run_cloc_on_repo(repo_path: Path) -> dict:
+    """Run cloc on the given repo path and return the parsed JSON output."""
+    try:
+        result = subprocess.run([
+            'cloc', '--json', '--quiet', '--exclude-dir=.git,node_modules,venv,build,dist', str(repo_path)
+        ], capture_output=True, text=True, check=True)
+        cloc_output = result.stdout
+        cloc_data = json.loads(cloc_output)
+        return cloc_data
+    except Exception as e:
+        print(f"⚠️ cloc failed: {e}")
+        return {}
 
 
 def main():
@@ -75,6 +90,33 @@ def main():
                 for item in parent_dir.iterdir():
                     print(f"  - {item.name}")
             sys.exit(1)
+        
+        # Run cloc for accurate language stats
+        print("🔍 Running cloc for accurate language stats...")
+        cloc_data = run_cloc_on_repo(repo_path)
+        cloc_language_stats = {}
+        if cloc_data:
+            for lang, stats in cloc_data.items():
+                if lang in ('header', 'SUM'):
+                    continue
+                cloc_language_stats[lang] = {
+                    'loc': stats.get('code', 0),
+                    'files': stats.get('nFiles', 0),
+                    'commits': 0  # cloc doesn't provide commits
+                }
+            print(f"✅ cloc found {len(cloc_language_stats)} languages")
+        else:
+            print("⚠️ cloc did not return any language stats")
+
+        # Merge cloc stats with language_mapper stats (favor cloc for LOC)
+        merged_language_stats = language_stats.copy() if language_stats else {}
+        for lang, stats in cloc_language_stats.items():
+            if lang not in merged_language_stats:
+                merged_language_stats[lang] = stats
+            else:
+                merged_language_stats[lang]['loc'] = stats['loc']
+                merged_language_stats[lang]['files'] = stats['files']
+        language_stats = merged_language_stats
         
         # Get regular git fame data (by author)
         git_fame_data = git_fame_parser.execute_git_fame(

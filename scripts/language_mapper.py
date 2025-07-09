@@ -10,12 +10,15 @@ class LanguageMapper:
     """Maps file extensions to programming languages."""
     
     def __init__(self):
-        """Initialize the language mapper with GitHub Linguist's extension mapping."""
+        """Initialize the language mapper with strict mapping for Configuration and Python."""
+        self.config_extensions = {'.yml', '.yaml', '.json', '.ini', '.env', '.cfg', '.conf', '.toml', '.properties'}
+        self.doc_extensions = {'.md', '.markdown', '.rst', '.txt', '.adoc'}
+        self.python_extensions = {'.py', '.pyw', '.pyi', '.pyx', '.pxd', '.pyo', '.pyd'}
         # GitHub Linguist's extension to language mapping
         self.extension_to_language = {
             # Python
             '.py': 'Python', '.pyw': 'Python', '.pyi': 'Python', '.pyx': 'Python',
-            '.pxd': 'Python', '.pyx': 'Python', '.pyo': 'Python', '.pyd': 'Python',
+            '.pxd': 'Python', '.pyo': 'Python', '.pyd': 'Python',
             
             # JavaScript/TypeScript
             '.js': 'JavaScript', '.jsx': 'JavaScript', '.mjs': 'JavaScript',
@@ -236,6 +239,12 @@ class LanguageMapper:
         if not extension.startswith('.'):
             extension = '.' + extension
         
+        if extension in self.python_extensions:
+            return 'Python'
+        if extension in self.config_extensions:
+            return 'Configuration'
+        if extension in self.doc_extensions:
+            return 'Documentation'
         # Get language from extension mapping
         language = self.extension_to_language.get(extension.lower(), 'Unknown')
         
@@ -252,20 +261,9 @@ class LanguageMapper:
         Returns:
             Language name or 'Unknown' if not recognized
         """
-        # Handle special filenames (like Makefile, Dockerfile, etc.)
-        basename = filename.split('/')[-1].split('\\')[-1]
-        
-        # Check for special filenames first
-        if basename in self.extension_to_language:
-            language = self.extension_to_language[basename]
-            return self.language_aliases.get(language, language)
-        
-        # Extract extension
-        if '.' in basename:
-            extension = '.' + basename.split('.')[-1]
-            return self.get_language_from_extension(extension)
-        
-        return 'Unknown'
+        import os
+        _, ext = os.path.splitext(filename)
+        return self.get_language_from_extension(ext.lower())
     
     def get_supported_languages(self) -> List[str]:
         """
