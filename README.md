@@ -2,13 +2,53 @@
 
 ## 📊 **My Coding Journey**
 
-<!-- GitHub Stats -->
+> 📊 **Unified stats from my private enterprise repositories**  
+> _Updated automatically every Monday via GitHub Actions_
+
+<!-- Unified Stats Overview -->
+<div align="center">
+  <img src="https://img.shields.io/badge/📈_Total_Lines_of_Code-145,894-58A6FF?style=for-the-badge&logo=github&logoColor=white" alt="Total Lines of Code" />
+  <img src="https://img.shields.io/badge/📝_Total_Commits-492-4ECDC4?style=for-the-badge&logo=github&logoColor=white" alt="Total Commits" />
+  <img src="https://img.shields.io/badge/📁_Total_Files-1,629-FF6B6B?style=for-the-badge&logo=github&logoColor=white" alt="Total Files" />
+</div>
+
+<!-- Repository Breakdown -->
+<details>
+<summary>📊 <strong>Repository Breakdown</strong></summary>
+<br>
+
+| Repository                   |       Lines | Commits |     Files | Distribution %     |
+| :--------------------------- | ----------: | ------: | --------: | :----------------- |
+| **🌟 TOTAL UNIFIED**         | **133,955** | **308** | **1,324** | **91.8/62.6/81.3** |
+| 📁 **InmoIA Frontend**       |      60,899 |     242 |       771 | 83.6/56.9/71.8     |
+| 📁 **TypeScript Backend**    |      14,103 |      23 |       137 | 99.8/95.8/98.6     |
+| 📁 **FacturaIA**             |      16,151 |       3 |       148 | 100.0/100.0/100.0  |
+| 📁 **Python AI MCP Backend** |      17,666 |       2 |        28 | 100.0/100.0/100.0  |
+| 📁 **Restaurant App**        |      25,136 |      38 |       240 | 100.0/100.0/100.0  |
+
+</details>
+
+<!-- Language Breakdown -->
+<details>
+<summary>🔤 <strong>Language Usage Analysis</strong></summary>
+<br>
+
+**📊 Summary:** 9 languages detected across 159,843 lines of code
+
+| Rank | Language             |   Lines | % of Total |
+| :--- | :------------------- | ------: | :--------- |
+| 1    | 🔷 **TypeScript**    | 106,116 | 66.4%      |
+| 2    | ⚙️ **Configuration** |  33,490 | 21.0%      |
+| 3    | 🐍 **Python**        |   7,659 | 4.8%       |
+| 4    | 📚 **Documentation** |   2,344 | 1.5%       |
+| 5    | 🎨 **CSS**           |   1,652 | 1.0%       |
+| 6    | 🟨 **JavaScript**    |     411 | 0.3%       |
+
+</details>
+
+<!-- GitHub Stats for Public Activity -->
 
 ![GitHub Stats](https://github-readme-stats.vercel.app/api?username=GuillermoAstorgaCalvo&show_icons=true&theme=radical&hide_border=true&bg_color=0D1117&title_color=58A6FF&text_color=8B949E&icon_color=58A6FF)
-
-<!-- Language Stats -->
-
-![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=GuillermoAstorgaCalvo&layout=compact&theme=radical&hide_border=true&bg_color=0D1117&title_color=58A6FF&text_color=8B949E)
 
 <!-- Contribution Graph -->
 
