@@ -52,9 +52,44 @@ I started coding because I wanted to build things that could actually help peopl
 
 
 
+### **⚡ Productivity Metrics**
+🚀 **432 lines per commit**
+📊 **4.3 files per commit**
+💡 **101 lines per file**
 
 
 
+### **💻 Top Languages**
+![TypeScript](https://img.shields.io/badge/-TypeScript-58A6FF?style=for-the-badge&logo=typescript&logoColor=white) **72.7%** (106,122 lines)
+![Configuration](https://img.shields.io/badge/-Configuration-58A6FF?style=for-the-badge&logo=configuration&logoColor=white) **22.9%** (33,492 lines)
+![Unknown](https://img.shields.io/badge/-Unknown-58A6FF?style=for-the-badge&logo=unknown&logoColor=white) **5.3%** (7,678 lines)
+![Python](https://img.shields.io/badge/-Python-58A6FF?style=for-the-badge&logo=python&logoColor=white) **5.2%** (7,659 lines)
+![Documentation](https://img.shields.io/badge/-Documentation-58A6FF?style=for-the-badge&logo=documentation&logoColor=white) **1.6%** (2,344 lines)
+
+
+
+### **🛠️ Technology Stack**
+**Frontend:** JavaScript, HTML, CSS (108,411 lines)
+**Backend:** Python (7,659 lines)
+**Other:** Unknown, Configuration, Documentation (43,781 lines)
+
+
+
+### **🏢 Top Projects**
+• **InmoIA Frontend** - 60,946 lines (83.7% contribution)
+• **Restaurant App** - 25,136 lines (100.0% contribution)
+• **Python AI MCP Backend** - 17,666 lines (100.0% contribution)
+
+
+
+### **💡 Key Insights**
+🏆 **Achievements:**
+• Built 134,002 lines of code across 5 projects
+• Made 310 commits demonstrating consistent development
+
+💪 **Strengths:**
+• High commit frequency indicates consistent development activity
+• Diverse technology stack across multiple programming languages
 
 
 These numbers tell the real story - late nights debugging, moments of breakthrough, and a lot of trial and error. Every line of code represents a problem solved or something new learned. The private repos are where the magic happens!
