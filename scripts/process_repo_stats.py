@@ -40,23 +40,34 @@ def run_cloc_on_repo(repo_path: Path) -> dict:
 
 def generate_language_svg_bar_chart(language_stats: dict, output_path: str):
     """Generate a modern SVG bar chart for language stats and save to output_path."""
-    import svgwrite
-    # Sort by LOC descending
-    sorted_langs = sorted(language_stats.items(), key=lambda x: x[1]['loc'], reverse=True)
-    max_loc = sorted_langs[0][1]['loc'] if sorted_langs else 1
-    width = 500
-    bar_height = 28
-    height = bar_height * len(sorted_langs) + 40
-    dwg = svgwrite.Drawing(output_path, size=(width, height))
-    y = 30
-    for lang, stats in sorted_langs:
-        bar_len = int((stats['loc'] / max_loc) * (width - 180))
-        dwg.add(dwg.rect(insert=(150, y-18), size=(bar_len, 20), fill='#4F8EF7', rx=6, ry=6))
-        dwg.add(dwg.text(lang, insert=(10, y-4), font_size='16px', font_family='Segoe UI', fill='#222'))
-        dwg.add(dwg.text(f"{stats['loc']:,} LOC", insert=(160 + bar_len, y-4), font_size='14px', font_family='Segoe UI', fill='#444'))
-        y += bar_height
-    dwg.add(dwg.text('Languages by Lines of Code', insert=(10, 20), font_size='18px', font_weight='bold', font_family='Segoe UI', fill='#222'))
-    dwg.save()
+    try:
+        import svgwrite
+        # Sort by LOC descending
+        sorted_langs = sorted(language_stats.items(), key=lambda x: x[1]['loc'], reverse=True)
+        max_loc = sorted_langs[0][1]['loc'] if sorted_langs else 1
+        width = 500
+        bar_height = 28
+        height = bar_height * len(sorted_langs) + 40
+        dwg = svgwrite.Drawing(output_path, size=(width, height))
+        y = 30
+        for lang, stats in sorted_langs:
+            bar_len = int((stats['loc'] / max_loc) * (width - 180))
+            dwg.add(dwg.rect(insert=(150, y-18), size=(bar_len, 20), fill='#4F8EF7', rx=6, ry=6))
+            dwg.add(dwg.text(lang, insert=(10, y-4), font_size='16px', font_family='Segoe UI', fill='#222'))
+            dwg.add(dwg.text(f"{stats['loc']:,} LOC", insert=(160 + bar_len, y-4), font_size='14px', font_family='Segoe UI', fill='#444'))
+            y += bar_height
+        dwg.add(dwg.text('Languages by Lines of Code', insert=(10, 20), font_size='18px', font_weight='bold', font_family='Segoe UI', fill='#222'))
+        dwg.save()
+        print(f"✅ SVG chart generated: {output_path}")
+    except ImportError:
+        print("⚠️ svgwrite not available, skipping SVG generation")
+        # Create a simple text-based fallback
+        with open(output_path.replace('.svg', '.txt'), 'w') as f:
+            f.write("Language Statistics (SVG not available):\n")
+            for lang, stats in sorted(language_stats.items(), key=lambda x: x[1]['loc'], reverse=True):
+                f.write(f"{lang}: {stats['loc']:,} LOC\n")
+    except Exception as e:
+        print(f"⚠️ SVG generation failed: {e}")
 
 
 def main():
