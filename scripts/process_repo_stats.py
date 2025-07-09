@@ -23,8 +23,12 @@ from language_mapper import get_language_mapper
 def run_cloc_on_repo(repo_path: Path) -> dict:
     """Run cloc on the given repo path and return the parsed JSON output."""
     try:
+        # Focus on real code languages, exclude common config/data/output dirs
         result = subprocess.run([
-            'cloc', '--json', '--quiet', '--exclude-dir=.git,node_modules,venv,build,dist', str(repo_path)
+            'cloc', '--json', '--quiet',
+            '--include-lang=Python,TypeScript,JavaScript,HTML,CSS,Shell,Markdown,JSON,YAML,INI',
+            '--exclude-dir=.git,node_modules,venv,build,dist,data,output,logs,generated',
+            str(repo_path)
         ], capture_output=True, text=True, check=True)
         cloc_output = result.stdout
         cloc_data = json.loads(cloc_output)
@@ -32,6 +36,27 @@ def run_cloc_on_repo(repo_path: Path) -> dict:
     except Exception as e:
         print(f"⚠️ cloc failed: {e}")
         return {}
+
+
+def generate_language_svg_bar_chart(language_stats: dict, output_path: str):
+    """Generate a modern SVG bar chart for language stats and save to output_path."""
+    import svgwrite
+    # Sort by LOC descending
+    sorted_langs = sorted(language_stats.items(), key=lambda x: x[1]['loc'], reverse=True)
+    max_loc = sorted_langs[0][1]['loc'] if sorted_langs else 1
+    width = 500
+    bar_height = 28
+    height = bar_height * len(sorted_langs) + 40
+    dwg = svgwrite.Drawing(output_path, size=(width, height))
+    y = 30
+    for lang, stats in sorted_langs:
+        bar_len = int((stats['loc'] / max_loc) * (width - 180))
+        dwg.add(dwg.rect(insert=(150, y-18), size=(bar_len, 20), fill='#4F8EF7', rx=6, ry=6))
+        dwg.add(dwg.text(lang, insert=(10, y-4), font_size='16px', font_family='Segoe UI', fill='#222'))
+        dwg.add(dwg.text(f"{stats['loc']:,} LOC", insert=(160 + bar_len, y-4), font_size='14px', font_family='Segoe UI', fill='#444'))
+        y += bar_height
+    dwg.add(dwg.text('Languages by Lines of Code', insert=(10, 20), font_size='18px', font_weight='bold', font_family='Segoe UI', fill='#222'))
+    dwg.save()
 
 
 def main():
@@ -108,6 +133,24 @@ def main():
         else:
             print("⚠️ cloc did not return any language stats")
 
+        # Post-process cloc output: group only .yml/.yaml/.ini/.json as Configuration
+        config_langs = {'JSON', 'YAML', 'INI'}
+        config_loc = 0
+        config_files = 0
+        filtered_cloc_language_stats = {}
+        for lang, stats in cloc_language_stats.items():
+            if lang in config_langs:
+                config_loc += stats.get('loc', 0)
+                config_files += stats.get('files', 0)
+            elif lang == 'Markdown':
+                # Optionally, treat Markdown as Documentation
+                filtered_cloc_language_stats['Documentation'] = stats
+            else:
+                filtered_cloc_language_stats[lang] = stats
+        if config_loc > 0:
+            filtered_cloc_language_stats['Configuration'] = {'loc': config_loc, 'files': config_files, 'commits': 0}
+        cloc_language_stats = filtered_cloc_language_stats
+        
         # Merge cloc stats with language_mapper stats (favor cloc for LOC)
         merged_language_stats = language_stats.copy() if language_stats else {}
         for lang, stats in cloc_language_stats.items():
@@ -191,6 +234,11 @@ def main():
             loc_pct = (guillermo_stats.loc / repo_totals.loc) * 100
             print(f"📊 Summary: {guillermo_stats.loc:,} LOC ({loc_pct:.1f}%), "
                   f"{guillermo_stats.commits} commits, {guillermo_stats.files} files")
+        
+        # After language stats aggregation:
+        # generate_language_svg_bar_chart(cloc_language_stats, 'assets/language_stats.svg')
+        # Generate SVG bar chart for README
+        generate_language_svg_bar_chart(cloc_language_stats, 'assets/language_stats.svg')
         
     except KeyboardInterrupt:
         print("\n❌ Process interrupted by user")
