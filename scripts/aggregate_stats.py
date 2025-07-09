@@ -137,20 +137,7 @@ def main():
         
         # Initialize report generators with configuration
         report_config = config.get_report_config()
-        markdown_generator = MarkdownReportGenerator(
-            title=config.get_report_title(),
-            date_format=config.get_date_format()
-        )
         json_generator = JSONReportGenerator()
-        
-        # Generate markdown report in scripts directory
-        markdown_filename = config.get_report_filename()
-        markdown_path = script_dir / markdown_filename
-        
-        # Get full config for analytics
-        full_config = config.get_full_config()
-        markdown_generator.save_report(unified_stats, str(markdown_path), full_config)
-        print(f"✅ Markdown report saved to: {markdown_path}")
         
         # Generate JSON report in scripts directory
         json_filename = "unified_stats.json"
@@ -180,6 +167,7 @@ def main():
               f"{guillermo.files:,} files ({files_pct:.1f}%)")
         
         print("\n✅ Statistics aggregation completed successfully!")
+        print("📝 All statistics will be displayed in README.md through the enhanced README generator")
         
     except KeyboardInterrupt:
         print("\n❌ Process interrupted by user")

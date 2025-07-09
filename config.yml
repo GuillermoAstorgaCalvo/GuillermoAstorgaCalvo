@@ -61,7 +61,6 @@ report:
 artifacts:
   retention_days: 1
   stats_filename: "repo_stats.json"
-  report_filename: "STATS.md"
 
 # Analytics and historical tracking
 analytics:

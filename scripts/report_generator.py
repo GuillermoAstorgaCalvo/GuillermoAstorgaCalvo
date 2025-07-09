@@ -384,7 +384,7 @@ class MarkdownReportGenerator:
 
 
 class JSONReportGenerator:
-    """Generates JSON reports from unified statistics."""
+    """Generates comprehensive JSON reports from unified statistics."""
     
     def __init__(self):
         """Initialize the JSON report generator."""
@@ -392,36 +392,224 @@ class JSONReportGenerator:
     
     def generate_report(self, stats: UnifiedStats) -> Dict[str, Any]:
         """
-        Generate a JSON report from unified statistics.
+        Generate a comprehensive JSON report from unified statistics.
         
         Args:
             stats: Unified statistics data
             
         Returns:
-            Dictionary representation of the statistics
+            Dictionary representation of the comprehensive statistics
         """
+        from datetime import datetime, timedelta
+        
+        # Calculate additional metrics
+        guillermo = stats.guillermo_unified
+        global_totals = AuthorStats(
+            loc=stats.total_loc,
+            commits=stats.total_commits,
+            files=stats.total_files
+        )
+        
+        # Calculate percentages
+        loc_pct = (guillermo.loc / global_totals.loc * 100) if global_totals.loc > 0 else 0
+        commits_pct = (guillermo.commits / global_totals.commits * 100) if global_totals.commits > 0 else 0
+        files_pct = (guillermo.files / global_totals.files * 100) if global_totals.files > 0 else 0
+        
+        # Calculate productivity metrics
+        avg_loc_per_commit = guillermo.loc / guillermo.commits if guillermo.commits > 0 else 0
+        avg_files_per_commit = guillermo.files / guillermo.commits if guillermo.commits > 0 else 0
+        
+        # Language analysis
+        language_analysis = {}
+        if stats.unified_language_stats:
+            total_loc = stats.total_loc
+            for lang, lang_stats in stats.unified_language_stats.items():
+                lang_pct = (lang_stats['loc'] / total_loc * 100) if total_loc > 0 else 0
+                language_analysis[lang] = {
+                    'lines': lang_stats['loc'],
+                    'commits': lang_stats['commits'],
+                    'files': lang_stats['files'],
+                    'percentage': round(lang_pct, 2),
+                    'avg_loc_per_commit': lang_stats['loc'] / lang_stats['commits'] if lang_stats['commits'] > 0 else 0
+                }
+        
+        # Repository analysis
+        repo_analysis = {}
+        for repo_name, repo_data in stats.repo_breakdown.items():
+            repo_guillermo = repo_data.guillermo_stats
+            repo_totals = repo_data.repo_totals
+            
+            repo_loc_pct = (repo_guillermo.loc / repo_totals.loc * 100) if repo_totals.loc > 0 else 0
+            repo_commits_pct = (repo_guillermo.commits / repo_totals.commits * 100) if repo_totals.commits > 0 else 0
+            repo_files_pct = (repo_guillermo.files / repo_totals.files * 100) if repo_totals.files > 0 else 0
+            
+            repo_analysis[repo_name] = {
+                'guillermo_stats': repo_guillermo.to_dict(),
+                'repo_totals': repo_totals.to_dict(),
+                'percentages': {
+                    'loc': round(repo_loc_pct, 2),
+                    'commits': round(repo_commits_pct, 2),
+                    'files': round(repo_files_pct, 2)
+                },
+                'productivity': {
+                    'avg_loc_per_commit': repo_guillermo.loc / repo_guillermo.commits if repo_guillermo.commits > 0 else 0,
+                    'avg_files_per_commit': repo_guillermo.files / repo_guillermo.commits if repo_guillermo.commits > 0 else 0
+                }
+            }
+        
+        # Technology stack analysis
+        tech_stack = self._analyze_tech_stack(stats.unified_language_stats)
+        
+        # Project complexity analysis
+        complexity_analysis = self._analyze_complexity(stats)
+        
+        # Generate comprehensive report
         report = {
             'timestamp': datetime.utcnow().isoformat() + 'Z',
+            'metadata': {
+                'version': '2.0',
+                'generated_by': 'Enhanced JSON Report Generator',
+                'data_source': 'Private Repository Analytics'
+            },
             'global_summary': {
                 'repositories_processed': stats.repos_processed,
                 'total_commits': stats.total_commits,
                 'total_files': stats.total_files,
-                'total_loc': stats.total_loc
+                'total_loc': stats.total_loc,
+                'guillermo_contribution': {
+                    'loc': guillermo.loc,
+                    'commits': guillermo.commits,
+                    'files': guillermo.files,
+                    'percentages': {
+                        'loc': round(loc_pct, 2),
+                        'commits': round(commits_pct, 2),
+                        'files': round(files_pct, 2)
+                    }
+                }
             },
-            'guillermo_unified': stats.guillermo_unified.to_dict(),
-            'repository_breakdown': {},
-            'language_breakdown': stats.unified_language_stats
+            'productivity_metrics': {
+                'avg_loc_per_commit': round(avg_loc_per_commit, 2),
+                'avg_files_per_commit': round(avg_files_per_commit, 2),
+                'code_efficiency': {
+                    'loc_per_file': guillermo.loc / guillermo.files if guillermo.files > 0 else 0,
+                    'commits_per_file': guillermo.commits / guillermo.files if guillermo.files > 0 else 0
+                }
+            },
+            'language_analysis': language_analysis,
+            'repository_analysis': repo_analysis,
+            'tech_stack_analysis': tech_stack,
+            'complexity_analysis': complexity_analysis,
+            'insights': self._generate_insights(stats, language_analysis, repo_analysis),
+            'raw_data': {
+                'guillermo_unified': stats.guillermo_unified.to_dict(),
+                'repository_breakdown': {name: data.to_dict() for name, data in stats.repo_breakdown.items()},
+                'language_breakdown': stats.unified_language_stats
+            }
         }
-        
-        # Add repository breakdown
-        for repo_name, repo_data in stats.repo_breakdown.items():
-            report['repository_breakdown'][repo_name] = repo_data.to_dict()
         
         return report
     
-    def save_report(self, stats: UnifiedStats, filename: str = "stats.json") -> None:
+    def _analyze_tech_stack(self, language_stats: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze technology stack from language statistics."""
+        if not language_stats:
+            return {}
+        
+        # Categorize languages by type
+        frontend_langs = ['JavaScript', 'TypeScript', 'HTML', 'CSS', 'React', 'Vue', 'Angular']
+        backend_langs = ['Python', 'Java', 'C#', 'PHP', 'Ruby', 'Go', 'Rust', 'Node.js']
+        database_langs = ['SQL', 'PL/SQL', 'T-SQL']
+        devops_langs = ['Shell', 'PowerShell', 'Dockerfile', 'YAML', 'JSON']
+        
+        categories = {
+            'frontend': {'languages': [], 'total_loc': 0},
+            'backend': {'languages': [], 'total_loc': 0},
+            'database': {'languages': [], 'total_loc': 0},
+            'devops': {'languages': [], 'total_loc': 0},
+            'other': {'languages': [], 'total_loc': 0}
+        }
+        
+        for lang, stats in language_stats.items():
+            loc = stats.get('loc', 0)
+            if lang in frontend_langs:
+                categories['frontend']['languages'].append({'name': lang, 'loc': loc})
+                categories['frontend']['total_loc'] += loc
+            elif lang in backend_langs:
+                categories['backend']['languages'].append({'name': lang, 'loc': loc})
+                categories['backend']['total_loc'] += loc
+            elif lang in database_langs:
+                categories['database']['languages'].append({'name': lang, 'loc': loc})
+                categories['database']['total_loc'] += loc
+            elif lang in devops_langs:
+                categories['devops']['languages'].append({'name': lang, 'loc': loc})
+                categories['devops']['total_loc'] += loc
+            else:
+                categories['other']['languages'].append({'name': lang, 'loc': loc})
+                categories['other']['total_loc'] += loc
+        
+        return categories
+    
+    def _analyze_complexity(self, stats: UnifiedStats) -> Dict[str, Any]:
+        """Analyze project complexity metrics."""
+        total_loc = stats.total_loc
+        total_commits = stats.total_commits
+        total_files = stats.total_files
+        
+        complexity = {
+            'project_scale': {
+                'total_projects': stats.repos_processed,
+                'avg_loc_per_project': total_loc / stats.repos_processed if stats.repos_processed > 0 else 0,
+                'avg_commits_per_project': total_commits / stats.repos_processed if stats.repos_processed > 0 else 0,
+                'avg_files_per_project': total_files / stats.repos_processed if stats.repos_processed > 0 else 0
+            },
+            'code_distribution': {
+                'loc_per_file': total_loc / total_files if total_files > 0 else 0,
+                'commits_per_file': total_commits / total_files if total_files > 0 else 0,
+                'files_per_commit': total_files / total_commits if total_commits > 0 else 0
+            },
+            'repository_diversity': {
+                'languages_used': len(stats.unified_language_stats) if stats.unified_language_stats else 0,
+                'project_types': len(stats.repo_breakdown)
+            }
+        }
+        
+        return complexity
+    
+    def _generate_insights(self, stats: UnifiedStats, language_analysis: Dict, repo_analysis: Dict) -> Dict[str, Any]:
+        """Generate insights from the statistics."""
+        insights = {
+            'strengths': [],
+            'focus_areas': [],
+            'achievements': [],
+            'recommendations': []
+        }
+        
+        # Analyze strengths
+        if stats.guillermo_unified.commits > 100:
+            insights['strengths'].append("High commit frequency indicates consistent development activity")
+        
+        if len(stats.unified_language_stats) > 5:
+            insights['strengths'].append("Diverse technology stack across multiple programming languages")
+        
+        # Analyze focus areas
+        if stats.guillermo_unified.loc > 100000:
+            insights['focus_areas'].append("Large codebase suggests complex, enterprise-level projects")
+        
+        # Generate achievements
+        if stats.guillermo_unified.loc > 50000:
+            insights['achievements'].append(f"Built {stats.guillermo_unified.loc:,} lines of code across {stats.repos_processed} projects")
+        
+        if stats.guillermo_unified.commits > 200:
+            insights['achievements'].append(f"Made {stats.guillermo_unified.commits:,} commits demonstrating consistent development")
+        
+        # Generate recommendations
+        if len(stats.unified_language_stats) < 3:
+            insights['recommendations'].append("Consider expanding technology stack for broader expertise")
+        
+        return insights
+    
+    def save_report(self, stats: UnifiedStats, filename: str = "unified_stats.json") -> None:
         """
-        Generate and save a JSON report to file.
+        Generate and save a comprehensive JSON report to file.
         
         Args:
             stats: Unified statistics data

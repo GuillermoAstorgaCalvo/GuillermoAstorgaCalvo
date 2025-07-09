@@ -146,27 +146,14 @@ jobs:
             cp scripts/analytics_history.json ./analytics_history.json
           fi
 
-      - name: Move generated reports to root
+      - name: Move generated data to root
         run: |
-          mv scripts/STATS.md ./
           mv scripts/unified_stats.json ./ 2>/dev/null || true
 
       - name: Restore analytics history
         run: |
           if [[ -f "analytics_history.json" ]]; then
             cp analytics_history.json scripts/analytics_history.json
-          fi
-
-      - name: Validate generated file
-        run: |
-          if [[ ! -f "STATS.md" ]]; then
-            echo "❌ Error: STATS.md was not generated"
-            exit 1
-          fi
-
-          if [[ ! -s "STATS.md" ]]; then
-            echo "❌ Error: STATS.md is empty"
-            exit 1
           fi
 
       - name: Generate enhanced dynamic README
@@ -186,7 +173,7 @@ jobs:
             exit 1
           fi
 
-          echo "✅ README.md generated successfully"
+          echo "✅ README.md generated successfully with private repository statistics"
 
       - name: Commit results to profile
         env:
@@ -199,8 +186,8 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
 
-                    git add STATS.md unified_stats.json analytics_history.json README.md
+          git add unified_stats.json analytics_history.json README.md
 
-          git commit -m "📊 Update unified statistics - $(date '+%Y-%m-%d %H:%M UTC')"
+          git commit -m "📊 Update README with private repository statistics - $(date '+%Y-%m-%d %H:%M UTC')"
 
           git push

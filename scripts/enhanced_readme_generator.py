@@ -14,10 +14,26 @@ def load_analytics_data() -> Dict[str, Any]:
     try:
         root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         analytics_path = os.path.join(root_dir, 'analytics_history.json')
-        with open(analytics_path, 'r', encoding='utf-8') as f:
-            return json.load(f)
+        unified_stats_path = os.path.join(root_dir, 'unified_stats.json')
+        
+        # Load analytics history
+        analytics_data = []
+        if os.path.exists(analytics_path):
+            with open(analytics_path, 'r', encoding='utf-8') as f:
+                analytics_data = json.load(f)
+        
+        # Load enhanced unified stats
+        unified_stats = {}
+        if os.path.exists(unified_stats_path):
+            with open(unified_stats_path, 'r', encoding='utf-8') as f:
+                unified_stats = json.load(f)
+        
+        return {
+            'analytics_history': analytics_data,
+            'unified_stats': unified_stats
+        }
     except FileNotFoundError:
-        print("Warning: analytics_history.json not found in project root")
+        print("Warning: analytics_history.json or unified_stats.json not found in project root")
         return {}
 
 def format_number(num: int) -> str:
@@ -114,11 +130,155 @@ I started coding because I wanted to build things that could actually help peopl
 """
 
 def generate_dynamic_stats_section(data: Dict[str, Any]) -> str:
-    """Generate comprehensive stats section using private repo data"""
-    if not data or not isinstance(data, list) or len(data) == 0:
+    """Generate comprehensive stats section using enhanced private repo data"""
+    if not data or not isinstance(data, dict):
         return ""
     
-    latest_data = data[-1]  # Get the most recent data
+    analytics_history = data.get('analytics_history', [])
+    unified_stats = data.get('unified_stats', {})
+    
+    if not analytics_history and not unified_stats:
+        return ""
+    
+    # Use unified stats if available, otherwise fall back to analytics history
+    if unified_stats:
+        return generate_enhanced_stats_from_unified(unified_stats)
+    elif analytics_history:
+        return generate_stats_from_analytics(analytics_history)
+    
+    return ""
+
+def generate_enhanced_stats_from_unified(unified_stats: Dict[str, Any]) -> str:
+    """Generate enhanced stats section from comprehensive unified stats"""
+    
+    # Basic stats badges
+    global_summary = unified_stats.get('global_summary', {})
+    guillermo_contribution = global_summary.get('guillermo_contribution', {})
+    productivity_metrics = unified_stats.get('productivity_metrics', {})
+    
+    stats_badges = []
+    if 'total_loc' in global_summary:
+        stats_badges.append(f'<img src="https://img.shields.io/badge/📈_Lines_of_Code-{format_number(global_summary["total_loc"])}-58A6FF?style=for-the-badge&logo=github&logoColor=white" alt="Lines of Code" />')
+    
+    if 'total_commits' in global_summary:
+        stats_badges.append(f'<img src="https://img.shields.io/badge/📝_Commits-{format_number(global_summary["total_commits"])}-4ECDC4?style=for-the-badge&logo=github&logoColor=white" alt="Total Commits" />')
+    
+    if 'total_files' in global_summary:
+        stats_badges.append(f'<img src="https://img.shields.io/badge/📁_Files-{format_number(global_summary["total_files"])}-FF6B6B?style=for-the-badge&logo=github&logoColor=white" alt="Total Files" />')
+    
+    if 'repositories_processed' in global_summary:
+        stats_badges.append(f'<img src="https://img.shields.io/badge/🏢_Repositories-{global_summary["repositories_processed"]}-9C27B0?style=for-the-badge&logo=github&logoColor=white" alt="Repositories" />')
+    
+    # Personal contribution insights
+    contribution_insights = ""
+    if guillermo_contribution:
+        percentages = guillermo_contribution.get('percentages', {})
+        contribution_insights = f"\n### **👨‍💻 My Contributions**\n"
+        contribution_insights += f"🎯 **{percentages.get('loc', 0):.1f}% of all code** ({format_number(guillermo_contribution.get('loc', 0))} lines)\n"
+        contribution_insights += f"📝 **{format_number(guillermo_contribution.get('commits', 0))} commits** across all projects\n"
+        contribution_insights += f"📁 **{format_number(guillermo_contribution.get('files', 0))} files** created or modified\n"
+    
+    # Productivity metrics
+    productivity_insights = ""
+    if productivity_metrics:
+        productivity_insights = f"\n### **⚡ Productivity Metrics**\n"
+        productivity_insights += f"🚀 **{productivity_metrics.get('avg_loc_per_commit', 0):.0f} lines per commit**\n"
+        productivity_insights += f"📊 **{productivity_metrics.get('avg_files_per_commit', 0):.1f} files per commit**\n"
+        
+        code_efficiency = productivity_metrics.get('code_efficiency', {})
+        if code_efficiency:
+            productivity_insights += f"💡 **{code_efficiency.get('loc_per_file', 0):.0f} lines per file**\n"
+    
+    # Language breakdown
+    language_stats = ""
+    language_analysis = unified_stats.get('language_analysis', {})
+    if language_analysis:
+        # Sort languages by lines of code
+        sorted_languages = sorted(language_analysis.items(), key=lambda x: x[1]['lines'], reverse=True)[:5]
+        language_stats = "\n### **💻 Top Languages**\n"
+        for lang, lang_data in sorted_languages:
+            percentage = lang_data.get('percentage', 0)
+            lines = lang_data.get('lines', 0)
+            language_stats += f"![{lang}](https://img.shields.io/badge/-{lang}-58A6FF?style=for-the-badge&logo={lang.lower()}&logoColor=white) **{percentage:.1f}%** ({format_number(lines)} lines)\n"
+    
+    # Tech stack analysis
+    tech_stack_insights = ""
+    tech_stack_analysis = unified_stats.get('tech_stack_analysis', {})
+    if tech_stack_analysis:
+        tech_stack_insights = f"\n### **🛠️ Technology Stack**\n"
+        for category, data in tech_stack_analysis.items():
+            if data.get('languages') and data.get('total_loc', 0) > 0:
+                category_name = category.title()
+                total_loc = data.get('total_loc', 0)
+                languages = [lang['name'] for lang in data.get('languages', [])]
+                tech_stack_insights += f"**{category_name}:** {', '.join(languages[:3])} ({format_number(total_loc)} lines)\n"
+    
+    # Repository insights
+    repo_insights = ""
+    repo_analysis = unified_stats.get('repository_analysis', {})
+    if repo_analysis:
+        # Sort repositories by Guillermo's contribution
+        sorted_repos = sorted(repo_analysis.items(), 
+                            key=lambda x: x[1]['guillermo_stats'].get('loc', 0), reverse=True)[:3]
+        
+        repo_insights = f"\n### **🏢 Top Projects**\n"
+        for repo_name, repo_data in sorted_repos:
+            guillermo_stats = repo_data.get('guillermo_stats', {})
+            percentages = repo_data.get('percentages', {})
+            repo_insights += f"• **{repo_name}** - {format_number(guillermo_stats.get('loc', 0))} lines ({percentages.get('loc', 0):.1f}% contribution)\n"
+    
+    # Insights
+    insights_section = ""
+    insights = unified_stats.get('insights', {})
+    if insights:
+        insights_section = f"\n### **💡 Key Insights**\n"
+        
+        achievements = insights.get('achievements', [])
+        if achievements:
+            insights_section += f"🏆 **Achievements:**\n"
+            for achievement in achievements[:2]:  # Show top 2 achievements
+                insights_section += f"• {achievement}\n"
+        
+        strengths = insights.get('strengths', [])
+        if strengths:
+            insights_section += f"\n💪 **Strengths:**\n"
+            for strength in strengths[:2]:  # Show top 2 strengths
+                insights_section += f"• {strength}\n"
+    
+    return f"""## 📊 **My Private Repository Stats**
+
+> 📊 **Real data from my private enterprise repositories**  
+> _Updated every Monday - this is where the real work happens!_
+
+<!-- Dynamic Stats Overview -->
+<div align="center">
+  {'  '.join(stats_badges)}
+</div>
+
+{contribution_insights}
+
+{productivity_insights}
+
+{language_stats}
+
+{tech_stack_insights}
+
+{repo_insights}
+
+{insights_section}
+
+These numbers tell the real story - late nights debugging, moments of breakthrough, and a lot of trial and error. Every line of code represents a problem solved or something new learned. The private repos are where the magic happens!
+
+---
+
+"""
+
+def generate_stats_from_analytics(analytics_history: List[Dict[str, Any]]) -> str:
+    """Generate stats section from analytics history (fallback)"""
+    if not analytics_history or len(analytics_history) == 0:
+        return ""
+    
+    latest_data = analytics_history[-1]  # Get the most recent data
     
     # Basic stats badges
     stats_badges = []
@@ -133,45 +293,6 @@ def generate_dynamic_stats_section(data: Dict[str, Any]) -> str:
     
     if 'repos_processed' in latest_data:
         stats_badges.append(f'<img src="https://img.shields.io/badge/🏢_Repositories-{latest_data["repos_processed"]}-9C27B0?style=for-the-badge&logo=github&logoColor=white" alt="Repositories" />')
-    
-    # Language breakdown
-    language_stats = ""
-    if 'language_stats' in latest_data and latest_data['language_stats']:
-        top_languages = sorted(latest_data['language_stats'].items(), key=lambda x: x[1], reverse=True)[:5]
-        language_stats = "\n### **💻 Top Languages**\n"
-        for lang, lines in top_languages:
-            percentage = (lines / latest_data['total_loc']) * 100 if latest_data['total_loc'] > 0 else 0
-            language_stats += f"![{lang}](https://img.shields.io/badge/-{lang}-58A6FF?style=for-the-badge&logo={lang.lower()}&logoColor=white) **{percentage:.1f}%** ({format_number(lines)} lines)\n"
-    
-    # Growth analysis
-    growth_insights = ""
-    if len(data) > 1:
-        previous_data = data[-2]
-        if 'total_loc' in latest_data and 'total_loc' in previous_data:
-            loc_growth = latest_data['total_loc'] - previous_data['total_loc']
-            growth_insights = f"\n### **📈 Growth This Week**\n"
-            if loc_growth > 0:
-                growth_insights += f"➕ **+{format_number(loc_growth)} lines of code**\n"
-            elif loc_growth < 0:
-                growth_insights += f"➖ **{format_number(loc_growth)} lines of code** (refactoring)\n"
-            else:
-                growth_insights += f"➖ **No new code** (maintenance week)\n"
-    
-    # Repository insights
-    repo_insights = ""
-    if 'repo_details' in latest_data and latest_data['repo_details']:
-        active_repos = len([repo for repo in latest_data['repo_details'] if repo.get('active', True)])
-        total_repos = len(latest_data['repo_details'])
-        repo_insights = f"\n### **🏢 Repository Overview**\n"
-        repo_insights += f"🟢 **{active_repos} active repositories**\n"
-        repo_insights += f"📊 **{total_repos} total repositories**\n"
-        
-        # Show top repos by activity
-        top_repos = sorted(latest_data['repo_details'], key=lambda x: x.get('loc', 0), reverse=True)[:3]
-        if top_repos:
-            repo_insights += f"\n**Most Active Projects:**\n"
-            for repo in top_repos:
-                repo_insights += f"• **{repo.get('name', 'Unknown')}** - {format_number(repo.get('loc', 0))} lines\n"
     
     # Personal contribution percentage
     contribution_insights = ""
@@ -195,12 +316,6 @@ def generate_dynamic_stats_section(data: Dict[str, Any]) -> str:
 </div>
 
 {contribution_insights}
-
-{language_stats}
-
-{growth_insights}
-
-{repo_insights}
 
 These numbers tell the real story - late nights debugging, moments of breakthrough, and a lot of trial and error. Every line of code represents a problem solved or something new learned. The private repos are where the magic happens!
 

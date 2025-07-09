@@ -116,10 +116,6 @@ class ConfigManager:
         """Get statistics output filename."""
         return self.get_artifacts_config().get('stats_filename', 'repo_stats.json')
     
-    def get_report_filename(self) -> str:
-        """Get report output filename."""
-        return self.get_artifacts_config().get('report_filename', 'STATS.md')
-    
     def get_full_config(self) -> Dict[str, Any]:
         """Get the complete configuration dictionary."""
         return self.config
