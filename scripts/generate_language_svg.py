@@ -13,18 +13,15 @@ def generate_language_svg_bar_chart(language_stats: dict, output_path: str):
     try:
         import svgwrite
         
-        # Filter out languages with 0 lines and sort by LOC descending
-        valid_langs = [(lang, stats) for lang, stats in language_stats.items() 
-                       if stats.get('lines', 0) > 0]
+        # Filter out languages with 0 lines, 'Unknown', 'Text', and 'JSON'
+        valid_langs = [(lang, stats) for lang, stats in language_stats.items() if stats.get('lines', 0) > 0 and lang not in ('Unknown', 'Text', 'JSON')]
         sorted_langs = sorted(valid_langs, key=lambda x: x[1]['lines'], reverse=True)
         
         if not sorted_langs:
             print("⚠️ No valid language data found")
             return
         
-        max_loc = sorted_langs[0][1]['lines']
-        min_loc = sorted_langs[-1][1]['lines']
-        total_loc = sum(stats.get('lines', 0) for _, stats in sorted_langs)
+        total_loc = sum(stats['lines'] for _, stats in sorted_langs)
         
         # Calculate chart dimensions
         width = 700  # Increased width for better spacing
@@ -201,7 +198,7 @@ def generate_language_svg_bar_chart(language_stats: dict, output_path: str):
         dwg.save()
         print(f"✅ SVG chart generated: {output_path}")
         print(f"📊 Chart shows {len(sorted_langs)} languages")
-        print(f"📈 Max LOC: {max_loc:,}, Min LOC: {min_loc:,}")
+        print(f"📈 Max LOC: {sorted_langs[0][1]['lines']:,}, Min LOC: {sorted_langs[-1][1]['lines']:,}")
         print(f"🎨 Enhanced with gradients and professional styling")
         
     except ImportError:

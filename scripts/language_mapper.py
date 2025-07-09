@@ -4,28 +4,27 @@ Maps file extensions to programming languages using GitHub Linguist's mapping.
 """
 
 from typing import Dict, List, Optional, Any
+import os
 
 
 class LanguageMapper:
-    """Maps file extensions to programming languages."""
+    """Maps file extensions to programming languages with high accuracy."""
     
     def __init__(self):
-        """Initialize the language mapper with strict mapping for Configuration and Python."""
-        self.config_extensions = {'.yml', '.yaml', '.json', '.ini', '.env', '.cfg', '.conf', '.toml', '.properties'}
-        self.doc_extensions = {'.md', '.markdown', '.rst', '.txt', '.adoc'}
-        self.python_extensions = {'.py', '.pyw', '.pyi', '.pyx', '.pxd', '.pyo', '.pyd'}
-        # GitHub Linguist's extension to language mapping
+        """Initialize the language mapper with detailed mapping."""
+        
+        # Core programming languages with their extensions
         self.extension_to_language = {
             # Python
             '.py': 'Python', '.pyw': 'Python', '.pyi': 'Python', '.pyx': 'Python',
-            '.pxd': 'Python', '.pyo': 'Python', '.pyd': 'Python',
+            '.pxd': 'Python', '.pyo': 'Python', '.pyd': 'Python', '.pyc': 'Python',
             
             # JavaScript/TypeScript
             '.js': 'JavaScript', '.jsx': 'JavaScript', '.mjs': 'JavaScript',
             '.ts': 'TypeScript', '.tsx': 'TypeScript',
             
             # Java
-            '.java': 'Java', '.jav': 'Java',
+            '.java': 'Java', '.jav': 'Java', '.class': 'Java',
             
             # C/C++
             '.c': 'C', '.h': 'C', '.cpp': 'C++', '.cc': 'C++', '.cxx': 'C++',
@@ -158,7 +157,8 @@ class LanguageMapper:
             'yarn.lock': 'YAML',
             
             # Pip
-            'requirements.txt': 'Text', 'setup.py': 'Python',
+            'requirements.txt': 'Python', 'setup.py': 'Python', 'Pipfile': 'Python',
+            'pyproject.toml': 'Python',
             
             # Cargo
             'Cargo.toml': 'TOML', 'Cargo.lock': 'TOML',
@@ -175,15 +175,15 @@ class LanguageMapper:
             # Rust
             '.toml': 'TOML',
             
-            # Config files
+            # Config files - be more specific
             '.ini': 'INI', '.cfg': 'INI', '.conf': 'INI',
             '.properties': 'Properties', '.env': 'Properties',
             
             # Logs
             '.log': 'Log',
             
-            # Documentation
-            '.txt': 'Text', '.rst': 'reStructuredText', '.adoc': 'AsciiDoc',
+            # Documentation (excluding .txt files which are mostly logs)
+            '.rst': 'reStructuredText', '.adoc': 'AsciiDoc',
             
             # Images (for completeness, but not code)
             '.png': 'Image', '.jpg': 'Image', '.jpeg': 'Image', '.gif': 'Image',
@@ -201,7 +201,31 @@ class LanguageMapper:
             '.o': 'Binary', '.obj': 'Binary', '.a': 'Binary', '.lib': 'Binary',
         }
         
-        # Language aliases for better categorization
+        # Specific filename mappings (case-sensitive)
+        self.filename_to_language = {
+            'Dockerfile': 'Dockerfile',
+            'Makefile': 'Makefile',
+            'CMakeLists.txt': 'CMake',
+            'package.json': 'JSON',
+            'package-lock.json': 'JSON',
+            'yarn.lock': 'YAML',
+            'requirements.txt': 'Python',
+            'setup.py': 'Python',
+            'Pipfile': 'Python',
+            'pyproject.toml': 'Python',
+            'Cargo.toml': 'TOML',
+            'Cargo.lock': 'TOML',
+            'composer.json': 'JSON',
+            'composer.lock': 'JSON',
+            'Gemfile': 'Ruby',
+            'Gemfile.lock': 'Ruby',
+            'go.mod': 'Go',
+            'go.sum': 'Go',
+            'pom.xml': 'Maven',
+            'build.gradle': 'Gradle',
+        }
+        
+        # Minimal aliases - only for very similar languages
         self.language_aliases = {
             'SCSS': 'CSS',
             'Sass': 'CSS',
@@ -210,15 +234,7 @@ class LanguageMapper:
             'AsciiDoc': 'Documentation',
             'Markdown': 'Documentation',
             'BibTeX': 'Documentation',
-            'Text': 'Documentation',
             'Log': 'Documentation',
-            'Properties': 'Configuration',
-            'INI': 'Configuration',
-            'TOML': 'Configuration',
-            'YAML': 'Configuration',
-            'JSON': 'Configuration',
-            'XML': 'Configuration',
-            'CSV': 'Data',
             'Image': 'Assets',
             'Font': 'Assets',
             'Archive': 'Assets',
@@ -239,16 +255,10 @@ class LanguageMapper:
         if not extension.startswith('.'):
             extension = '.' + extension
         
-        if extension in self.python_extensions:
-            return 'Python'
-        if extension in self.config_extensions:
-            return 'Configuration'
-        if extension in self.doc_extensions:
-            return 'Documentation'
         # Get language from extension mapping
         language = self.extension_to_language.get(extension.lower(), 'Unknown')
         
-        # Apply aliases for better categorization
+        # Apply minimal aliases for better categorization
         return self.language_aliases.get(language, language)
     
     def get_language_from_filename(self, filename: str) -> str:
@@ -261,8 +271,15 @@ class LanguageMapper:
         Returns:
             Language name or 'Unknown' if not recognized
         """
-        import os
-        _, ext = os.path.splitext(filename)
+        # Extract just the filename without path
+        basename = os.path.basename(filename)
+        
+        # Check for specific filename mappings first
+        if basename in self.filename_to_language:
+            return self.filename_to_language[basename]
+        
+        # Fall back to extension-based detection
+        _, ext = os.path.splitext(basename)
         return self.get_language_from_extension(ext.lower())
     
     def get_supported_languages(self) -> List[str]:

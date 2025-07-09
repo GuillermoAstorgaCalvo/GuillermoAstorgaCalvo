@@ -148,23 +148,16 @@ def main():
             print(f"⚠️ cloc failed, using fallback: {e}")
             cloc_language_stats = {}
 
-        # Post-process cloc output: group only .yml/.yaml/.ini/.json as Configuration
-        config_langs = {'JSON', 'YAML', 'INI'}
-        config_loc = 0
-        config_files = 0
-        filtered_cloc_language_stats = {}
-        for lang, stats in cloc_language_stats.items():
-            if lang in config_langs:
-                config_loc += stats.get('loc', 0)
-                config_files += stats.get('files', 0)
-            elif lang == 'Markdown':
-                # Optionally, treat Markdown as Documentation
-                filtered_cloc_language_stats['Documentation'] = stats
-            else:
-                filtered_cloc_language_stats[lang] = stats
-        if config_loc > 0:
-            filtered_cloc_language_stats['Configuration'] = {'loc': config_loc, 'files': config_files, 'commits': 0}
-        cloc_language_stats = filtered_cloc_language_stats
+        # Use cloc data directly, but exclude .txt and .json files
+        cloc_language_stats = {}
+        for lang, stats in cloc_data.items():
+            if lang in ('header', 'SUM', 'JSON', 'Text'):
+                continue
+            cloc_language_stats[lang] = {
+                'loc': stats.get('code', 0),
+                'files': stats.get('nFiles', 0),
+                'commits': 0  # cloc doesn't provide commits
+            }
         
         # Merge cloc stats with language_mapper stats (favor cloc for LOC)
         merged_language_stats = language_stats.copy() if language_stats else {}
@@ -216,12 +209,26 @@ def main():
             language_stats = language_mapper.get_language_stats(extension_stats)
             print(f"✅ Found {len(language_stats)} languages")
             
-            # Debug: Show top languages
+            # Debug: Show detailed language breakdown
             if language_stats:
                 sorted_langs = sorted(language_stats.items(), key=lambda x: x[1]['loc'], reverse=True)
-                print("🏆 Top languages:")
-                for lang, stats in sorted_langs[:5]:
-                    print(f"  - {lang}: {stats['loc']} LOC")
+                print("🏆 Language breakdown:")
+                for lang, stats in sorted_langs:
+                    print(f"  - {lang}: {stats['loc']:,} LOC ({stats['files']} files)")
+                
+                # Show problematic categorizations
+                config_langs = [lang for lang, stats in sorted_langs if lang in ['Configuration', 'YAML', 'JSON', 'TOML', 'INI', 'Properties']]
+                if config_langs:
+                    print(f"⚠️ Configuration-like languages found: {', '.join(config_langs)}")
+                
+                unknown_langs = [lang for lang, stats in sorted_langs if lang == 'Unknown']
+                if unknown_langs:
+                    print(f"❓ Unknown languages found: {len(unknown_langs)} files")
+                
+                # Note about .txt files being excluded
+                print("ℹ️ Note: .txt files are excluded as they are mostly logs")
+            else:
+                print("⚠️ No language stats generated")
         else:
             print("⚠️ Could not get language breakdown data")
             print("🔍 Debug: git fame --bytype output was empty or failed")
