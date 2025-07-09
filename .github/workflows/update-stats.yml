@@ -7,7 +7,7 @@ on:
 
 jobs:
   load-config:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     outputs:
       repositories: ${{ steps.config.outputs.repositories }}
     steps:
@@ -37,7 +37,7 @@ jobs:
 
   process-repositories:
     needs: load-config
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         repository: ${{ fromJson(needs.load-config.outputs.repositories) }}
@@ -52,7 +52,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
           cache: "pip"
 
       - name: Cache pip dependencies
@@ -66,7 +66,7 @@ jobs:
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip --no-cache-dir
-          pip install --no-cache-dir git-fame PyYAML svgwrite
+          pip install --no-cache-dir -r requirements.txt
 
       - name: Install cloc
         run: |
@@ -112,7 +112,7 @@ jobs:
 
   aggregate-and-commit:
     needs: process-repositories
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
       actions: read
@@ -127,7 +127,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
           cache: "pip"
 
       - name: Cache pip dependencies
@@ -141,7 +141,7 @@ jobs:
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip --no-cache-dir
-          pip install --no-cache-dir PyYAML svgwrite
+          pip install --no-cache-dir -r requirements.txt
 
       - name: Download all repository statistics
         uses: actions/download-artifact@v4

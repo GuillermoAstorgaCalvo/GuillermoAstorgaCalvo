@@ -1,3 +1,6 @@
-git-fame>=1.0.0
-PyYAML>=6.0
-svgwrite>=1.4.0 
+git-fame>=3.1.0
+PyYAML>=6.0.2
+svgwrite>=1.4.3
+requests>=2.32.4
+colorama>=0.4.6
+tqdm>=4.67.1 
