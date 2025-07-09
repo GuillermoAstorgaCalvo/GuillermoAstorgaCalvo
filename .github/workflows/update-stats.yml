@@ -195,7 +195,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add unified_stats.json analytics_history.json README.md language_ranking.svg
+          git add unified_stats.json analytics_history.json README.md language_ranking.svg assets/language_stats.svg
 
           git commit -m "📊 Update README and language ranking SVG - $(date '+%Y-%m-%d %H:%M UTC')"
 

@@ -189,17 +189,16 @@ def generate_enhanced_stats_from_unified(unified_stats: Dict[str, Any]) -> str:
         if code_efficiency:
             productivity_insights += f"💡 **{code_efficiency.get('loc_per_file', 0):.0f} lines per file**\n"
     
-    # Language breakdown
+    # Language breakdown with SVG chart
     language_stats = ""
     language_analysis = unified_stats.get('language_analysis', {})
     if language_analysis:
         # Sort languages by lines of code
         sorted_languages = sorted(language_analysis.items(), key=lambda x: x[1]['lines'], reverse=True)[:5]
-        language_stats = "\n### **💻 Top Languages**\n"
-        for lang, lang_data in sorted_languages:
-            percentage = lang_data.get('percentage', 0)
-            lines = lang_data.get('lines', 0)
-            language_stats += f"![{lang}](https://img.shields.io/badge/-{lang}-58A6FF?style=for-the-badge&logo={lang.lower()}&logoColor=white) **{percentage:.1f}%** ({format_number(lines)} lines)\n"
+        language_stats = "\n### **💻 Top Languages**\n\n"
+        language_stats += '<p align="center">\n'
+        language_stats += '  <img src="assets/language_stats.svg" alt="Languages by Lines of Code" width="500" />\n'
+        language_stats += '</p>\n'
     
     # Tech stack analysis
     tech_stack_insights = ""
