@@ -244,7 +244,25 @@ def generate_enhanced_stats_from_unified(unified_stats: Dict[str, Any]) -> str:
             insights_section += f"\n💪 **Strengths:**\n"
             for strength in strengths[:2]:  # Show top 2 strengths
                 insights_section += f"• {strength}\n"
-    
+
+    # Other/Unknown breakdown
+    other_unknown_section = ""
+    other_unknown = unified_stats.get('other_unknown_breakdown', {})
+    if other_unknown and (other_unknown.get('other', 0) > 0 or other_unknown.get('unknown', 0) > 0):
+        other_unknown_section = "\n### **🗂️ Other/Unknown Files**\n"
+        if other_unknown.get('other', 0) > 0:
+            other_unknown_section += f"• **Other:** {format_number(other_unknown['other'])} lines\n"
+        if other_unknown.get('unknown', 0) > 0:
+            other_unknown_section += f"• **Unknown:** {format_number(other_unknown['unknown'])} lines\n"
+
+    # Validation warning
+    validation_section = ""
+    validation = unified_stats.get('validation_results', {})
+    if validation:
+        if validation.get('loc_mismatch') or validation.get('files_mismatch') or validation.get('commits_mismatch'):
+            validation_section = ("\n> ⚠️ **Note:** There is a mismatch between the sum of language/project stats and the global totals. "
+                                 "This may be due to unclassified files, multi-language files, or aggregation logic.\n")
+
     return f"""## 📊 **My Private Repository Stats**
 
 > 📊 **Real data from my private enterprise repositories**  
@@ -266,6 +284,10 @@ def generate_enhanced_stats_from_unified(unified_stats: Dict[str, Any]) -> str:
 {repo_insights}
 
 {insights_section}
+
+{other_unknown_section}
+
+{validation_section}
 
 These numbers tell the real story - late nights debugging, moments of breakthrough, and a lot of trial and error. Every line of code represents a problem solved or something new learned. The private repos are where the magic happens!
 

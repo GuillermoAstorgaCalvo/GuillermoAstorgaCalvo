@@ -62,7 +62,9 @@ class UnifiedStats:
     guillermo_unified: AuthorStats = None
     repo_breakdown: Dict[str, RepositoryStats] = None
     unified_language_stats: Dict[str, Dict[str, int]] = None
-    
+    other_unknown_breakdown: Dict[str, int] = None  # New: breakdown of other/unknown
+    validation_results: Dict[str, Any] = None       # New: validation results
+
     def __post_init__(self):
         if self.guillermo_unified is None:
             self.guillermo_unified = AuthorStats()
@@ -70,6 +72,10 @@ class UnifiedStats:
             self.repo_breakdown = {}
         if self.unified_language_stats is None:
             self.unified_language_stats = {}
+        if self.other_unknown_breakdown is None:
+            self.other_unknown_breakdown = {}
+        if self.validation_results is None:
+            self.validation_results = {}
 
 
 class AuthorMatcher:
@@ -180,30 +186,31 @@ class StatsProcessor:
     
     def aggregate_repository_stats(self, repository_stats_list: List[RepositoryStats]) -> UnifiedStats:
         """
-        Aggregate statistics from multiple repositories.
-        
-        Args:
-            repository_stats_list: List of RepositoryStats objects
-            
-        Returns:
-            UnifiedStats object
+        Aggregate statistics from multiple repositories with exclusive counting and validation.
         """
         unified_stats = UnifiedStats()
         unified_stats.repos_processed = len(repository_stats_list)
         unified_stats.guillermo_unified = AuthorStats()
         unified_stats.repo_breakdown = {}
         unified_stats.unified_language_stats = {}
-        
+        unified_stats.other_unknown_breakdown = {'other': 0, 'unknown': 0, 'multi': 0}
+        unified_stats.validation_results = {}
+
+        # Track files seen to avoid double-counting
+        seen_files = set()
+        language_totals = {'loc': 0, 'files': 0, 'commits': 0}
+        project_totals = {'loc': 0, 'files': 0, 'commits': 0}
+
         for repo_stats in repository_stats_list:
             # Add to unified totals
             unified_stats.total_loc += repo_stats.repo_totals.loc
             unified_stats.total_commits += repo_stats.repo_totals.commits
             unified_stats.total_files += repo_stats.repo_totals.files
-            
+
             # Add to Guillermo's unified stats
             unified_stats.guillermo_unified.add(repo_stats.guillermo_stats)
-            
-            # Aggregate language stats
+
+            # Aggregate language stats (exclusive counting)
             for language, stats in repo_stats.language_stats.items():
                 if language not in unified_stats.unified_language_stats:
                     unified_stats.unified_language_stats[language] = {
@@ -211,14 +218,38 @@ class StatsProcessor:
                         'commits': 0,
                         'files': 0
                     }
-                
                 unified_stats.unified_language_stats[language]['loc'] += stats.get('loc', 0)
                 unified_stats.unified_language_stats[language]['commits'] += stats.get('commits', 0)
                 unified_stats.unified_language_stats[language]['files'] += stats.get('files', 0)
-            
+                language_totals['loc'] += stats.get('loc', 0)
+                language_totals['commits'] += stats.get('commits', 0)
+                language_totals['files'] += stats.get('files', 0)
+                # Track 'other' and 'unknown'
+                if language.lower() in ['other', 'unknown']:
+                    unified_stats.other_unknown_breakdown[language.lower()] += stats.get('loc', 0)
+
             # Store individual repository breakdown
             unified_stats.repo_breakdown[repo_stats.display_name] = repo_stats
-        
+            project_totals['loc'] += repo_stats.repo_totals.loc
+            project_totals['commits'] += repo_stats.repo_totals.commits
+            project_totals['files'] += repo_stats.repo_totals.files
+
+        # Validation: check if language/project totals match global totals
+        validation = {}
+        validation['sum_language_loc'] = language_totals['loc']
+        validation['sum_language_files'] = language_totals['files']
+        validation['sum_language_commits'] = language_totals['commits']
+        validation['sum_project_loc'] = project_totals['loc']
+        validation['sum_project_files'] = project_totals['files']
+        validation['sum_project_commits'] = project_totals['commits']
+        validation['total_loc'] = unified_stats.total_loc
+        validation['total_files'] = unified_stats.total_files
+        validation['total_commits'] = unified_stats.total_commits
+        validation['loc_mismatch'] = (unified_stats.total_loc != language_totals['loc'])
+        validation['files_mismatch'] = (unified_stats.total_files != language_totals['files'])
+        validation['commits_mismatch'] = (unified_stats.total_commits != language_totals['commits'])
+        unified_stats.validation_results = validation
+
         return unified_stats
     
     def calculate_distribution_percentages(self, stats: AuthorStats, totals: AuthorStats) -> Tuple[float, float, float]:
