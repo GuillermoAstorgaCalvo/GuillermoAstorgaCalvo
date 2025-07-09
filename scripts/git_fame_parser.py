@@ -21,6 +21,24 @@ class GitFameParser:
             timeout_seconds: Timeout for git fame execution
         """
         self.timeout_seconds = timeout_seconds
+        self._check_git_fame_version()
+    
+    def _check_git_fame_version(self):
+        """Check git fame version for compatibility."""
+        try:
+            result = subprocess.run(
+                ['git', 'fame', '--version'], 
+                capture_output=True, 
+                text=True, 
+                timeout=10
+            )
+            if result.returncode == 0:
+                version = result.stdout.strip()
+                print(f"✅ Git fame version: {version}")
+            else:
+                print("⚠️ Could not determine git fame version")
+        except Exception as e:
+            print(f"⚠️ Error checking git fame version: {e}")
     
     def execute_git_fame(self, repo_path: str, output_format: str = "json", by_type: bool = False) -> Optional[Dict[str, Any]]:
         """
@@ -43,11 +61,12 @@ class GitFameParser:
             os.chdir(repo_path)
             
             # Build git fame command with optimizations for speed
-            cmd = ['git', 'fame', '--format', output_format, '--progressbar=false']
+            cmd = ['git', 'fame', '--format', output_format]
             if by_type:
                 cmd.append('--bytype')
             
             # Execute git fame
+            print(f"🔍 Running git fame command: {' '.join(cmd)}")
             result = subprocess.run(
                 cmd, 
                 capture_output=True, 
@@ -57,6 +76,8 @@ class GitFameParser:
             
             if result.returncode != 0:
                 print(f"❌ Error running git fame: {result.stderr}")
+                print(f"🔍 Command that failed: {' '.join(cmd)}")
+                print(f"🔍 Return code: {result.returncode}")
                 return None
             
             # Parse JSON output
