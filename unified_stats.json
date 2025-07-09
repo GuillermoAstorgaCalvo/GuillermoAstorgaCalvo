@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-07-09T17:23:37.762963Z",
+  "timestamp": "2025-07-09T17:31:01.308102Z",
   "metadata": {
     "version": "2.0",
     "generated_by": "Enhanced JSON Report Generator",
@@ -31,25 +31,32 @@
   },
   "language_analysis": {
     "Unknown": {
-      "lines": 7678,
-      "commits": 92,
-      "files": 35,
-      "percentage": 4.8,
-      "avg_loc_per_commit": 83.45652173913044
+      "lines": 7755,
+      "commits": 94,
+      "files": 37,
+      "percentage": 4.85,
+      "avg_loc_per_commit": 82.5
     },
-    "Configuration": {
-      "lines": 33492,
-      "commits": 334,
-      "files": 72,
-      "percentage": 20.95,
-      "avg_loc_per_commit": 100.27544910179641
+    "YAML": {
+      "lines": 241,
+      "commits": 3,
+      "files": 3,
+      "percentage": 0.15,
+      "avg_loc_per_commit": 80.33333333333333
     },
     "Documentation": {
-      "lines": 2344,
-      "commits": 24,
-      "files": 9,
-      "percentage": 1.47,
-      "avg_loc_per_commit": 97.66666666666667
+      "lines": 2267,
+      "commits": 22,
+      "files": 7,
+      "percentage": 1.42,
+      "avg_loc_per_commit": 103.04545454545455
+    },
+    "INI": {
+      "lines": 82,
+      "commits": 1,
+      "files": 1,
+      "percentage": 0.05,
+      "avg_loc_per_commit": 82.0
     },
     "Python": {
       "lines": 7659,
@@ -57,6 +64,13 @@
       "files": 15,
       "percentage": 4.79,
       "avg_loc_per_commit": 100.77631578947368
+    },
+    "JSON": {
+      "lines": 33103,
+      "commits": 329,
+      "files": 67,
+      "percentage": 20.71,
+      "avg_loc_per_commit": 100.61702127659575
     },
     "JavaScript": {
       "lines": 411,
@@ -92,6 +106,13 @@
       "files": 210,
       "percentage": 66.39,
       "avg_loc_per_commit": 100.30434782608695
+    },
+    "TOML": {
+      "lines": 66,
+      "commits": 1,
+      "files": 1,
+      "percentage": 0.04,
+      "avg_loc_per_commit": 66.0
     }
   },
   "repository_analysis": {
@@ -237,29 +258,42 @@
       "total_loc": 0
     },
     "devops": {
-      "languages": [],
-      "total_loc": 0
+      "languages": [
+        {
+          "name": "YAML",
+          "loc": 241
+        },
+        {
+          "name": "JSON",
+          "loc": 33103
+        }
+      ],
+      "total_loc": 33344
     },
     "other": {
       "languages": [
         {
           "name": "Unknown",
-          "loc": 7678
-        },
-        {
-          "name": "Configuration",
-          "loc": 33492
+          "loc": 7755
         },
         {
           "name": "Documentation",
-          "loc": 2344
+          "loc": 2267
+        },
+        {
+          "name": "INI",
+          "loc": 82
         },
         {
           "name": "Assets",
           "loc": 267
+        },
+        {
+          "name": "TOML",
+          "loc": 66
         }
       ],
-      "total_loc": 43781
+      "total_loc": 10437
     }
   },
   "complexity_analysis": {
@@ -275,7 +309,7 @@
       "files_per_commit": 240.2
     },
     "repository_diversity": {
-      "languages_used": 9,
+      "languages_used": 12,
       "project_types": 5
     }
   },
@@ -312,24 +346,34 @@
         },
         "language_stats": {
           "Unknown": {
-            "loc": 1482,
-            "commits": 16,
-            "files": 5
+            "loc": 1548,
+            "commits": 17,
+            "files": 6
           },
-          "Configuration": {
-            "loc": 378,
-            "commits": 3,
-            "files": 3
+          "YAML": {
+            "loc": 122,
+            "commits": 1,
+            "files": 1
           },
           "Documentation": {
-            "loc": 1907,
-            "commits": 19,
-            "files": 4
+            "loc": 1841,
+            "commits": 18,
+            "files": 3
+          },
+          "INI": {
+            "loc": 82,
+            "commits": 1,
+            "files": 1
           },
           "Python": {
             "loc": 6106,
             "commits": 61,
             "files": 12
+          },
+          "JSON": {
+            "loc": 174,
+            "commits": 1,
+            "files": 1
           },
           "JavaScript": {
             "loc": 35,
@@ -376,10 +420,10 @@
             "commits": 42,
             "files": 12
           },
-          "Configuration": {
-            "loc": 194,
-            "commits": 2,
-            "files": 2
+          "YAML": {
+            "loc": 53,
+            "commits": 1,
+            "files": 1
           },
           "Documentation": {
             "loc": 160,
@@ -388,6 +432,11 @@
           },
           "JavaScript": {
             "loc": 83,
+            "commits": 1,
+            "files": 1
+          },
+          "JSON": {
+            "loc": 141,
             "commits": 1,
             "files": 1
           },
@@ -421,10 +470,10 @@
             "commits": 1,
             "files": 1
           },
-          "Configuration": {
-            "loc": 406,
-            "commits": 4,
-            "files": 2
+          "JSON": {
+            "loc": 340,
+            "commits": 3,
+            "files": 1
           },
           "JavaScript": {
             "loc": 109,
@@ -450,6 +499,11 @@
             "loc": 1240,
             "commits": 12,
             "files": 2
+          },
+          "TOML": {
+            "loc": 66,
+            "commits": 1,
+            "files": 1
           }
         }
       },
@@ -467,21 +521,21 @@
         },
         "language_stats": {
           "Unknown": {
-            "loc": 35,
-            "commits": 1,
-            "files": 1
-          },
-          "Documentation": {
-            "loc": 36,
+            "loc": 46,
             "commits": 2,
             "files": 2
+          },
+          "Documentation": {
+            "loc": 25,
+            "commits": 1,
+            "files": 1
           },
           "Python": {
             "loc": 1553,
             "commits": 15,
             "files": 3
           },
-          "Configuration": {
+          "JSON": {
             "loc": 16042,
             "commits": 160,
             "files": 32
@@ -506,10 +560,10 @@
             "commits": 5,
             "files": 5
           },
-          "Configuration": {
-            "loc": 16472,
-            "commits": 165,
-            "files": 33
+          "JSON": {
+            "loc": 16406,
+            "commits": 164,
+            "files": 32
           },
           "JavaScript": {
             "loc": 184,
@@ -535,30 +589,45 @@
             "loc": 172,
             "commits": 1,
             "files": 1
+          },
+          "YAML": {
+            "loc": 66,
+            "commits": 1,
+            "files": 1
           }
         }
       }
     },
     "language_breakdown": {
       "Unknown": {
-        "loc": 7678,
-        "commits": 92,
-        "files": 35
+        "loc": 7755,
+        "commits": 94,
+        "files": 37
       },
-      "Configuration": {
-        "loc": 33492,
-        "commits": 334,
-        "files": 72
+      "YAML": {
+        "loc": 241,
+        "commits": 3,
+        "files": 3
       },
       "Documentation": {
-        "loc": 2344,
-        "commits": 24,
-        "files": 9
+        "loc": 2267,
+        "commits": 22,
+        "files": 7
+      },
+      "INI": {
+        "loc": 82,
+        "commits": 1,
+        "files": 1
       },
       "Python": {
         "loc": 7659,
         "commits": 76,
         "files": 15
+      },
+      "JSON": {
+        "loc": 33103,
+        "commits": 329,
+        "files": 67
       },
       "JavaScript": {
         "loc": 411,
@@ -584,6 +653,11 @@
         "loc": 106122,
         "commits": 1058,
         "files": 210
+      },
+      "TOML": {
+        "loc": 66,
+        "commits": 1,
+        "files": 1
       }
     }
   }
