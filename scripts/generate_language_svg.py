@@ -42,13 +42,26 @@ def generate_language_svg_bar_chart(language_stats: dict, output_path: str):
 def main():
     """Generate SVG from unified stats"""
     try:
-        # Load unified stats from project root
+        # Load unified stats from project root (when running from scripts directory)
         script_dir = Path(__file__).parent
         root_dir = script_dir.parent
         unified_stats_path = root_dir / 'unified_stats.json'
         
+        # If not found in root, try current directory (for local testing)
+        if not unified_stats_path.exists():
+            unified_stats_path = Path('unified_stats.json')
+        
+        print(f"🔍 Looking for unified_stats.json at: {unified_stats_path}")
+        print(f"📁 Current working directory: {Path.cwd()}")
+        print(f"📁 Script directory: {script_dir}")
+        print(f"📁 Root directory: {root_dir}")
+        
         if not unified_stats_path.exists():
             print("❌ unified_stats.json not found")
+            print("📁 Available files in root directory:")
+            if root_dir.exists():
+                for file in root_dir.iterdir():
+                    print(f"  - {file.name}")
             sys.exit(1)
         
         with open(unified_stats_path, 'r', encoding='utf-8') as f:
@@ -62,9 +75,15 @@ def main():
         
         # Generate SVG
         svg_path = root_dir / 'assets' / 'language_stats.svg'
+        print(f"🎨 Generating SVG at: {svg_path}")
         generate_language_svg_bar_chart(language_analysis, str(svg_path))
         
-        print(f"✅ Language SVG generated successfully at {svg_path}")
+        # Verify the SVG was created
+        if svg_path.exists():
+            print(f"✅ Language SVG generated successfully at {svg_path}")
+            print(f"📏 SVG file size: {svg_path.stat().st_size} bytes")
+        else:
+            print(f"❌ SVG file was not created at {svg_path}")
         
     except Exception as e:
         print(f"❌ Error generating SVG: {e}")
