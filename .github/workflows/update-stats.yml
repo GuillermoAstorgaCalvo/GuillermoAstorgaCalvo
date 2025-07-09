@@ -64,11 +64,6 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y cloc
 
-      - name: Run cloc (optimized)
-        working-directory: repo
-        run: |
-          cloc --skip-uniqueness --exclude-dir=.git,node_modules,venv,.venv,build,dist . || true
-
       - name: Clone repository
         env:
           PERSONAL_TOKEN: ${{ secrets.PERSONAL_REPOS_TOKEN }}
@@ -90,6 +85,18 @@ jobs:
           git clone --branch "${BRANCH_NAME}" --single-branch --depth 1 \
             "https://x-access-token:${TOKEN}@github.com/${ORG}/${REPO_NAME}.git" \
             repo
+
+      - name: Check repo directory exists
+        run: |
+          if [ ! -d repo ]; then
+            echo "❌ repo directory does not exist!"
+            exit 1
+          fi
+
+      - name: Run cloc (optimized)
+        working-directory: repo
+        run: |
+          cloc --skip-uniqueness --exclude-dir=.git,node_modules,venv,.venv,build,dist . || true
 
       - name: Process repository statistics
         env:
