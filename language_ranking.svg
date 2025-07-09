@@ -1,0 +1,33 @@
+<svg width="500" height="388" viewBox="0 0 500 388" fill="none" xmlns="http://www.w3.org/2000/svg">
+<style> .label { font-family: Fira Mono, monospace; font-size: 16px; fill: #fff; } .lang { font-family: Fira Mono, monospace; font-size: 18px; font-weight: bold; fill: #fff; } .percent { font-family: Fira Mono, monospace; font-size: 14px; fill: #8B949E; } .lines { font-family: Fira Mono, monospace; font-size: 14px; fill: #8B949E; } .title { font-family: Fira Mono, monospace; font-size: 22px; font-weight: bold; fill: #fff; } .bg { fill: #161B22; } </style>
+<rect class="bg" x="0" y="0" width="500" height="388" rx="16"/>
+<text x="250" y="28" text-anchor="middle" class="title">Language Ranking</text>
+<rect x="120" y="40" width="340" height="32" rx="8" fill="#3178C6" />
+<text x="108" y="62" text-anchor="end" class="lang">🟦 TypeScript</text>
+<text x="468" y="62" class="percent">72.7%</text>
+<text x="460" y="62" text-anchor="end" class="lines">106,122 lines</text>
+<rect x="120" y="84" width="107" height="32" rx="8" fill="#888888" />
+<text x="108" y="106" text-anchor="end" class="lang">⚙️ Configuration</text>
+<text x="235" y="106" class="percent">22.9%</text>
+<text x="460" y="106" text-anchor="end" class="lines">33,492 lines</text>
+<rect x="120" y="128" width="24" height="32" rx="8" fill="#AAAAAA" />
+<text x="108" y="150" text-anchor="end" class="lang">❓ Unknown</text>
+<text x="152" y="150" class="percent">5.3%</text>
+<text x="460" y="150" text-anchor="end" class="lines">7,678 lines</text>
+<rect x="120" y="172" width="24" height="32" rx="8" fill="#3776AB" />
+<text x="108" y="194" text-anchor="end" class="lang">🐍 Python</text>
+<text x="152" y="194" class="percent">5.2%</text>
+<text x="460" y="194" text-anchor="end" class="lines">7,659 lines</text>
+<rect x="120" y="216" width="7" height="32" rx="8" fill="#CCCCCC" />
+<text x="108" y="238" text-anchor="end" class="lang">📄 Documentation</text>
+<text x="135" y="238" class="percent">1.6%</text>
+<text x="460" y="238" text-anchor="end" class="lines">2,344 lines</text>
+<rect x="120" y="260" width="5" height="32" rx="8" fill="#4ECDC4" />
+<text x="108" y="282" text-anchor="end" class="lang">💻 CSS</text>
+<text x="133" y="282" class="percent">1.1%</text>
+<text x="460" y="282" text-anchor="end" class="lines">1,652 lines</text>
+<rect x="120" y="304" width="1" height="32" rx="8" fill="#FF6B6B" />
+<text x="108" y="326" text-anchor="end" class="lang">💻 JavaScript</text>
+<text x="129" y="326" class="percent">0.3%</text>
+<text x="460" y="326" text-anchor="end" class="lines">411 lines</text>
+</svg>
