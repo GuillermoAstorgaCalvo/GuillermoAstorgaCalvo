@@ -41,21 +41,21 @@ I started coding because I wanted to build things that could actually help peopl
 
 <!-- Dynamic Stats Overview -->
 <div align="center">
-  <img src="https://img.shields.io/badge/📈_Lines_of_Code-145,941-58A6FF?style=for-the-badge&logo=github&logoColor=white" alt="Lines of Code" />  <img src="https://img.shields.io/badge/📝_Commits-494-4ECDC4?style=for-the-badge&logo=github&logoColor=white" alt="Total Commits" />  <img src="https://img.shields.io/badge/📁_Files-1,631-FF6B6B?style=for-the-badge&logo=github&logoColor=white" alt="Total Files" />  <img src="https://img.shields.io/badge/🏢_Repositories-5-9C27B0?style=for-the-badge&logo=github&logoColor=white" alt="Repositories" />
+  <img src="https://img.shields.io/badge/📈_Lines_of_Code-159,851-58A6FF?style=for-the-badge&logo=github&logoColor=white" alt="Lines of Code" />  <img src="https://img.shields.io/badge/📝_Commits-5-4ECDC4?style=for-the-badge&logo=github&logoColor=white" alt="Total Commits" />  <img src="https://img.shields.io/badge/📁_Files-1,201-FF6B6B?style=for-the-badge&logo=github&logoColor=white" alt="Total Files" />  <img src="https://img.shields.io/badge/🏢_Repositories-5-9C27B0?style=for-the-badge&logo=github&logoColor=white" alt="Repositories" />
 </div>
 
 
 ### **👨‍💻 My Contributions**
-🎯 **91.8% of all code** (134,002 lines)
-📝 **310 commits** across all projects
-📁 **1,326 files** created or modified
+🎯 **100.0% of all code** (159,851 lines)
+📝 **5 commits** across all projects
+📁 **1,201 files** created or modified
 
 
 
 ### **⚡ Productivity Metrics**
-🚀 **432 lines per commit**
-📊 **4.3 files per commit**
-💡 **101 lines per file**
+🚀 **31970 lines per commit**
+📊 **240.2 files per commit**
+💡 **133 lines per file**
 
 
 
@@ -75,7 +75,7 @@ I started coding because I wanted to build things that could actually help peopl
 
 
 ### **🏢 Top Projects**
-• **InmoIA Frontend** - 60,946 lines (83.7% contribution)
+• **InmoIA Frontend** - 86,764 lines (100.0% contribution)
 • **Restaurant App** - 25,136 lines (100.0% contribution)
 • **Python AI MCP Backend** - 17,666 lines (100.0% contribution)
 
@@ -83,11 +83,9 @@ I started coding because I wanted to build things that could actually help peopl
 
 ### **💡 Key Insights**
 🏆 **Achievements:**
-• Built 134,002 lines of code across 5 projects
-• Made 310 commits demonstrating consistent development
+• Built 159,851 lines of code across 5 projects
 
 💪 **Strengths:**
-• High commit frequency indicates consistent development activity
 • Diverse technology stack across multiple programming languages
 
 
