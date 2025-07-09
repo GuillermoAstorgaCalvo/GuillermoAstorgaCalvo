@@ -16,10 +16,6 @@ I build things. Sometimes they work, sometimes they don't, but I always learn so
 
 ## 🚀 What I'm Up To
 
-<div align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=guillermo-affiliaction&show_icons=true&theme=radical&hide_border=true&bg_color=0D1117&title_color=58A6FF&text_color=8B949E&icon_color=58A6FF&include_all_commits=true&count_private=true" alt="GitHub Stats" />
-</div>
-
 ### 💼 **My Story**
 I started coding because I wanted to build things that could actually help people. What began as simple scripts has turned into a passion for creating meaningful applications. I love the challenge of taking a complex problem and turning it into something elegant and useful.
 
@@ -49,15 +45,17 @@ I started coding because I wanted to build things that could actually help peopl
 </div>
 
 
+### **👨‍💻 My Contributions**
+🎯 **91.8% of all code** (134,002 lines)
+📝 **310 commits** across all projects
+📁 **1,326 files** created or modified
 
 
 
 
 
-<!-- GitHub Streak (Public Activity) -->
-<div align="center">
-  <img src="https://streak-stats.demolab.com/?user=guillermo-affiliaction&theme=radical&hide_border=true&background=0D1117&stroke=58A6FF&ring=58A6FF&fire=58A6FF&currStreakNum=8B949E&sideNums=8B949E&currStreakLabel=8B949E&sideLabels=8B949E&dates=8B949E" alt="GitHub Streak" />
-</div>
+
+
 
 These numbers tell the real story - late nights debugging, moments of breakthrough, and a lot of trial and error. Every line of code represents a problem solved or something new learned. The private repos are where the magic happens!
 
@@ -228,14 +226,6 @@ I'm always up for connecting with fellow developers, discussing interesting proj
   <a href="https://guillermoastorgacalvo.dev">
     <img src="https://img.shields.io/badge/-Portfolio-FF6B6B?style=for-the-badge&logo=github&logoColor=white" alt="Portfolio" />
   </a>
-</div>
-
----
-
-<div align="center">
-  <img src="https://komarev.com/ghpvc/?username=guillermo-affiliaction&style=flat-square&color=58A6FF" alt="Profile Views" />
-  <br>
-  <img src="https://github-readme-activity-graph.vercel.app/graph?username=guillermo-affiliaction&theme=react-dark&hide_border=true&bg_color=0D1117&color=58A6FF&line=58A6FF&point=58A6FF" alt="Activity Graph" />
 </div>
 
 ---
