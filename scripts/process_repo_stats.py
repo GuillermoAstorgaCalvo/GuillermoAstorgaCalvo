@@ -248,8 +248,7 @@ def main():
         
         # After language stats aggregation:
         # generate_language_svg_bar_chart(cloc_language_stats, 'assets/language_stats.svg')
-        # Generate SVG bar chart for README
-        generate_language_svg_bar_chart(cloc_language_stats, str(script_dir.parent / 'assets' / 'language_stats.svg'))
+        # Note: SVG generation moved to aggregation job
         
     except KeyboardInterrupt:
         print("\n❌ Process interrupted by user")
