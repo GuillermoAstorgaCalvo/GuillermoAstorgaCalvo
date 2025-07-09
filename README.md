@@ -60,11 +60,10 @@ I started coding because I wanted to build things that could actually help peopl
 
 
 ### **💻 Top Languages**
-![TypeScript](https://img.shields.io/badge/-TypeScript-58A6FF?style=for-the-badge&logo=typescript&logoColor=white) **72.7%** (106,122 lines)
-![Configuration](https://img.shields.io/badge/-Configuration-58A6FF?style=for-the-badge&logo=configuration&logoColor=white) **22.9%** (33,492 lines)
-![Unknown](https://img.shields.io/badge/-Unknown-58A6FF?style=for-the-badge&logo=unknown&logoColor=white) **5.3%** (7,678 lines)
-![Python](https://img.shields.io/badge/-Python-58A6FF?style=for-the-badge&logo=python&logoColor=white) **5.2%** (7,659 lines)
-![Documentation](https://img.shields.io/badge/-Documentation-58A6FF?style=for-the-badge&logo=documentation&logoColor=white) **1.6%** (2,344 lines)
+
+<p align="center">
+  <img src="assets/language_stats.svg" alt="Languages by Lines of Code" width="500" />
+</p>
 
 
 
