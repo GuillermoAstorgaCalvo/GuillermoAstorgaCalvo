@@ -46,7 +46,7 @@ author_patterns:
 
 # Processing settings
 processing:
-  timeout_seconds: 120
+  timeout_seconds: 60 # Reduced timeout for faster execution
   git_fame_format: "json"
 
 # Report settings

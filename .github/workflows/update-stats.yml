@@ -7,20 +7,14 @@ on:
 
 jobs:
   load-config:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       repositories: ${{ steps.config.outputs.repositories }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
-
-      - name: Install PyYAML
-        run: pip install PyYAML
+          fetch-depth: 1
 
       - name: Load configuration matrix
         id: config
@@ -43,36 +37,40 @@ jobs:
 
   process-repositories:
     needs: load-config
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         repository: ${{ fromJson(needs.load-config.outputs.repositories) }}
+      fail-fast: false
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: "pip"
 
-      - name: Cache dependencies
+      - name: Cache pip dependencies
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-git-fame-pyyaml-v1
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/Pipfile.lock') }}-${{ hashFiles('**/setup.py') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
       - name: Install dependencies
         run: |
-          python3 -m pip install --upgrade pip
-          pip install git-fame PyYAML svgwrite
+          python3 -m pip install --upgrade pip --no-cache-dir
+          pip install --no-cache-dir git-fame PyYAML svgwrite
 
       - name: Install cloc
         run: |
-          sudo apt-get update
+          sudo apt-get update -qq
           sudo apt-get install -y cloc
 
       - name: Clone repository
@@ -92,7 +90,8 @@ jobs:
             TOKEN="${PRIVATE_TOKEN}"
           fi
 
-          git clone --branch "${BRANCH_NAME}" --single-branch \
+          # Use shallow clone with depth 1 for faster cloning
+          git clone --branch "${BRANCH_NAME}" --single-branch --depth 1 \
             "https://x-access-token:${TOKEN}@github.com/${ORG}/${REPO_NAME}.git" \
             repo
 
@@ -113,7 +112,7 @@ jobs:
 
   aggregate-and-commit:
     needs: process-repositories
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       contents: write
       actions: read
@@ -129,42 +128,44 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: "pip"
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-aggregation-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/Pipfile.lock') }}-${{ hashFiles('**/setup.py') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-aggregation-
 
       - name: Install dependencies
         run: |
-          python3 -m pip install --upgrade pip
-          pip install PyYAML svgwrite
+          python3 -m pip install --upgrade pip --no-cache-dir
+          pip install --no-cache-dir PyYAML svgwrite
 
       - name: Download all repository statistics
         uses: actions/download-artifact@v4
         with:
           path: repo-stats
 
-      - name: Generate unified statistics
+      - name: Generate unified statistics and README
         run: |
           cd scripts
           python3 aggregate_stats.py
-
-      - name: Save analytics history
-        run: |
-          if [[ -f "scripts/analytics_history.json" ]]; then
-            cp scripts/analytics_history.json ./analytics_history.json
-          fi
+          python3 enhanced_readme_generator.py
 
       - name: Move generated data to root
         run: |
           mv scripts/unified_stats.json ./ 2>/dev/null || true
-
-      - name: Restore analytics history
-        run: |
-          if [[ -f "analytics_history.json" ]]; then
-            cp analytics_history.json scripts/analytics_history.json
+          if [[ -f "scripts/analytics_history.json" ]]; then
+            cp scripts/analytics_history.json ./analytics_history.json
           fi
 
-      - name: Generate enhanced dynamic README
+      - name: Create assets directory and generate SVG
         run: |
+          mkdir -p assets
           cd scripts
-          python3 enhanced_readme_generator.py
+          python3 generate_language_svg.py
 
       - name: Validate README generation
         run: |
@@ -180,20 +181,12 @@ jobs:
 
           echo "✅ README.md generated successfully with private repository statistics"
 
-      - name: Create assets directory
-        run: |
-          mkdir -p assets
-
-      - name: Generate language ranking SVG
-        run: |
-          cd scripts
-          python3 generate_language_svg.py
-
       - name: Commit results to profile
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if [[ -z "$(git status --porcelain)" ]]; then
+            echo "No changes to commit"
             exit 0
           fi
 
@@ -207,7 +200,5 @@ jobs:
             git add assets/language_stats.svg
           fi
 
-
           git commit -m "📊 Update README and language ranking SVG - $(date '+%Y-%m-%d %H:%M UTC')"
-
           git push

@@ -25,11 +25,11 @@ def run_cloc_on_repo(repo_path: Path) -> dict:
     try:
         # Focus on real code languages, exclude common config/data/output dirs
         result = subprocess.run([
-            'cloc', '--json', '--quiet',
+            'cloc', '--json', '--quiet', '--timeout=60',
             '--include-lang=Python,TypeScript,JavaScript,HTML,CSS,Shell,Markdown,JSON,YAML,INI',
-            '--exclude-dir=.git,node_modules,venv,build,dist,data,output,logs,generated',
+            '--exclude-dir=.git,node_modules,venv,build,dist,data,output,logs,generated,target,coverage,.nyc_output',
             str(repo_path)
-        ], capture_output=True, text=True, check=True)
+        ], capture_output=True, text=True, timeout=120, check=True)
         cloc_output = result.stdout
         cloc_data = json.loads(cloc_output)
         return cloc_data
@@ -127,22 +127,26 @@ def main():
                     print(f"  - {item.name}")
             sys.exit(1)
         
-        # Run cloc for accurate language stats
+        # Run cloc for accurate language stats (with timeout)
         print("🔍 Running cloc for accurate language stats...")
-        cloc_data = run_cloc_on_repo(repo_path)
-        cloc_language_stats = {}
-        if cloc_data:
-            for lang, stats in cloc_data.items():
-                if lang in ('header', 'SUM'):
-                    continue
-                cloc_language_stats[lang] = {
-                    'loc': stats.get('code', 0),
-                    'files': stats.get('nFiles', 0),
-                    'commits': 0  # cloc doesn't provide commits
-                }
-            print(f"✅ cloc found {len(cloc_language_stats)} languages")
-        else:
-            print("⚠️ cloc did not return any language stats")
+        try:
+            cloc_data = run_cloc_on_repo(repo_path)
+            cloc_language_stats = {}
+            if cloc_data:
+                for lang, stats in cloc_data.items():
+                    if lang in ('header', 'SUM'):
+                        continue
+                    cloc_language_stats[lang] = {
+                        'loc': stats.get('code', 0),
+                        'files': stats.get('nFiles', 0),
+                        'commits': 0  # cloc doesn't provide commits
+                    }
+                print(f"✅ cloc found {len(cloc_language_stats)} languages")
+            else:
+                print("⚠️ cloc did not return any language stats")
+        except Exception as e:
+            print(f"⚠️ cloc failed, using fallback: {e}")
+            cloc_language_stats = {}
 
         # Post-process cloc output: group only .yml/.yaml/.ini/.json as Configuration
         config_langs = {'JSON', 'YAML', 'INI'}

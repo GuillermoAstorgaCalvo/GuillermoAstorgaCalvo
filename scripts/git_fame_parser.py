@@ -42,8 +42,8 @@ class GitFameParser:
             
             os.chdir(repo_path)
             
-            # Build git fame command
-            cmd = ['git', 'fame', '--format', output_format]
+            # Build git fame command with optimizations for speed
+            cmd = ['git', 'fame', '--format', output_format, '--progressbar=false']
             if by_type:
                 cmd.append('--bytype')
             
