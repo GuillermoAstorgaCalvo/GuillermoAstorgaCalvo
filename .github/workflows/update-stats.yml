@@ -180,6 +180,12 @@ jobs:
 
           echo "✅ README.md generated successfully with private repository statistics"
 
+      - name: Generate language ranking SVG
+        run: |
+          cd scripts
+          python3 generate_language_svg.py
+          mv ../language_ranking.svg ../language_ranking.svg || true
+
       - name: Commit results to profile
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -191,8 +197,8 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add unified_stats.json analytics_history.json README.md
+          git add unified_stats.json analytics_history.json README.md language_ranking.svg
 
-          git commit -m "📊 Update README with private repository statistics - $(date '+%Y-%m-%d %H:%M UTC')"
+          git commit -m "📊 Update README and language ranking SVG - $(date '+%Y-%m-%d %H:%M UTC')"
 
           git push

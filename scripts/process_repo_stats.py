@@ -35,7 +35,7 @@ def run_cloc_on_repo(repo_path: Path) -> dict:
 
 
 def main():
-    """Main function to process repository statistics."""
+    language_stats = {}  # Ensure language_stats is always defined
     try:
         # Load configuration
         config = get_config_manager()
