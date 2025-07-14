@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-07-14T10:59:37.827360Z",
+  "timestamp": "2025-07-14T11:05:23.482794Z",
   "metadata": {
     "version": "2.0",
     "generated_by": "Enhanced JSON Report Generator",
@@ -7,146 +7,118 @@
   },
   "global_summary": {
     "repositories_processed": 5,
-    "total_commits": 5,
-    "total_files": 1201,
-    "total_loc": 159851,
+    "total_commits": 494,
+    "total_files": 1631,
+    "total_loc": 145941,
     "guillermo_contribution": {
-      "loc": 159851,
-      "commits": 5,
-      "files": 1201,
+      "loc": 134002,
+      "commits": 310,
+      "files": 1326,
       "percentages": {
-        "loc": 100.0,
-        "commits": 100.0,
-        "files": 100.0
+        "loc": 91.82,
+        "commits": 62.75,
+        "files": 81.3
       }
     }
   },
   "productivity_metrics": {
-    "avg_loc_per_commit": 31970.2,
-    "avg_files_per_commit": 240.2,
+    "avg_loc_per_commit": 432.26,
+    "avg_files_per_commit": 4.28,
     "code_efficiency": {
-      "loc_per_file": 133.09825145711906,
-      "commits_per_file": 0.004163197335553705
+      "loc_per_file": 101.05731523378583,
+      "commits_per_file": 0.23378582202111614
     }
   },
   "language_analysis": {
     "Unknown": {
       "lines": 7755,
-      "commits": 94,
-      "files": 37,
-      "percentage": 4.85,
-      "avg_loc_per_commit": 82.5
+      "commits": 18,
+      "files": 83,
+      "percentage": 5.31,
+      "avg_loc_per_commit": 430.8333333333333
     },
     "Documentation": {
       "lines": 2267,
-      "commits": 22,
-      "files": 7,
-      "percentage": 1.42,
-      "avg_loc_per_commit": 103.04545454545455
-    },
-    "JSON": {
-      "lines": 33103,
-      "commits": 329,
-      "files": 67,
-      "percentage": 20.71,
-      "avg_loc_per_commit": 100.61702127659575
+      "commits": 0,
+      "files": 19,
+      "percentage": 1.55,
+      "avg_loc_per_commit": 0
     },
     "JavaScript": {
       "lines": 411,
-      "commits": 5,
-      "files": 5,
-      "percentage": 0.26,
-      "avg_loc_per_commit": 82.2
+      "commits": 0,
+      "files": 2,
+      "percentage": 0.28,
+      "avg_loc_per_commit": 0
     },
     "HTML": {
       "lines": 226,
-      "commits": 3,
+      "commits": 1,
       "files": 2,
-      "percentage": 0.14,
-      "avg_loc_per_commit": 75.33333333333333
-    },
-    "TypeScript": {
-      "lines": 106122,
-      "commits": 1058,
-      "files": 210,
-      "percentage": 66.39,
-      "avg_loc_per_commit": 100.30434782608695
-    },
-    "Assets": {
-      "lines": 267,
-      "commits": 4,
-      "files": 3,
-      "percentage": 0.17,
-      "avg_loc_per_commit": 66.75
+      "percentage": 0.15,
+      "avg_loc_per_commit": 226.0
     },
     "CSS": {
       "lines": 1652,
-      "commits": 15,
-      "files": 4,
-      "percentage": 1.03,
-      "avg_loc_per_commit": 110.13333333333334
+      "commits": 7,
+      "files": 21,
+      "percentage": 1.13,
+      "avg_loc_per_commit": 236.0
     },
-    "TOML": {
-      "lines": 66,
+    "TypeScript": {
+      "lines": 106122,
+      "commits": 512,
+      "files": 1443,
+      "percentage": 72.72,
+      "avg_loc_per_commit": 207.26953125
+    },
+    "Assets": {
+      "lines": 267,
       "commits": 1,
-      "files": 1,
-      "percentage": 0.04,
-      "avg_loc_per_commit": 66.0
-    },
-    "YAML": {
-      "lines": 241,
-      "commits": 3,
       "files": 3,
-      "percentage": 0.15,
-      "avg_loc_per_commit": 80.33333333333333
-    },
-    "INI": {
-      "lines": 82,
-      "commits": 1,
-      "files": 1,
-      "percentage": 0.05,
-      "avg_loc_per_commit": 82.0
+      "percentage": 0.18,
+      "avg_loc_per_commit": 267.0
     },
     "Python": {
       "lines": 7659,
-      "commits": 76,
-      "files": 15,
-      "percentage": 4.79,
-      "avg_loc_per_commit": 100.77631578947368
+      "commits": 1,
+      "files": 57,
+      "percentage": 5.25,
+      "avg_loc_per_commit": 7659.0
     }
   },
   "repository_analysis": {
     "InmoIA Frontend": {
       "guillermo_stats": {
-        "loc": 86764,
-        "commits": 1,
-        "files": 712
+        "loc": 60946,
+        "commits": 244,
+        "files": 773
       },
       "repo_totals": {
-        "loc": 86764,
-        "commits": 1,
-        "files": 712
+        "loc": 72854,
+        "commits": 427,
+        "files": 1076
       },
       "percentages": {
-        "loc": 100.0,
-        "commits": 100.0,
-        "files": 100.0
+        "loc": 83.65,
+        "commits": 57.14,
+        "files": 71.84
       },
       "productivity": {
-        "avg_loc_per_commit": 86764.0,
-        "avg_files_per_commit": 712.0
+        "avg_loc_per_commit": 249.77868852459017,
+        "avg_files_per_commit": 3.168032786885246
       }
     },
     "FacturaIA": {
       "guillermo_stats": {
         "loc": 16151,
-        "commits": 1,
-        "files": 139
+        "commits": 3,
+        "files": 148
       },
       "repo_totals": {
         "loc": 16151,
-        "commits": 1,
-        "files": 139
+        "commits": 3,
+        "files": 148
       },
       "percentages": {
         "loc": 100.0,
@@ -154,20 +126,20 @@
         "files": 100.0
       },
       "productivity": {
-        "avg_loc_per_commit": 16151.0,
-        "avg_files_per_commit": 139.0
+        "avg_loc_per_commit": 5383.666666666667,
+        "avg_files_per_commit": 49.333333333333336
       }
     },
     "Restaurant App": {
       "guillermo_stats": {
         "loc": 25136,
-        "commits": 1,
-        "files": 204
+        "commits": 38,
+        "files": 240
       },
       "repo_totals": {
         "loc": 25136,
-        "commits": 1,
-        "files": 204
+        "commits": 38,
+        "files": 240
       },
       "percentages": {
         "loc": 100.0,
@@ -175,19 +147,19 @@
         "files": 100.0
       },
       "productivity": {
-        "avg_loc_per_commit": 25136.0,
-        "avg_files_per_commit": 204.0
+        "avg_loc_per_commit": 661.4736842105264,
+        "avg_files_per_commit": 6.315789473684211
       }
     },
     "Python AI MCP Backend": {
       "guillermo_stats": {
         "loc": 17666,
-        "commits": 1,
+        "commits": 2,
         "files": 28
       },
       "repo_totals": {
         "loc": 17666,
-        "commits": 1,
+        "commits": 2,
         "files": 28
       },
       "percentages": {
@@ -196,29 +168,29 @@
         "files": 100.0
       },
       "productivity": {
-        "avg_loc_per_commit": 17666.0,
-        "avg_files_per_commit": 28.0
+        "avg_loc_per_commit": 8833.0,
+        "avg_files_per_commit": 14.0
       }
     },
     "TypeScript Backend": {
       "guillermo_stats": {
-        "loc": 14134,
-        "commits": 1,
-        "files": 118
+        "loc": 14103,
+        "commits": 23,
+        "files": 137
       },
       "repo_totals": {
         "loc": 14134,
-        "commits": 1,
-        "files": 118
+        "commits": 24,
+        "files": 139
       },
       "percentages": {
-        "loc": 100.0,
-        "commits": 100.0,
-        "files": 100.0
+        "loc": 99.78,
+        "commits": 95.83,
+        "files": 98.56
       },
       "productivity": {
-        "avg_loc_per_commit": 14134.0,
-        "avg_files_per_commit": 118.0
+        "avg_loc_per_commit": 613.1739130434783,
+        "avg_files_per_commit": 5.956521739130435
       }
     }
   },
@@ -234,12 +206,12 @@
           "loc": 226
         },
         {
-          "name": "TypeScript",
-          "loc": 106122
-        },
-        {
           "name": "CSS",
           "loc": 1652
+        },
+        {
+          "name": "TypeScript",
+          "loc": 106122
         }
       ],
       "total_loc": 108411
@@ -258,17 +230,8 @@
       "total_loc": 0
     },
     "devops": {
-      "languages": [
-        {
-          "name": "JSON",
-          "loc": 33103
-        },
-        {
-          "name": "YAML",
-          "loc": 241
-        }
-      ],
-      "total_loc": 33344
+      "languages": [],
+      "total_loc": 0
     },
     "other": {
       "languages": [
@@ -283,112 +246,96 @@
         {
           "name": "Assets",
           "loc": 267
-        },
-        {
-          "name": "TOML",
-          "loc": 66
-        },
-        {
-          "name": "INI",
-          "loc": 82
         }
       ],
-      "total_loc": 10437
+      "total_loc": 10289
     }
   },
   "complexity_analysis": {
     "project_scale": {
       "total_projects": 5,
-      "avg_loc_per_project": 31970.2,
-      "avg_commits_per_project": 1.0,
-      "avg_files_per_project": 240.2
+      "avg_loc_per_project": 29188.2,
+      "avg_commits_per_project": 98.8,
+      "avg_files_per_project": 326.2
     },
     "code_distribution": {
-      "loc_per_file": 133.09825145711906,
-      "commits_per_file": 0.004163197335553705,
-      "files_per_commit": 240.2
+      "loc_per_file": 89.47946045370938,
+      "commits_per_file": 0.30288166768853464,
+      "files_per_commit": 3.3016194331983804
     },
     "repository_diversity": {
-      "languages_used": 12,
+      "languages_used": 8,
       "project_types": 5
     }
   },
   "insights": {
     "strengths": [
+      "High commit frequency indicates consistent development activity",
       "Diverse technology stack across multiple programming languages"
     ],
     "focus_areas": [
       "Large codebase suggests complex, enterprise-level projects"
     ],
     "achievements": [
-      "Built 159,851 lines of code across 5 projects"
+      "Built 134,002 lines of code across 5 projects",
+      "Made 310 commits demonstrating consistent development"
     ],
     "recommendations": []
   },
   "raw_data": {
     "guillermo_unified": {
-      "loc": 159851,
-      "commits": 5,
-      "files": 1201
+      "loc": 134002,
+      "commits": 310,
+      "files": 1326
     },
     "repository_breakdown": {
       "InmoIA Frontend": {
         "display_name": "InmoIA Frontend",
         "guillermo_stats": {
-          "loc": 86764,
-          "commits": 1,
-          "files": 712
+          "loc": 60946,
+          "commits": 244,
+          "files": 773
         },
         "repo_totals": {
-          "loc": 86764,
-          "commits": 1,
-          "files": 712
+          "loc": 72854,
+          "commits": 427,
+          "files": 1076
         },
         "language_stats": {
           "Unknown": {
             "loc": 2054,
-            "commits": 28,
-            "files": 12
+            "commits": 0,
+            "files": 0
           },
           "Documentation": {
             "loc": 69,
-            "commits": 1,
-            "files": 1
-          },
-          "JSON": {
-            "loc": 340,
-            "commits": 3,
-            "files": 1
+            "commits": 0,
+            "files": 0
           },
           "JavaScript": {
             "loc": 109,
-            "commits": 1,
-            "files": 1
+            "commits": 0,
+            "files": 0
           },
           "HTML": {
             "loc": 202,
-            "commits": 2,
-            "files": 1
-          },
-          "TypeScript": {
-            "loc": 82427,
-            "commits": 823,
-            "files": 164
-          },
-          "Assets": {
-            "loc": 257,
-            "commits": 2,
-            "files": 1
+            "commits": 0,
+            "files": 0
           },
           "CSS": {
             "loc": 1240,
-            "commits": 12,
-            "files": 2
+            "commits": 0,
+            "files": 0
           },
-          "TOML": {
-            "loc": 66,
-            "commits": 1,
-            "files": 1
+          "TypeScript": {
+            "loc": 82427,
+            "commits": 0,
+            "files": 0
+          },
+          "Assets": {
+            "loc": 257,
+            "commits": 0,
+            "files": 0
           }
         }
       },
@@ -396,69 +343,54 @@
         "display_name": "FacturaIA",
         "guillermo_stats": {
           "loc": 16151,
-          "commits": 1,
-          "files": 139
+          "commits": 3,
+          "files": 148
         },
         "repo_totals": {
           "loc": 16151,
-          "commits": 1,
-          "files": 139
+          "commits": 3,
+          "files": 148
         },
         "language_stats": {
           "Unknown": {
             "loc": 1548,
-            "commits": 17,
-            "files": 6
-          },
-          "YAML": {
-            "loc": 122,
-            "commits": 1,
-            "files": 1
+            "commits": 0,
+            "files": 0
           },
           "Documentation": {
             "loc": 1841,
-            "commits": 18,
-            "files": 3
-          },
-          "INI": {
-            "loc": 82,
-            "commits": 1,
-            "files": 1
+            "commits": 0,
+            "files": 0
           },
           "Python": {
             "loc": 6106,
-            "commits": 61,
-            "files": 12
-          },
-          "JSON": {
-            "loc": 174,
-            "commits": 1,
-            "files": 1
+            "commits": 0,
+            "files": 0
           },
           "JavaScript": {
             "loc": 35,
-            "commits": 1,
-            "files": 1
+            "commits": 0,
+            "files": 0
           },
           "HTML": {
             "loc": 24,
-            "commits": 1,
-            "files": 1
+            "commits": 0,
+            "files": 0
           },
           "Assets": {
             "loc": 1,
-            "commits": 1,
-            "files": 1
+            "commits": 0,
+            "files": 0
           },
           "CSS": {
             "loc": 298,
-            "commits": 2,
-            "files": 1
+            "commits": 0,
+            "files": 0
           },
           "TypeScript": {
             "loc": 5920,
-            "commits": 59,
-            "files": 12
+            "commits": 0,
+            "files": 0
           }
         }
       },
@@ -466,54 +398,44 @@
         "display_name": "Restaurant App",
         "guillermo_stats": {
           "loc": 25136,
-          "commits": 1,
-          "files": 204
+          "commits": 38,
+          "files": 240
         },
         "repo_totals": {
           "loc": 25136,
-          "commits": 1,
-          "files": 204
+          "commits": 38,
+          "files": 240
         },
         "language_stats": {
           "Unknown": {
             "loc": 185,
-            "commits": 5,
-            "files": 5
-          },
-          "JSON": {
-            "loc": 16406,
-            "commits": 164,
-            "files": 32
+            "commits": 0,
+            "files": 0
           },
           "JavaScript": {
             "loc": 184,
-            "commits": 2,
-            "files": 2
+            "commits": 0,
+            "files": 0
           },
           "TypeScript": {
             "loc": 8000,
-            "commits": 79,
-            "files": 15
+            "commits": 0,
+            "files": 0
           },
           "Assets": {
             "loc": 9,
-            "commits": 1,
-            "files": 1
+            "commits": 0,
+            "files": 0
           },
           "CSS": {
             "loc": 114,
-            "commits": 1,
-            "files": 1
+            "commits": 0,
+            "files": 0
           },
           "Documentation": {
             "loc": 172,
-            "commits": 1,
-            "files": 1
-          },
-          "YAML": {
-            "loc": 66,
-            "commits": 1,
-            "files": 1
+            "commits": 0,
+            "files": 0
           }
         }
       },
@@ -521,79 +443,64 @@
         "display_name": "Python AI MCP Backend",
         "guillermo_stats": {
           "loc": 17666,
-          "commits": 1,
+          "commits": 2,
           "files": 28
         },
         "repo_totals": {
           "loc": 17666,
-          "commits": 1,
+          "commits": 2,
           "files": 28
         },
         "language_stats": {
           "Unknown": {
             "loc": 46,
-            "commits": 2,
-            "files": 2
+            "commits": 0,
+            "files": 0
           },
           "Documentation": {
             "loc": 25,
-            "commits": 1,
-            "files": 1
+            "commits": 0,
+            "files": 0
           },
           "Python": {
             "loc": 1553,
-            "commits": 15,
-            "files": 3
-          },
-          "JSON": {
-            "loc": 16042,
-            "commits": 160,
-            "files": 32
+            "commits": 0,
+            "files": 0
           }
         }
       },
       "TypeScript Backend": {
         "display_name": "TypeScript Backend",
         "guillermo_stats": {
-          "loc": 14134,
-          "commits": 1,
-          "files": 118
+          "loc": 14103,
+          "commits": 23,
+          "files": 137
         },
         "repo_totals": {
           "loc": 14134,
-          "commits": 1,
-          "files": 118
+          "commits": 24,
+          "files": 139
         },
         "language_stats": {
           "Unknown": {
             "loc": 3922,
-            "commits": 42,
-            "files": 12
-          },
-          "YAML": {
-            "loc": 53,
-            "commits": 1,
-            "files": 1
+            "commits": 0,
+            "files": 0
           },
           "Documentation": {
             "loc": 160,
-            "commits": 1,
-            "files": 1
-          },
-          "JavaScript": {
-            "loc": 83,
-            "commits": 1,
-            "files": 1
-          },
-          "JSON": {
-            "loc": 141,
-            "commits": 1,
-            "files": 1
+            "commits": 0,
+            "files": 0
           },
           "TypeScript": {
             "loc": 9775,
-            "commits": 97,
-            "files": 19
+            "commits": 0,
+            "files": 0
+          },
+          "JavaScript": {
+            "loc": 83,
+            "commits": 0,
+            "files": 0
           }
         }
       }
@@ -601,63 +508,43 @@
     "language_breakdown": {
       "Unknown": {
         "loc": 7755,
-        "commits": 94,
-        "files": 37
+        "commits": 18,
+        "files": 83
       },
       "Documentation": {
         "loc": 2267,
-        "commits": 22,
-        "files": 7
-      },
-      "JSON": {
-        "loc": 33103,
-        "commits": 329,
-        "files": 67
+        "commits": 0,
+        "files": 19
       },
       "JavaScript": {
         "loc": 411,
-        "commits": 5,
-        "files": 5
+        "commits": 0,
+        "files": 2
       },
       "HTML": {
         "loc": 226,
-        "commits": 3,
+        "commits": 1,
         "files": 2
-      },
-      "TypeScript": {
-        "loc": 106122,
-        "commits": 1058,
-        "files": 210
-      },
-      "Assets": {
-        "loc": 267,
-        "commits": 4,
-        "files": 3
       },
       "CSS": {
         "loc": 1652,
-        "commits": 15,
-        "files": 4
+        "commits": 7,
+        "files": 21
       },
-      "TOML": {
-        "loc": 66,
+      "TypeScript": {
+        "loc": 106122,
+        "commits": 512,
+        "files": 1443
+      },
+      "Assets": {
+        "loc": 267,
         "commits": 1,
-        "files": 1
-      },
-      "YAML": {
-        "loc": 241,
-        "commits": 3,
         "files": 3
-      },
-      "INI": {
-        "loc": 82,
-        "commits": 1,
-        "files": 1
       },
       "Python": {
         "loc": 7659,
-        "commits": 76,
-        "files": 15
+        "commits": 1,
+        "files": 57
       }
     }
   }
