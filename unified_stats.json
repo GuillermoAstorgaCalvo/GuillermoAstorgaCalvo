@@ -196,11 +196,32 @@
   },
   "tech_stack_analysis": {
     "frontend": {
-      "technologies": [],
+      "technologies": [
+        "CSS",
+        "Framer Motion",
+        "HTML",
+        "JavaScript",
+        "Node.js",
+        "Radix UI",
+        "React",
+        "React Router",
+        "Supabase",
+        "TailwindCSS",
+        "TanStack Query",
+        "TypeScript",
+        "Vite"
+      ],
       "total_loc": 108411
     },
     "backend": {
-      "technologies": [],
+      "technologies": [
+        "FastAPI",
+        "OpenAI",
+        "Pydantic",
+        "Python",
+        "SQLAlchemy",
+        "Tesseract OCR"
+      ],
       "total_loc": 7659
     },
     "database": {

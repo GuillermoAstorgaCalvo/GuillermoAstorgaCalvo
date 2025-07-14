@@ -35,7 +35,95 @@ class DependencyAnalyzer:
             'axios': 'Axios', 'fetch': 'Fetch API',
             'lodash': 'Lodash', 'underscore': 'Underscore',
             'moment': 'Moment.js', 'date-fns': 'date-fns',
-            'chart.js': 'Chart.js', 'd3': 'D3.js', 'recharts': 'Recharts'
+            'chart.js': 'Chart.js', 'd3': 'D3.js', 'recharts': 'Recharts',
+            # Radix UI components
+            '@radix-ui/react-accordion': 'Radix UI',
+            '@radix-ui/react-alert-dialog': 'Radix UI',
+            '@radix-ui/react-aspect-ratio': 'Radix UI',
+            '@radix-ui/react-avatar': 'Radix UI',
+            '@radix-ui/react-checkbox': 'Radix UI',
+            '@radix-ui/react-collapsible': 'Radix UI',
+            '@radix-ui/react-context-menu': 'Radix UI',
+            '@radix-ui/react-dialog': 'Radix UI',
+            '@radix-ui/react-dropdown-menu': 'Radix UI',
+            '@radix-ui/react-hover-card': 'Radix UI',
+            '@radix-ui/react-label': 'Radix UI',
+            '@radix-ui/react-menubar': 'Radix UI',
+            '@radix-ui/react-navigation-menu': 'Radix UI',
+            '@radix-ui/react-popover': 'Radix UI',
+            '@radix-ui/react-progress': 'Radix UI',
+            '@radix-ui/react-radio-group': 'Radix UI',
+            '@radix-ui/react-scroll-area': 'Radix UI',
+            '@radix-ui/react-select': 'Radix UI',
+            '@radix-ui/react-separator': 'Radix UI',
+            '@radix-ui/react-slider': 'Radix UI',
+            '@radix-ui/react-slot': 'Radix UI',
+            '@radix-ui/react-switch': 'Radix UI',
+            '@radix-ui/react-tabs': 'Radix UI',
+            '@radix-ui/react-toast': 'Radix UI',
+            '@radix-ui/react-toggle': 'Radix UI',
+            '@radix-ui/react-toggle-group': 'Radix UI',
+            '@radix-ui/react-tooltip': 'Radix UI',
+            # Other frontend libraries
+            '@tanstack/react-query': 'TanStack Query',
+            '@hookform/resolvers': 'React Hook Form',
+            'react-hook-form': 'React Hook Form',
+            'react-router-dom': 'React Router',
+            'react-day-picker': 'React Day Picker',
+            'react-resizable-panels': 'React Resizable Panels',
+            'react-icons': 'React Icons',
+            'react-hot-toast': 'React Hot Toast',
+            'sonner': 'Sonner',
+            'lucide-react': 'Lucide React',
+            'class-variance-authority': 'CVA',
+            'clsx': 'clsx',
+            'tailwind-merge': 'Tailwind Merge',
+            'tailwindcss-animate': 'Tailwind Animate',
+            'cmdk': 'cmdk',
+            'embla-carousel-react': 'Embla Carousel',
+            'input-otp': 'Input OTP',
+            'next-themes': 'Next Themes',
+            'vaul': 'Vaul',
+            'zod': 'Zod',
+            'framer-motion': 'Framer Motion',
+            'vite': 'Vite',
+            '@vitejs/plugin-react-swc': 'Vite',
+            # Maps and visualization
+            '@react-google-maps/api': 'Google Maps',
+            '@googlemaps/js-api-loader': 'Google Maps',
+            '@googlemaps/markerclusterer': 'Google Maps',
+            '@turf/turf': 'Turf.js',
+            'proj4': 'Proj4js',
+            'marzipano': 'Marzipano',
+            'konva': 'Konva',
+            'react-konva': 'React Konva',
+            '@xyflow/react': 'React Flow',
+            # Authentication and backend
+            '@supabase/auth-helpers-react': 'Supabase',
+            '@supabase/supabase-js': 'Supabase',
+            'supabase': 'Supabase',
+            '@stripe/stripe-js': 'Stripe',
+            'bcrypt': 'bcrypt',
+            'bcryptjs': 'bcryptjs',
+            # File handling and utilities
+            'html2canvas': 'html2canvas',
+            'jspdf': 'jsPDF',
+            'file-saver': 'File Saver',
+            'dompurify': 'DOMPurify',
+            'uuid': 'UUID',
+            'crypto': 'Crypto',
+            'dotenv': 'dotenv',
+            # Development tools
+            'eslint': 'ESLint',
+            'typescript': 'TypeScript',
+            'autoprefixer': 'Autoprefixer',
+            'postcss': 'PostCSS',
+            'esbuild': 'esbuild',
+            'playwright': 'Playwright',
+            '@playwright/test': 'Playwright',
+            'eslint-config-prettier': 'ESLint Prettier',
+            'eslint-plugin-security': 'ESLint Security',
+            'eslint-plugin-sonarjs': 'ESLint SonarJS'
         }
         
         self.backend_tech = {
@@ -51,7 +139,53 @@ class DependencyAnalyzer:
             'go': 'Go', 'golang': 'Go',
             'rust': 'Rust',
             'cors': 'CORS', 'helmet': 'Helmet',
-            'bcrypt': 'bcrypt', 'jsonwebtoken': 'JWT', 'passport': 'Passport'
+            'bcrypt': 'bcrypt', 'jsonwebtoken': 'JWT', 'passport': 'Passport',
+            # Python specific
+            'starlette': 'Starlette',
+            'pydantic': 'Pydantic',
+            'pydantic-settings': 'Pydantic Settings',
+            'pydantic-core': 'Pydantic Core',
+            'python-jose': 'PyJWT',
+            'passlib': 'Passlib',
+            'python-multipart': 'Python Multipart',
+            'pyjwt': 'PyJWT',
+            'email-validator': 'Email Validator',
+            'python-dotenv': 'Python dotenv',
+            'python-magic': 'Python Magic',
+            'aiofiles': 'aiofiles',
+            'tenacity': 'Tenacity',
+            'requests': 'Requests',
+            'httpx': 'httpx',
+            # Additional backend technologies
+            'compression': 'Compression',
+            'express-rate-limit': 'Rate Limiting',
+            'fast-xml-parser': 'XML Parser',
+            'ioredis': 'Redis',
+            'lru-cache': 'LRU Cache',
+            'node-cache': 'Node Cache',
+            'node-cron': 'Cron Jobs',
+            'proj4': 'Proj4',
+            'prom-client': 'Prometheus',
+            'undici': 'Undici',
+            'winston': 'Winston',
+            'xml2js': 'XML2JS',
+            'beautifulsoup4': 'BeautifulSoup',
+            'apscheduler': 'APScheduler',
+            'joblib': 'Joblib',
+            'tabulate': 'Tabulate',
+            # Testing and development
+            'pytest': 'pytest',
+            'pytest-asyncio': 'pytest-asyncio',
+            'pytest-cov': 'pytest-cov',
+            'ruff': 'Ruff',
+            'black': 'Black',
+            'mypy': 'MyPy',
+            'setuptools': 'setuptools',
+            'artillery': 'Artillery',
+            'ts-jest': 'ts-jest',
+            'ts-node-dev': 'ts-node-dev',
+            'tsc-alias': 'tsc-alias',
+            'tsconfig-paths': 'tsconfig-paths'
         }
         
         self.database_tech = {
@@ -63,20 +197,29 @@ class DependencyAnalyzer:
             'prisma': 'Prisma', '@prisma/client': 'Prisma',
             'sequelize': 'Sequelize', 'sequelize-cli': 'Sequelize',
             'sqlalchemy': 'SQLAlchemy', 'alembic': 'SQLAlchemy',
-            'typeorm': 'TypeORM', 'typeorm-reflect-metadata': 'TypeORM'
+            'typeorm': 'TypeORM', 'typeorm-reflect-metadata': 'TypeORM',
+            # Python database
+            'asyncpg': 'asyncpg',
+            'psycopg2-binary': 'psycopg2',
+            'alembic': 'Alembic'
         }
         
         self.devops_tech = {
             'docker': 'Docker', 'docker-compose': 'Docker Compose', '@types/docker': 'Docker',
             'kubernetes': 'Kubernetes', 'k8s': 'Kubernetes',
             'aws': 'AWS', 'aws-sdk': 'AWS SDK', '@aws-sdk/client-s3': 'AWS',
+            '@aws-sdk/client-ses': 'AWS SES',
             'azure': 'Azure', '@azure/identity': 'Azure', '@azure/storage-blob': 'Azure',
             'gcp': 'Google Cloud', 'google-cloud': 'Google Cloud', '@google-cloud/storage': 'Google Cloud',
             'terraform': 'Terraform',
             'jenkins': 'Jenkins',
             'github-actions': 'GitHub Actions',
             'gitlab-ci': 'GitLab CI',
-            'nginx': 'Nginx', 'apache': 'Apache'
+            'nginx': 'Nginx', 'apache': 'Apache',
+            'vite': 'Vite',
+            'esbuild': 'esbuild',
+            'rollup': 'Rollup',
+            'webpack': 'Webpack'
         }
         
         self.ai_ml_tech = {
@@ -91,7 +234,12 @@ class DependencyAnalyzer:
             'transformers': 'Transformers', 'huggingface': 'Hugging Face',
             'langchain': 'LangChain', 'langchain-community': 'LangChain',
             'anthropic': 'Anthropic', 'claude': 'Anthropic',
-            'spacy': 'spaCy', 'nltk': 'NLTK'
+            'spacy': 'spaCy', 'nltk': 'NLTK',
+            # Image processing and OCR
+            'pytesseract': 'Tesseract OCR',
+            'pillow': 'Pillow',
+            'opencv-python': 'OpenCV',
+            'replicate': 'Replicate'
         }
     
     def analyze_repository_dependencies(self, repo_path: Path) -> Dict[str, Set[str]]:

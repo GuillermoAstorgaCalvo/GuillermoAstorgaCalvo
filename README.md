@@ -68,8 +68,8 @@ I started coding because I wanted to build things that could actually help peopl
 
 
 ### **🛠️ Technology Stack**
-**Frontend:** CSS, HTML, JavaScript, Next.js, Node.js (108,411 lines)
-**Backend:** Django, FastAPI, Python (7,659 lines)
+**Frontend:** CSS, Framer Motion, HTML, JavaScript, Node.js (108,411 lines)
+**Backend:** FastAPI, OpenAI, Pydantic, Python, SQLAlchemy (7,659 lines)
 
 
 
@@ -87,7 +87,6 @@ I started coding because I wanted to build things that could actually help peopl
 
 💪 **Strengths:**
 • High commit frequency indicates consistent development activity
-• Diverse technology stack across multiple programming languages
 
 
 
@@ -181,46 +180,25 @@ Here are some projects I'm pretty proud of. Each one taught me something differe
 **🔗 [Check it out](https://restauranteguillermoastorga.up.railway.app/)**
 
 ---
-## 🛠️ **Tools I Use**
+## 🛠️ **Technology Stack**
 
 <div align="center">
   <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=500&size=18&pause=1000&color=58A6FF&center=true&vCenter=true&width=400&height=40&lines=Modern+Technologies;Best+Practices;Clean+Code" alt="Tech Stack Typing" />
 </div>
 
-I believe in using the right tool for the job. Here's what I've been working with lately:
+I believe in using the right tool for the job. Here's my current technology stack based on my projects:
 
-### **🌐 Frontend**
-![React](https://img.shields.io/badge/-React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
-![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![Next.js](https://img.shields.io/badge/-Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/-TailwindCSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![Framer Motion](https://img.shields.io/badge/-Framer%20Motion-0055FF?style=for-the-badge&logo=framer&logoColor=white)
+### **🌐 Frontend Development**
+<div align="center">
+  <img src="https://skillicons.dev/icons?i=css,framer,html,js,nodejs,radix,react,reactrouter" alt="Frontend Technologies" />
+</div>
 
-### **⚙️ Backend**
-![Node.js](https://img.shields.io/badge/-Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
-![Python](https://img.shields.io/badge/-Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/-FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
-![Express.js](https://img.shields.io/badge/-Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
-
-### **🗄️ Data & Cloud**
-![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)
-![MongoDB](https://img.shields.io/badge/-MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
-![AWS](https://img.shields.io/badge/-AWS-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white)
-![Docker](https://img.shields.io/badge/-Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-
-### **🤖 AI & ML**
-![OpenAI](https://img.shields.io/badge/-OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white)
-![TensorFlow](https://img.shields.io/badge/-TensorFlow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white)
-![Scikit-learn](https://img.shields.io/badge/-Scikit--learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)
-
-### **🛠️ Tools**
-![Git](https://img.shields.io/badge/-Git-F05032?style=for-the-badge&logo=git&logoColor=white)
-![GitHub Actions](https://img.shields.io/badge/-GitHub%20Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
-![Linux](https://img.shields.io/badge/-Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
-![VS Code](https://img.shields.io/badge/-VS%20Code-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white)
+### **⚙️ Backend Development**
+<div align="center">
+  <img src="https://skillicons.dev/icons?i=fastapi,openai,pydantic,python,sqlalchemy,tesseract" alt="Backend Technologies" />
+</div>
 
 ---
-
 ## 💼 **Experience & Growth**
 
 ### **🎯 What I Focus On**

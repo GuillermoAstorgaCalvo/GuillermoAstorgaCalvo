@@ -34,11 +34,11 @@ def update_tech_stack_format():
     
     # Map languages to actual technologies
     lang_to_tech = {
-        'TypeScript': 'TypeScript, React, Next.js',
-        'JavaScript': 'JavaScript, Node.js',
-        'Python': 'Python, FastAPI, Django',
+        'TypeScript': 'TypeScript, React, Vite, Radix UI, TanStack Query, Framer Motion',
+        'JavaScript': 'JavaScript, Node.js, React Router, Supabase',
+        'Python': 'Python, FastAPI, SQLAlchemy, Pydantic, OpenAI, Tesseract OCR',
         'HTML': 'HTML',
-        'CSS': 'CSS, TailwindCSS'
+        'CSS': 'CSS, TailwindCSS, Framer Motion'
     }
     
     # Process each language

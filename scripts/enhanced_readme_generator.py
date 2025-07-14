@@ -404,49 +404,164 @@ Here are some projects I'm pretty proud of. Each one taught me something differe
     
     return content
 
-def generate_tech_stack_section() -> str:
-    """Generate authentic tech stack section"""
-    return """## 🛠️ **Tools I Use**
+def generate_dynamic_tech_stack_section(data: Dict[str, Any]) -> str:
+    """Generate dynamic tech stack section using skillicons.dev based on actual repository data"""
+    
+    # Default tech stack if no data is available
+    default_tech_stack = {
+        'frontend': ['react', 'ts', 'js', 'nextjs', 'tailwind', 'html', 'css'],
+        'backend': ['nodejs', 'python', 'express', 'fastapi'],
+        'database': ['postgresql', 'mongodb', 'aws', 'docker'],
+        'ai_ml': ['tensorflow', 'scikit', 'openai'],
+        'devops': ['git', 'github', 'vscode', 'linux'],
+        'additional': ['supabase', 'stripe', 'framer']
+    }
+    
+    # Try to get actual tech stack from unified stats
+    unified_stats = data.get('unified_stats', {})
+    tech_stack_analysis = unified_stats.get('tech_stack_analysis', {})
+    
+    if tech_stack_analysis:
+        # Map actual technologies to skillicons.dev icons
+        tech_to_icon = {
+            # Frontend
+            'React': 'react', 'TypeScript': 'ts', 'JavaScript': 'js', 'Next.js': 'nextjs',
+            'TailwindCSS': 'tailwind', 'HTML': 'html', 'CSS': 'css', 'Vue.js': 'vuejs',
+            'Angular': 'angular', 'Framer Motion': 'framer', 'Radix UI': 'radix',
+            'TanStack Query': 'tanstack', 'React Router': 'reactrouter',
+            
+            # Backend
+            'Node.js': 'nodejs', 'Python': 'python', 'Express.js': 'express',
+            'FastAPI': 'fastapi', 'Django': 'django', 'Flask': 'flask',
+            'TypeScript': 'ts', 'Java': 'java', 'Spring Boot': 'spring',
+            
+            # Database & Cloud
+            'PostgreSQL': 'postgresql', 'MongoDB': 'mongodb', 'Redis': 'redis',
+            'AWS': 'aws', 'Docker': 'docker', 'Supabase': 'supabase',
+            'MySQL': 'mysql', 'SQLite': 'sqlite', 'Prisma': 'prisma',
+            
+            # AI & ML
+            'TensorFlow': 'tensorflow', 'PyTorch': 'pytorch', 'Scikit-learn': 'scikit',
+            'OpenAI': 'openai', 'Pandas': 'pandas', 'NumPy': 'numpy',
+            'Tesseract OCR': 'tesseract', 'Pillow': 'pillow',
+            
+            # DevOps & Tools
+            'Git': 'git', 'GitHub': 'github', 'VS Code': 'vscode',
+            'Linux': 'linux', 'Docker Compose': 'docker', 'Nginx': 'nginx',
+            'ESLint': 'eslint', 'TypeScript': 'ts', 'Webpack': 'webpack',
+            
+            # Additional
+            'Stripe': 'stripe', 'Framer Motion': 'framer', 'Radix UI': 'radix',
+            'TanStack Query': 'tanstack', 'Zod': 'zod', 'Lodash': 'lodash',
+            'Axios': 'axios', 'Moment.js': 'moment', 'Chart.js': 'chartjs'
+        }
+        
+        # Build dynamic tech stack
+        dynamic_tech_stack = {
+            'frontend': [],
+            'backend': [],
+            'database': [],
+            'ai_ml': [],
+            'devops': [],
+            'additional': []
+        }
+        
+        # Process each category
+        for category, data in tech_stack_analysis.items():
+            technologies = data.get('technologies', [])
+            for tech in technologies:
+                icon = tech_to_icon.get(tech, tech.lower().replace(' ', '').replace('.', ''))
+                if category == 'frontend':
+                    dynamic_tech_stack['frontend'].append(icon)
+                elif category == 'backend':
+                    dynamic_tech_stack['backend'].append(icon)
+                elif category == 'database':
+                    dynamic_tech_stack['database'].append(icon)
+                elif category == 'ai_ml':
+                    dynamic_tech_stack['ai_ml'].append(icon)
+                elif category == 'devops':
+                    dynamic_tech_stack['devops'].append(icon)
+                else:
+                    dynamic_tech_stack['additional'].append(icon)
+        
+        # Use dynamic tech stack if we have data, otherwise use default
+        tech_stack = dynamic_tech_stack if any(any(techs) for techs in dynamic_tech_stack.values()) else default_tech_stack
+    else:
+        tech_stack = default_tech_stack
+    
+    # Generate the tech stack section
+    content = """## 🛠️ **Technology Stack**
 
 <div align="center">
   <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=500&size=18&pause=1000&color=58A6FF&center=true&vCenter=true&width=400&height=40&lines=Modern+Technologies;Best+Practices;Clean+Code" alt="Tech Stack Typing" />
 </div>
 
-I believe in using the right tool for the job. Here's what I've been working with lately:
-
-### **🌐 Frontend**
-![React](https://img.shields.io/badge/-React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
-![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![Next.js](https://img.shields.io/badge/-Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/-TailwindCSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![Framer Motion](https://img.shields.io/badge/-Framer%20Motion-0055FF?style=for-the-badge&logo=framer&logoColor=white)
-
-### **⚙️ Backend**
-![Node.js](https://img.shields.io/badge/-Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
-![Python](https://img.shields.io/badge/-Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/-FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
-![Express.js](https://img.shields.io/badge/-Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
-
-### **🗄️ Data & Cloud**
-![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)
-![MongoDB](https://img.shields.io/badge/-MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
-![AWS](https://img.shields.io/badge/-AWS-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white)
-![Docker](https://img.shields.io/badge/-Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-
-### **🤖 AI & ML**
-![OpenAI](https://img.shields.io/badge/-OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white)
-![TensorFlow](https://img.shields.io/badge/-TensorFlow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white)
-![Scikit-learn](https://img.shields.io/badge/-Scikit--learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)
-
-### **🛠️ Tools**
-![Git](https://img.shields.io/badge/-Git-F05032?style=for-the-badge&logo=git&logoColor=white)
-![GitHub Actions](https://img.shields.io/badge/-GitHub%20Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
-![Linux](https://img.shields.io/badge/-Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
-![VS Code](https://img.shields.io/badge/-VS%20Code-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white)
-
----
+I believe in using the right tool for the job. Here's my current technology stack based on my projects:
 
 """
+    
+    # Frontend
+    if tech_stack['frontend']:
+        icons = ','.join(tech_stack['frontend'][:8])  # Limit to 8 icons
+        content += f"""### **🌐 Frontend Development**
+<div align="center">
+  <img src="https://skillicons.dev/icons?i={icons}" alt="Frontend Technologies" />
+</div>
+
+"""
+    
+    # Backend
+    if tech_stack['backend']:
+        icons = ','.join(tech_stack['backend'][:8])
+        content += f"""### **⚙️ Backend Development**
+<div align="center">
+  <img src="https://skillicons.dev/icons?i={icons}" alt="Backend Technologies" />
+</div>
+
+"""
+    
+    # Database & Cloud
+    if tech_stack['database']:
+        icons = ','.join(tech_stack['database'][:8])
+        content += f"""### **🗄️ Database & Cloud**
+<div align="center">
+  <img src="https://skillicons.dev/icons?i={icons}" alt="Database & Cloud Technologies" />
+</div>
+
+"""
+    
+    # AI & ML
+    if tech_stack['ai_ml']:
+        icons = ','.join(tech_stack['ai_ml'][:8])
+        content += f"""### **🤖 AI & Machine Learning**
+<div align="center">
+  <img src="https://skillicons.dev/icons?i={icons}" alt="AI & ML Technologies" />
+</div>
+
+"""
+    
+    # DevOps & Tools
+    if tech_stack['devops']:
+        icons = ','.join(tech_stack['devops'][:8])
+        content += f"""### **🛠️ Development Tools**
+<div align="center">
+  <img src="https://skillicons.dev/icons?i={icons}" alt="Development Tools" />
+</div>
+
+"""
+    
+    # Additional Technologies
+    if tech_stack['additional']:
+        icons = ','.join(tech_stack['additional'][:8])
+        content += f"""### **📊 Additional Technologies**
+<div align="center">
+  <img src="https://skillicons.dev/icons?i={icons}" alt="Additional Technologies" />
+</div>
+
+"""
+    
+    content += "---\n"
+    return content
 
 def generate_experience_section() -> str:
     """Generate authentic experience section"""
@@ -521,7 +636,7 @@ def generate_enhanced_readme(data: Dict[str, Any]) -> str:
     content += generate_projects_section()
     
     # Tech Stack Section
-    content += generate_tech_stack_section()
+    content += generate_dynamic_tech_stack_section(data)
     
     # Experience Section
     content += generate_experience_section()

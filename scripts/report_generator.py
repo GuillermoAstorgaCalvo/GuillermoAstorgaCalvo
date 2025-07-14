@@ -564,13 +564,13 @@ class JSONReportGenerator:
             'ai_ml': {'technologies': [], 'total_loc': 0}
         }
         
-        # Map languages to technologies
+        # Map languages to actual technologies and frameworks
         lang_to_tech = {
-            'TypeScript': 'TypeScript',
-            'JavaScript': 'JavaScript',
-            'Python': 'Python',
+            'TypeScript': 'TypeScript, React, Next.js',
+            'JavaScript': 'JavaScript, Node.js',
+            'Python': 'Python, FastAPI, Django',
             'HTML': 'HTML',
-            'CSS': 'CSS'
+            'CSS': 'CSS, TailwindCSS'
         }
         
         for lang, stats in language_stats.items():
