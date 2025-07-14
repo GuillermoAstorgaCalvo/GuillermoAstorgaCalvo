@@ -247,7 +247,7 @@ def main():
         repo_dir = script_dir.parent / "repo"
         analyzer = DependencyAnalyzer()
         print(f"[DEBUG] (process_repo_stats.py) Analyzing dependencies in: {repo_dir}")
-        tech_stack = analyzer.analyze_all_repositories(repo_dir)
+        tech_stack = analyzer.analyze_repository_dependencies(repo_dir)
         with open('tech_stack_analysis.json', 'w', encoding='utf-8') as f:
             json.dump(tech_stack, f, indent=2, ensure_ascii=False)
         print(f"[DEBUG] (process_repo_stats.py) Saved tech_stack_analysis.json for {repo_dir}")
