@@ -514,11 +514,17 @@ class JSONReportGenerator:
         if not language_stats:
             return {}
         
+        # Define categories to exclude (non-programming languages)
+        excluded_categories = {
+            'Unknown', 'Assets', 'Documentation', 'Image', 'Font', 'Archive', 'Binary',
+            'JSON', 'YAML', 'TOML', 'INI', 'Properties', 'Log', 'Markdown', 'reStructuredText', 'AsciiDoc', 'BibTeX'
+        }
+        
         # Categorize languages by type
         frontend_langs = ['JavaScript', 'TypeScript', 'HTML', 'CSS', 'React', 'Vue', 'Angular']
         backend_langs = ['Python', 'Java', 'C#', 'PHP', 'Ruby', 'Go', 'Rust', 'Node.js']
         database_langs = ['SQL', 'PL/SQL', 'T-SQL']
-        devops_langs = ['Shell', 'PowerShell', 'Dockerfile', 'YAML', 'JSON']
+        devops_langs = ['Shell', 'PowerShell', 'Dockerfile']
         
         categories = {
             'frontend': {'languages': [], 'total_loc': 0},
@@ -529,6 +535,10 @@ class JSONReportGenerator:
         }
         
         for lang, stats in language_stats.items():
+            # Skip excluded categories
+            if lang in excluded_categories:
+                continue
+                
             loc = stats.get('loc', 0)
             if lang in frontend_langs:
                 categories['frontend']['languages'].append({'name': lang, 'loc': loc})
@@ -543,8 +553,10 @@ class JSONReportGenerator:
                 categories['devops']['languages'].append({'name': lang, 'loc': loc})
                 categories['devops']['total_loc'] += loc
             else:
-                categories['other']['languages'].append({'name': lang, 'loc': loc})
-                categories['other']['total_loc'] += loc
+                # Only add to 'other' if it's a real programming language
+                if loc > 0:  # Only include languages with actual code
+                    categories['other']['languages'].append({'name': lang, 'loc': loc})
+                    categories['other']['total_loc'] += loc
         
         return categories
     
@@ -553,6 +565,20 @@ class JSONReportGenerator:
         total_loc = stats.total_loc
         total_commits = stats.total_commits
         total_files = stats.total_files
+        
+        # Define categories to exclude (non-programming languages)
+        excluded_categories = {
+            'Unknown', 'Assets', 'Documentation', 'Image', 'Font', 'Archive', 'Binary',
+            'JSON', 'YAML', 'TOML', 'INI', 'Properties', 'Log', 'Markdown', 'reStructuredText', 'AsciiDoc', 'BibTeX'
+        }
+        
+        # Count only programming languages
+        programming_languages = 0
+        if stats.unified_language_stats:
+            programming_languages = len([
+                lang for lang in stats.unified_language_stats.keys()
+                if lang not in excluded_categories
+            ])
         
         complexity = {
             'project_scale': {
@@ -567,7 +593,7 @@ class JSONReportGenerator:
                 'files_per_commit': total_files / total_commits if total_commits > 0 else 0
             },
             'repository_diversity': {
-                'languages_used': len(stats.unified_language_stats) if stats.unified_language_stats else 0,
+                'languages_used': programming_languages,
                 'project_types': len(stats.repo_breakdown)
             }
         }
@@ -583,11 +609,25 @@ class JSONReportGenerator:
             'recommendations': []
         }
         
+        # Define categories to exclude (non-programming languages)
+        excluded_categories = {
+            'Unknown', 'Assets', 'Documentation', 'Image', 'Font', 'Archive', 'Binary',
+            'JSON', 'YAML', 'TOML', 'INI', 'Properties', 'Log', 'Markdown', 'reStructuredText', 'AsciiDoc', 'BibTeX'
+        }
+        
+        # Count only programming languages
+        programming_languages = 0
+        if stats.unified_language_stats:
+            programming_languages = len([
+                lang for lang in stats.unified_language_stats.keys()
+                if lang not in excluded_categories
+            ])
+        
         # Analyze strengths
         if stats.guillermo_unified.commits > 100:
             insights['strengths'].append("High commit frequency indicates consistent development activity")
         
-        if len(stats.unified_language_stats) > 5:
+        if programming_languages > 5:
             insights['strengths'].append("Diverse technology stack across multiple programming languages")
         
         # Analyze focus areas
@@ -602,7 +642,7 @@ class JSONReportGenerator:
             insights['achievements'].append(f"Made {stats.guillermo_unified.commits:,} commits demonstrating consistent development")
         
         # Generate recommendations
-        if len(stats.unified_language_stats) < 3:
+        if programming_languages < 3:
             insights['recommendations'].append("Consider expanding technology stack for broader expertise")
         
         return insights

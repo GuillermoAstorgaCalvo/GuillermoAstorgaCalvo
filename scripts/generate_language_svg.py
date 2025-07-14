@@ -13,17 +13,25 @@ def generate_language_svg_bar_chart(language_stats: dict, output_path: str):
     try:
         import svgwrite
         
-        # Define config types to exclude
-        config_types = {'Configuration', 'YAML', 'JSON', 'TOML', 'INI', 'Properties'}
-        # Filter out config types, 'Unknown', and any with 0 lines
+        # Define categories to exclude (non-programming languages)
+        excluded_categories = {
+            # Configuration files
+            'Configuration', 'YAML', 'JSON', 'TOML', 'INI', 'Properties',
+            # Non-code categories
+            'Unknown', 'Assets', 'Documentation', 'Image', 'Font', 'Archive', 'Binary',
+            # Other non-programming languages
+            'Log', 'Markdown', 'reStructuredText', 'AsciiDoc', 'BibTeX'
+        }
+        
+        # Filter out excluded categories and any with 0 lines
         valid_langs = [
             (lang, stats) for lang, stats in language_stats.items()
-            if stats.get('lines', 0) > 0 and lang not in config_types and lang != 'Unknown'
+            if stats.get('lines', 0) > 0 and lang not in excluded_categories
         ]
         sorted_langs = sorted(valid_langs, key=lambda x: x[1]['lines'], reverse=True)
         
         if not sorted_langs:
-            print("⚠️ No valid language data found")
+            print("⚠️ No valid programming language data found")
             return
         
         total_loc = sum(stats['lines'] for _, stats in sorted_langs)
@@ -37,27 +45,27 @@ def generate_language_svg_bar_chart(language_stats: dict, output_path: str):
         dwg = svgwrite.Drawing(output_path, size=(width, height))
         
         # Define gradients for better visual appeal
-        defs = dwg.defs()
-        
+        # Add gradients directly to dwg.defs
         # Gradient for major languages (>50%)
-        major_gradient = defs.linearGradient(id="major_gradient", x1="0%", y1="0%", x2="100%", y2="0%")
+        major_gradient = dwg.linearGradient(id="major_gradient", x1="0%", y1="0%", x2="100%", y2="0%")
         major_gradient.add_stop_color(offset="0%", color="#4F8EF7", opacity=1)
         major_gradient.add_stop_color(offset="100%", color="#2E5BB8", opacity=1)
-        
+        dwg.defs.add(major_gradient)
         # Gradient for medium languages (10-50%)
-        medium_gradient = defs.linearGradient(id="medium_gradient", x1="0%", y1="0%", x2="100%", y2="0%")
+        medium_gradient = dwg.linearGradient(id="medium_gradient", x1="0%", y1="0%", x2="100%", y2="0%")
         medium_gradient.add_stop_color(offset="0%", color="#6BB6FF", opacity=1)
         medium_gradient.add_stop_color(offset="100%", color="#4F8EF7", opacity=1)
-        
+        dwg.defs.add(medium_gradient)
         # Gradient for minor languages (<10%)
-        minor_gradient = defs.linearGradient(id="minor_gradient", x1="0%", y1="0%", x2="100%", y2="0%")
+        minor_gradient = dwg.linearGradient(id="minor_gradient", x1="0%", y1="0%", x2="100%", y2="0%")
         minor_gradient.add_stop_color(offset="0%", color="#A8D8FF", opacity=1)
         minor_gradient.add_stop_color(offset="100%", color="#6BB6FF", opacity=1)
-        
+        dwg.defs.add(minor_gradient)
         # Add background with subtle gradient
-        bg_gradient = defs.linearGradient(id="bg_gradient", x1="0%", y1="0%", x2="0%", y2="100%")
+        bg_gradient = dwg.linearGradient(id="bg_gradient", x1="0%", y1="0%", x2="0%", y2="100%")
         bg_gradient.add_stop_color(offset="0%", color="#FAFBFC", opacity=1)
         bg_gradient.add_stop_color(offset="100%", color="#F5F7FA", opacity=1)
+        dwg.defs.add(bg_gradient)
         
         dwg.add(dwg.rect(insert=(0, 0), size=(width, height), fill="url(#bg_gradient)"))
         
@@ -113,6 +121,29 @@ def generate_language_svg_bar_chart(language_stats: dict, output_path: str):
                 gradient_id = "minor_gradient"
                 rank_emoji = "🥉"
             
+            # Always place LOC at the far right
+            loc_margin = 15
+            loc_x = width - loc_margin
+            # Percentage logic as before
+            pct_font_size = 12
+            pct_margin = 10
+            pct_inside_threshold = 60  # px, bar must be at least this wide to fit percentage inside
+            pct_text = f"{percentage:.1f}%"
+            pct_y = y-2
+            pct_fill_inside = '#fff'  # White text inside bar
+            pct_fill_outside = '#4F8EF7'  # Brand color outside bar
+            # Ensure bar never overlaps LOC value
+            max_bar_width_adjusted = loc_x - 200 - 60  # 60px buffer for LOC and margin
+            bar_width = min(bar_width, max_bar_width_adjusted)
+            # Percentage placement
+            if bar_width >= pct_inside_threshold:
+                pct_x = 200 + bar_width - pct_margin
+                pct_anchor = "end"
+                pct_fill = pct_fill_inside
+            else:
+                pct_x = 200 + bar_width + pct_margin
+                pct_anchor = "start"
+                pct_fill = pct_fill_outside
             # Draw bar with shadow effect
             shadow_offset = 2
             dwg.add(dwg.rect(insert=(200 + shadow_offset, y-17 + shadow_offset), 
@@ -120,13 +151,11 @@ def generate_language_svg_bar_chart(language_stats: dict, output_path: str):
                             fill='#000000', 
                             opacity=0.1,
                             rx=6, ry=6))
-            
             # Main bar
             dwg.add(dwg.rect(insert=(200, y-17), 
                             size=(bar_width, 24), 
                             fill=f"url(#{gradient_id})", 
                             rx=6, ry=6))
-            
             # Add subtle border
             dwg.add(dwg.rect(insert=(200, y-17), 
                             size=(bar_width, 24), 
@@ -156,31 +185,30 @@ def generate_language_svg_bar_chart(language_stats: dict, output_path: str):
                             font_family='Segoe UI, Arial, sans-serif', 
                             fill='#1A1A1A'))
             
-            # LOC value with better formatting
+            # LOC value at far right
             loc_text = f"{loc:,}"
             dwg.add(dwg.text(loc_text, 
-                            insert=(210 + bar_width, y-2), 
+                            insert=(loc_x, y-2), 
                             font_size='13px', 
                             font_weight='bold',
                             font_family='Segoe UI, Arial, sans-serif', 
-                            fill='#1A1A1A'))
-            
+                            fill='#1A1A1A',
+                            text_anchor="end"))
             # "LOC" label
             dwg.add(dwg.text("LOC", 
-                            insert=(210 + bar_width, y+10), 
+                            insert=(loc_x, y+10), 
                             font_size='10px', 
                             font_family='Segoe UI, Arial, sans-serif', 
-                            fill='#666'))
-            
-            # Percentage with better positioning
-            pct_text = f"{percentage:.1f}%"
-            dwg.add(dwg.text(pct_text, 
-                            insert=(width - 15, y-2), 
-                            font_size='12px', 
-                            font_weight='bold',
-                            font_family='Segoe UI, Arial, sans-serif', 
-                            fill='#4F8EF7',
+                            fill='#666',
                             text_anchor="end"))
+            # Percentage as before
+            dwg.add(dwg.text(pct_text, 
+                            insert=(pct_x, pct_y),
+                            font_size=f'{pct_font_size}px',
+                            font_weight='bold',
+                            font_family='Segoe UI, Arial, sans-serif',
+                            fill=pct_fill,
+                            text_anchor=pct_anchor))
             
             y += bar_height
         
@@ -196,8 +224,9 @@ def generate_language_svg_bar_chart(language_stats: dict, output_path: str):
                             stroke_width=1)
         dwg.add(footer_bg)
         
-        # Footer text
-        dwg.add(dwg.text(f"📊 Generated on {timestamp} | Total: {total_loc:,} LOC | {len(sorted_langs)} languages", 
+        # Footer text with excluded files info
+        footer_text = f"📊 Generated on {timestamp} | Total: {total_loc:,} LOC | {len(sorted_langs)} languages | (excluded unnecessary files extensions like .svg, .json, .txt, .md, .log, .cfg, etc...)"
+        dwg.add(dwg.text(footer_text, 
                         insert=(15, height - 8), 
                         font_size='10px', 
                         font_family='Segoe UI, Arial, sans-serif', 
