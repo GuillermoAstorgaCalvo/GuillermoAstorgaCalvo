@@ -203,7 +203,8 @@ def generate_enhanced_stats_from_unified(unified_stats: Dict[str, Any]) -> str:
     # Tech stack analysis with skillicons.dev
     tech_stack_insights = ""
     tech_stack_analysis = unified_stats.get('tech_stack_analysis', {})
-    print(f"🛠️ Rendering tech stack section: {tech_stack_analysis}")
+    print("\n[DEBUG] Rendering tech stack section with the following data:")
+    print(json.dumps(tech_stack_analysis, indent=2))
     if tech_stack_analysis:
         # Map actual technologies to skillicons.dev icons
         tech_to_icon = {

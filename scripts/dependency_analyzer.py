@@ -326,10 +326,11 @@ class DependencyAnalyzer:
                 if repo_dir.is_dir():
                     print(f"🔍 Analyzing dependencies in {repo_dir.name}")
                     repo_tech = self.analyze_repository_dependencies(repo_dir)
-                    print(f"🔍 Technologies found for {repo_dir.name}: {repo_tech}")
+                    
                     # Merge technologies
                     for category, techs in repo_tech.items():
                         all_technologies[category].update(techs)
+        
         # Convert sets to sorted lists
         result = {}
         for category, techs in all_technologies.items():
@@ -337,7 +338,12 @@ class DependencyAnalyzer:
                 'technologies': sorted(list(techs)),
                 'count': len(techs)
             }
-        print(f'📦 Final aggregated tech stack: {result}')
+
+        # DEBUG: Print the detected technology stack
+        print("\n[DEBUG] Final detected technology stack by category:")
+        for category, techs in all_technologies.items():
+            print(f"  {category}: {sorted(list(techs))}")
+
         return result
 
 

@@ -145,15 +145,16 @@ def main():
         json_path = script_dir / json_filename
         json_generator.save_report(unified_stats, str(json_path))
         print(f"✅ JSON report saved to: {json_path}")
-
-        # Merge tech stack analysis
+        
+        # Merge tech stack analysis if available
         if os.path.exists('tech_stack_analysis.json'):
-            print("🔄 Loading tech_stack_analysis.json...")
+            print("\n[DEBUG] Loading tech_stack_analysis.json...")
             with open('tech_stack_analysis.json', 'r', encoding='utf-8') as f:
                 tech_stack = json.load(f)
-            print(f"🔍 Loaded tech stack: {tech_stack}")
-            unified_stats.tech_stack_analysis = tech_stack
-            print(f"✅ Merged tech stack into unified_stats: {unified_stats.tech_stack_analysis}")
+            print("[DEBUG] Loaded tech stack analysis:", json.dumps(tech_stack, indent=2))
+            unified_stats['tech_stack_analysis'] = tech_stack
+            print("\n[DEBUG] Merged tech_stack_analysis into unified_stats.json:")
+            print(json.dumps(unified_stats.get('tech_stack_analysis', {}), indent=2))
         
         # Print summary
         guillermo = unified_stats.guillermo_unified

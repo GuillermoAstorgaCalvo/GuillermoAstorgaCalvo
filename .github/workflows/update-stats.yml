@@ -175,12 +175,6 @@ jobs:
 
           echo "✅ README.md generated successfully with private repository statistics"
 
-      - name: Debug: Enable shell command tracing
-        run: set -x
-      - name: Show tech_stack_analysis.json
-        run: cat tech_stack_analysis.json || echo "No tech_stack_analysis.json found"
-      - name: Show unified_stats.json
-        run: cat unified_stats.json || echo "No unified_stats.json found"
       - name: Commit results to profile
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -189,11 +183,16 @@ jobs:
             echo "No changes to commit"
             exit 0
           fi
+
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Add files that exist
           git add unified_stats.json analytics_history.json README.md
+          # Add SVG if it exists
           if [[ -f "assets/language_stats.svg" ]]; then
             git add assets/language_stats.svg
           fi
+
           git commit -m "📊 Update README and language ranking SVG - $(date '+%Y-%m-%d %H:%M UTC')"
           git push
