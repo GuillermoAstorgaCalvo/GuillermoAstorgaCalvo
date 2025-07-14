@@ -244,7 +244,7 @@ def main():
         
         # After processing repo stats, run dependency analyzer for this repo
         from dependency_analyzer import DependencyAnalyzer
-        repo_dir = Path(os.getcwd())
+        repo_dir = script_dir.parent / "repo"
         analyzer = DependencyAnalyzer()
         print(f"[DEBUG] (process_repo_stats.py) Analyzing dependencies in: {repo_dir}")
         tech_stack = analyzer.analyze_all_repositories(repo_dir)
