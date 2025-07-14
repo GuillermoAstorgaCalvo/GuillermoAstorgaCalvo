@@ -248,8 +248,14 @@ def main():
         analyzer = DependencyAnalyzer()
         print(f"[DEBUG] (process_repo_stats.py) Analyzing dependencies in: {repo_dir}")
         tech_stack = analyzer.analyze_repository_dependencies(repo_dir)
-        # Convert sets to sorted lists for JSON serialization
-        tech_stack_serializable = {k: sorted(list(v)) for k, v in tech_stack.items()}
+        # Convert sets to the format expected by aggregation script
+        tech_stack_serializable = {}
+        for category, techs in tech_stack.items():
+            tech_list = sorted(list(techs))
+            tech_stack_serializable[category] = {
+                'technologies': tech_list,
+                'count': len(tech_list)
+            }
         with open('tech_stack_analysis.json', 'w', encoding='utf-8') as f:
             json.dump(tech_stack_serializable, f, indent=2, ensure_ascii=False)
         print(f"[DEBUG] (process_repo_stats.py) Saved tech_stack_analysis.json for {repo_dir}")
