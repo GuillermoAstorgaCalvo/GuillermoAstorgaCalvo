@@ -147,6 +147,8 @@ jobs:
           cd scripts
           python3 aggregate_stats.py
           python3 enhanced_readme_generator.py
+        env:
+          REPOS_DIR: ${{ github.workspace }}/repo-stats
 
       - name: Move generated data to root
         run: |
