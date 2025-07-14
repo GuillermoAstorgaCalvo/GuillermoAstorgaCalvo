@@ -324,14 +324,17 @@ class DependencyAnalyzer:
             for repo_dir in repos_dir.iterdir():
                 if repo_dir.is_dir():
                     print(f"[DEBUG] Analyzing dependencies in {repo_dir.name}")
-                    # List files for debug
-                    for root, dirs, files in os.walk(repo_dir):
-                        for file in files:
-                            if file.endswith(('package.json', 'requirements.txt')):
-                                print(f"[DEBUG] Found {file} in {root}")
-                    repo_tech = self.analyze_repository_dependencies(repo_dir)
-                    for category, techs in repo_tech.items():
-                        all_technologies[category].update(techs)
+                    # Recursively search for package.json and requirements.txt
+                    for file_path in repo_dir.rglob('package.json'):
+                        print(f"[DEBUG] Found package.json in {file_path}")
+                        repo_tech = self.analyze_repository_dependencies(file_path.parent)
+                        for category, techs in repo_tech.items():
+                            all_technologies[category].update(techs)
+                    for file_path in repo_dir.rglob('requirements.txt'):
+                        print(f"[DEBUG] Found requirements.txt in {file_path}")
+                        repo_tech = self.analyze_repository_dependencies(file_path.parent)
+                        for category, techs in repo_tech.items():
+                            all_technologies[category].update(techs)
         else:
             print(f"[DEBUG] Directory does not exist: {repos_dir}")
         # Convert sets to sorted lists
