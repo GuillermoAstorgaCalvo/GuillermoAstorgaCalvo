@@ -105,6 +105,14 @@ jobs:
         run: |
           find repo/ | sort
 
+      - name: Debug GitHub Actions environment
+        env:
+          REPO_NAME: ${{ matrix.repository.name }}
+          DISPLAY_NAME: ${{ matrix.repository.display_name }}
+        run: |
+          cd scripts
+          python3 debug_github_actions.py
+
       - name: Process repository statistics
         env:
           REPO_NAME: ${{ matrix.repository.name }}

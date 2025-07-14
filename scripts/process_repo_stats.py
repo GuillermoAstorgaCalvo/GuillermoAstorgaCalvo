@@ -246,6 +246,14 @@ def main():
         repo_dir = script_dir.parent / "repo"
         analyzer = DependencyAnalyzer()
         print(f"[DEBUG] (process_repo_stats.py) Analyzing dependencies in: {repo_dir}")
+        print(f"[DEBUG] (process_repo_stats.py) Repo exists: {repo_dir.exists()}")
+        if repo_dir.exists():
+            print(f"[DEBUG] (process_repo_stats.py) Repo contents:")
+            try:
+                for item in repo_dir.iterdir():
+                    print(f"[DEBUG] (process_repo_stats.py)   - {item.name}")
+            except Exception as e:
+                print(f"[DEBUG] (process_repo_stats.py) Error listing contents: {e}")
         tech_stack = analyzer.analyze_repository_dependencies(repo_dir)
         # Convert sets to the format expected by aggregation script
         tech_stack_serializable = {}
