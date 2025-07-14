@@ -356,6 +356,7 @@ def main():
     
     import os
     from pathlib import Path
+    print(f"[DEBUG] REPOS_DIR env: {os.environ.get('REPOS_DIR')}")
     repos_dir = Path(os.environ.get('REPOS_DIR', 'repo-stats'))
     if not repos_dir.exists():
         repos_dir = Path.cwd()
