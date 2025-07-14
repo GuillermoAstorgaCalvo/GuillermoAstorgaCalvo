@@ -23,11 +23,12 @@ from language_mapper import get_language_mapper
 def run_cloc_on_repo(repo_path: Path) -> dict:
     """Run cloc on the given repo path and return the parsed JSON output."""
     try:
-        # Focus on real code languages, exclude common config/data/output dirs
+        # Focus on real code languages, exclude configuration files
         result = subprocess.run([
             'cloc', '--json', '--quiet', '--timeout=60',
-            '--include-lang=Python,TypeScript,JavaScript,HTML,CSS,Shell,Markdown,JSON,YAML,INI',
+            '--include-lang=Python,TypeScript,JavaScript,HTML,CSS,Shell',
             '--exclude-dir=.git,node_modules,venv,build,dist,data,output,logs,generated,target,coverage,.nyc_output',
+            '--exclude-ext=json,toml,lock,yml,yaml,ini,cfg,conf,env,log,md,txt',
             str(repo_path)
         ], capture_output=True, text=True, timeout=120, check=True)
         cloc_output = result.stdout
@@ -134,7 +135,8 @@ def main():
             cloc_language_stats = {}
             if cloc_data:
                 for lang, stats in cloc_data.items():
-                    if lang in ('header', 'SUM', 'JSON', 'Text'):
+                    # Exclude configuration and non-code languages
+                    if lang in ('header', 'SUM', 'JSON', 'Text', 'YAML', 'TOML', 'INI', 'Markdown', 'Properties'):
                         continue
                     cloc_language_stats[lang] = {
                         'loc': stats.get('code', 0),

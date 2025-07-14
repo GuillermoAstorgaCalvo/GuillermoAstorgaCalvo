@@ -96,7 +96,7 @@ jobs:
       - name: Run cloc (optimized)
         working-directory: repo
         run: |
-          cloc --skip-uniqueness --exclude-dir=.git,node_modules,venv,.venv,build,dist . || true
+          cloc --skip-uniqueness --exclude-dir=.git,node_modules,venv,.venv,build,dist,coverage,.nyc_output,logs,generated,target,data,output --exclude-ext=json,toml,lock,yml,yaml,ini,cfg,conf,env,log,md,txt . || true
 
       - name: Process repository statistics
         env:

@@ -207,12 +207,15 @@ class GitFameParser:
                 extension = key
                 loc = value if isinstance(value, (int, float)) else 0
                 
-                # Only use LOC data from --bytype, don't estimate commits/files
-                # Real commit and file data should come from author analysis
+                # For --bytype, we get LOC per extension
+                # Estimate file count based on LOC (roughly 1 file per 500 LOC)
+                # This is a reasonable estimate since we can't get exact file counts from --bytype
+                estimated_files = max(1, loc // 500) if loc > 0 else 0
+                
                 extension_stats[extension] = {
                     'loc': loc,
-                    'commits': 0,  # Don't estimate - use real data from author analysis
-                    'files': 0     # Don't estimate - use real data from author analysis
+                    'commits': 0,  # Will be distributed from author analysis
+                    'files': estimated_files
                 }
         
         return extension_stats 
