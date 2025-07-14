@@ -133,19 +133,6 @@ def main():
                 print(f"   - {error}")
             sys.exit(1)
         
-        # Generate reports
-        print("Generating reports...")
-        
-        # Initialize report generators with configuration
-        report_config = config.get_report_config()
-        json_generator = JSONReportGenerator()
-        
-        # Generate JSON report in scripts directory
-        json_filename = "unified_stats.json"
-        json_path = script_dir / json_filename
-        json_generator.save_report(unified_stats, str(json_path))
-        print(f"✅ JSON report saved to: {json_path}")
-        
         # Technology stack analysis
         from dependency_analyzer import DependencyAnalyzer
         import os
@@ -190,6 +177,19 @@ def main():
             print(json.dumps(getattr(unified_stats, 'tech_stack_analysis'), indent=2))
         elif isinstance(unified_stats, dict) and 'tech_stack_analysis' in unified_stats:
             print(json.dumps(unified_stats['tech_stack_analysis'], indent=2))
+        
+        # Generate reports
+        print("Generating reports...")
+        
+        # Initialize report generators with configuration
+        report_config = config.get_report_config()
+        json_generator = JSONReportGenerator()
+        
+        # Generate JSON report in scripts directory
+        json_filename = "unified_stats.json"
+        json_path = script_dir / json_filename
+        json_generator.save_report(unified_stats, str(json_path))
+        print(f"✅ JSON report saved to: {json_path}")
         
         # Print summary
         guillermo = unified_stats.guillermo_unified
