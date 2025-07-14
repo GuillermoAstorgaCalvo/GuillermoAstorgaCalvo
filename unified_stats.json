@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-07-14T11:34:13.551381Z",
+  "timestamp": "2025-07-14T11:52:44.101937Z",
   "metadata": {
     "version": "2.0",
     "generated_by": "Enhanced JSON Report Generator",
@@ -196,32 +196,11 @@
   },
   "tech_stack_analysis": {
     "frontend": {
-      "technologies": [
-        "CSS",
-        "Framer Motion",
-        "HTML",
-        "JavaScript",
-        "Node.js",
-        "Radix UI",
-        "React",
-        "React Router",
-        "Supabase",
-        "TailwindCSS",
-        "TanStack Query",
-        "TypeScript",
-        "Vite"
-      ],
+      "technologies": [],
       "total_loc": 108411
     },
     "backend": {
-      "technologies": [
-        "FastAPI",
-        "OpenAI",
-        "Pydantic",
-        "Python",
-        "SQLAlchemy",
-        "Tesseract OCR"
-      ],
+      "technologies": [],
       "total_loc": 7659
     },
     "database": {
