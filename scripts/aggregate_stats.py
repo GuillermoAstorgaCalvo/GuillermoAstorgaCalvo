@@ -146,23 +146,27 @@ def main():
         json_generator.save_report(unified_stats, str(json_path))
         print(f"✅ JSON report saved to: {json_path}")
         
-        # Merge tech stack analysis if available
-        if os.path.exists('tech_stack_analysis.json'):
-            print("\n[DEBUG] Loading tech_stack_analysis.json...")
-            with open('tech_stack_analysis.json', 'r', encoding='utf-8') as f:
-                tech_stack = json.load(f)
-            print("[DEBUG] Loaded tech stack analysis:", json.dumps(tech_stack, indent=2))
-            # Fix: assign as attribute if unified_stats is an object, else as dict key
-            try:
-                setattr(unified_stats, 'tech_stack_analysis', tech_stack)
-            except Exception:
-                if isinstance(unified_stats, dict):
-                    unified_stats['tech_stack_analysis'] = tech_stack
-            print("\n[DEBUG] Merged tech_stack_analysis into unified_stats:")
-            if hasattr(unified_stats, 'tech_stack_analysis'):
-                print(json.dumps(getattr(unified_stats, 'tech_stack_analysis'), indent=2))
-            elif isinstance(unified_stats, dict) and 'tech_stack_analysis' in unified_stats:
-                print(json.dumps(unified_stats['tech_stack_analysis'], indent=2))
+        # Technology stack analysis
+        from dependency_analyzer import DependencyAnalyzer
+        import os
+        from pathlib import Path
+        analyzer = DependencyAnalyzer()
+        repos_dir = Path(os.environ.get('REPOS_DIR', 'repo-stats'))
+        if not repos_dir.exists():
+            repos_dir = Path.cwd()
+        print(f"[DEBUG] (aggregate_stats.py) Using repos_dir: {repos_dir.resolve()}")
+        tech_stack = analyzer.analyze_all_repositories(repos_dir)
+        # Fix: assign as attribute if unified_stats is an object, else as dict key
+        try:
+            setattr(unified_stats, 'tech_stack_analysis', tech_stack)
+        except Exception:
+            if isinstance(unified_stats, dict):
+                unified_stats['tech_stack_analysis'] = tech_stack
+        print("\n[DEBUG] Merged tech_stack_analysis into unified_stats:")
+        if hasattr(unified_stats, 'tech_stack_analysis'):
+            print(json.dumps(getattr(unified_stats, 'tech_stack_analysis'), indent=2))
+        elif isinstance(unified_stats, dict) and 'tech_stack_analysis' in unified_stats:
+            print(json.dumps(unified_stats['tech_stack_analysis'], indent=2))
         
         # Print summary
         guillermo = unified_stats.guillermo_unified
