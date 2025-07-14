@@ -202,7 +202,7 @@ class StatsProcessor:
         project_totals = {'loc': 0, 'files': 0, 'commits': 0}
 
         for repo_stats in repository_stats_list:
-            # Add to unified totals
+            # Add to unified totals using REAL data from author analysis
             unified_stats.total_loc += repo_stats.repo_totals.loc
             unified_stats.total_commits += repo_stats.repo_totals.commits
             unified_stats.total_files += repo_stats.repo_totals.files
@@ -210,7 +210,7 @@ class StatsProcessor:
             # Add to Guillermo's unified stats
             unified_stats.guillermo_unified.add(repo_stats.guillermo_stats)
 
-            # Aggregate language stats (exclusive counting)
+            # Aggregate language stats (LOC only from --bytype, commits/files from author analysis)
             for language, stats in repo_stats.language_stats.items():
                 if language not in unified_stats.unified_language_stats:
                     unified_stats.unified_language_stats[language] = {
@@ -218,12 +218,12 @@ class StatsProcessor:
                         'commits': 0,
                         'files': 0
                     }
+                # Use LOC from language stats (from --bytype)
                 unified_stats.unified_language_stats[language]['loc'] += stats.get('loc', 0)
-                unified_stats.unified_language_stats[language]['commits'] += stats.get('commits', 0)
-                unified_stats.unified_language_stats[language]['files'] += stats.get('files', 0)
+                # Use commits/files from author analysis (real data)
+                # Note: We'll distribute the real commits/files proportionally to languages
+                # based on LOC distribution
                 language_totals['loc'] += stats.get('loc', 0)
-                language_totals['commits'] += stats.get('commits', 0)
-                language_totals['files'] += stats.get('files', 0)
                 # Track 'other' and 'unknown'
                 if language.lower() in ['other', 'unknown']:
                     unified_stats.other_unknown_breakdown[language.lower()] += stats.get('loc', 0)
@@ -233,6 +233,23 @@ class StatsProcessor:
             project_totals['loc'] += repo_stats.repo_totals.loc
             project_totals['commits'] += repo_stats.repo_totals.commits
             project_totals['files'] += repo_stats.repo_totals.files
+
+        # Now distribute real commits and files proportionally to languages based on LOC
+        for repo_stats in repository_stats_list:
+            repo_total_loc = repo_stats.repo_totals.loc
+            repo_total_commits = repo_stats.repo_totals.commits
+            repo_total_files = repo_stats.repo_totals.files
+            
+            if repo_total_loc > 0:
+                for language, stats in repo_stats.language_stats.items():
+                    if language in unified_stats.unified_language_stats:
+                        # Calculate proportion of this language's LOC in this repo
+                        lang_proportion = stats.get('loc', 0) / repo_total_loc
+                        # Distribute commits and files proportionally
+                        unified_stats.unified_language_stats[language]['commits'] += int(repo_total_commits * lang_proportion)
+                        unified_stats.unified_language_stats[language]['files'] += int(repo_total_files * lang_proportion)
+                        language_totals['commits'] += int(repo_total_commits * lang_proportion)
+                        language_totals['files'] += int(repo_total_files * lang_proportion)
 
         # Validation: check if language/project totals match global totals
         validation = {}

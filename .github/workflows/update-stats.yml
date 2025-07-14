@@ -81,8 +81,8 @@ jobs:
             TOKEN="${PRIVATE_TOKEN}"
           fi
 
-          # Use shallow clone with depth 1 for faster cloning
-          git clone --branch "${BRANCH_NAME}" --single-branch --depth 1 \
+          # Use full clone to get complete history for accurate git fame analysis
+          git clone --branch "${BRANCH_NAME}" --single-branch \
             "https://x-access-token:${TOKEN}@github.com/${ORG}/${REPO_NAME}.git" \
             repo
 

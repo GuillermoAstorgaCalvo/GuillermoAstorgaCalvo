@@ -307,8 +307,26 @@ class LanguageMapper:
         """
         language_stats = {}
         
+        # Languages to exclude as they are mostly configuration files
+        excluded_languages = {
+            'JSON',      # package.json, composer.json, etc.
+            'YAML',      # .yml, .yaml files
+            'TOML',      # Cargo.toml, pyproject.toml, etc.
+            'INI',       # .ini, .cfg, .conf files
+            'Properties', # .properties, .env files
+            'Log',       # .log files
+            'Image',     # Image files
+            'Font',      # Font files
+            'Archive',   # Archive files
+            'Binary',    # Binary files
+        }
+        
         for extension, stats in extension_stats.items():
             language = self.get_language_from_extension(extension)
+            
+            # Skip configuration and non-code files
+            if language in excluded_languages:
+                continue
             
             if language not in language_stats:
                 language_stats[language] = {

@@ -134,7 +134,7 @@ def main():
             cloc_language_stats = {}
             if cloc_data:
                 for lang, stats in cloc_data.items():
-                    if lang in ('header', 'SUM'):
+                    if lang in ('header', 'SUM', 'JSON', 'Text'):
                         continue
                     cloc_language_stats[lang] = {
                         'loc': stats.get('code', 0),
@@ -148,28 +148,7 @@ def main():
             print(f"⚠️ cloc failed, using fallback: {e}")
             cloc_language_stats = {}
 
-        # Use cloc data directly, but exclude .txt and .json files
-        cloc_language_stats = {}
-        for lang, stats in cloc_data.items():
-            if lang in ('header', 'SUM', 'JSON', 'Text'):
-                continue
-            cloc_language_stats[lang] = {
-                'loc': stats.get('code', 0),
-                'files': stats.get('nFiles', 0),
-                'commits': 0  # cloc doesn't provide commits
-            }
-        
-        # Merge cloc stats with language_mapper stats (favor cloc for LOC)
-        merged_language_stats = language_stats.copy() if language_stats else {}
-        for lang, stats in cloc_language_stats.items():
-            if lang not in merged_language_stats:
-                merged_language_stats[lang] = stats
-            else:
-                merged_language_stats[lang]['loc'] = stats['loc']
-                merged_language_stats[lang]['files'] = stats['files']
-        language_stats = merged_language_stats
-        
-        # Get regular git fame data (by author)
+        # Get regular git fame data (by author) - this provides REAL commit data
         git_fame_data = git_fame_parser.execute_git_fame(
             str(repo_path), 
             config.get_git_fame_format()
@@ -184,14 +163,14 @@ def main():
             print("❌ Invalid git fame data format")
             sys.exit(1)
         
-        # Extract author information
+        # Extract author information - this contains REAL commit and file counts
         authors = git_fame_parser.extract_authors(git_fame_data)
         
         if not authors:
             print("❌ No author data found")
             sys.exit(1)
         
-        # Get language breakdown data
+        # Get language breakdown data (for LOC only, commits/files will be distributed proportionally)
         print("📊 Getting language breakdown...")
         git_fame_bytype_data = git_fame_parser.execute_git_fame(
             str(repo_path),
@@ -201,7 +180,7 @@ def main():
         
         language_stats = {}
         if git_fame_bytype_data:
-            # Extract extension stats
+            # Extract extension stats (LOC only, no estimated commits/files)
             extension_stats = git_fame_parser.extract_extension_stats(git_fame_bytype_data)
             print(f"📊 Extracted {len(extension_stats)} file extensions")
             
@@ -233,7 +212,7 @@ def main():
             print("⚠️ Could not get language breakdown data")
             print("🔍 Debug: git fame --bytype output was empty or failed")
         
-        # Process repository statistics
+        # Process repository statistics using REAL author data
         repo_stats = stats_processor.process_repository_data(authors, display_name)
         repo_stats.language_stats = language_stats
         
