@@ -576,14 +576,13 @@ class JSONReportGenerator:
         for lang, stats in language_stats.items():
             if lang in lang_to_tech:
                 tech_name = lang_to_tech[lang]
-            loc = stats.get('loc', 0)
-                
+                loc = stats.get('loc', 0)
                 if lang in ['TypeScript', 'JavaScript', 'HTML', 'CSS']:
                     categories['frontend']['technologies'].append(tech_name)
-                categories['frontend']['total_loc'] += loc
+                    categories['frontend']['total_loc'] += loc
                 elif lang == 'Python':
                     categories['backend']['technologies'].append(tech_name)
-                categories['backend']['total_loc'] += loc
+                    categories['backend']['total_loc'] += loc
         
         # Remove duplicates
         for category in categories.values():
