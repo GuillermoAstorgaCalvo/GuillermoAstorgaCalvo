@@ -152,9 +152,17 @@ def main():
             with open('tech_stack_analysis.json', 'r', encoding='utf-8') as f:
                 tech_stack = json.load(f)
             print("[DEBUG] Loaded tech stack analysis:", json.dumps(tech_stack, indent=2))
-            unified_stats['tech_stack_analysis'] = tech_stack
-            print("\n[DEBUG] Merged tech_stack_analysis into unified_stats.json:")
-            print(json.dumps(unified_stats.get('tech_stack_analysis', {}), indent=2))
+            # Fix: assign as attribute if unified_stats is an object, else as dict key
+            try:
+                setattr(unified_stats, 'tech_stack_analysis', tech_stack)
+            except Exception:
+                if isinstance(unified_stats, dict):
+                    unified_stats['tech_stack_analysis'] = tech_stack
+            print("\n[DEBUG] Merged tech_stack_analysis into unified_stats:")
+            if hasattr(unified_stats, 'tech_stack_analysis'):
+                print(json.dumps(getattr(unified_stats, 'tech_stack_analysis'), indent=2))
+            elif isinstance(unified_stats, dict) and 'tech_stack_analysis' in unified_stats:
+                print(json.dumps(unified_stats['tech_stack_analysis'], indent=2))
         
         # Print summary
         guillermo = unified_stats.guillermo_unified

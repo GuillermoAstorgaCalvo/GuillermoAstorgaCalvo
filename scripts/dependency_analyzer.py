@@ -319,18 +319,21 @@ class DependencyAnalyzer:
             'devops': set(),
             'ai_ml': set()
         }
-        
-        # Look for repositories in the repos directory
+        print(f"[DEBUG] Scanning repositories in: {repos_dir.resolve()}")
         if repos_dir.exists():
             for repo_dir in repos_dir.iterdir():
                 if repo_dir.is_dir():
-                    print(f"🔍 Analyzing dependencies in {repo_dir.name}")
+                    print(f"[DEBUG] Analyzing dependencies in {repo_dir.name}")
+                    # List files for debug
+                    for root, dirs, files in os.walk(repo_dir):
+                        for file in files:
+                            if file.endswith(('package.json', 'requirements.txt')):
+                                print(f"[DEBUG] Found {file} in {root}")
                     repo_tech = self.analyze_repository_dependencies(repo_dir)
-                    
-                    # Merge technologies
                     for category, techs in repo_tech.items():
                         all_technologies[category].update(techs)
-        
+        else:
+            print(f"[DEBUG] Directory does not exist: {repos_dir}")
         # Convert sets to sorted lists
         result = {}
         for category, techs in all_technologies.items():
@@ -351,13 +354,11 @@ def main():
     """Main function to analyze dependencies."""
     analyzer = DependencyAnalyzer()
     
-    # Look for repositories in the current directory or a repos subdirectory
-    current_dir = Path.cwd()
-    repos_dir = current_dir / 'repos'
-    
+    import os
+    from pathlib import Path
+    repos_dir = Path(os.environ.get('REPOS_DIR', 'repo-stats'))
     if not repos_dir.exists():
-        # Try to find repositories in the current directory
-        repos_dir = current_dir
+        repos_dir = Path.cwd()
     
     print(f"🔍 Analyzing dependencies in: {repos_dir}")
     
@@ -372,7 +373,7 @@ def main():
                 print(f"  • {tech}")
     
     # Save results
-    output_file = current_dir / 'tech_stack_analysis.json'
+    output_file = repos_dir / 'tech_stack_analysis.json'
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(tech_stack, f, indent=2, ensure_ascii=False)
     
