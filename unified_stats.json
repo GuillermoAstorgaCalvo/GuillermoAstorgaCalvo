@@ -196,59 +196,37 @@
   },
   "tech_stack_analysis": {
     "frontend": {
-      "languages": [
-        {
-          "name": "JavaScript",
-          "loc": 411
-        },
-        {
-          "name": "HTML",
-          "loc": 226
-        },
-        {
-          "name": "CSS",
-          "loc": 1652
-        },
-        {
-          "name": "TypeScript",
-          "loc": 106122
-        }
+      "technologies": [
+        "CSS",
+        "HTML",
+        "JavaScript",
+        "Next.js",
+        "Node.js",
+        "React",
+        "TailwindCSS",
+        "TypeScript"
       ],
       "total_loc": 108411
     },
     "backend": {
-      "languages": [
-        {
-          "name": "Python",
-          "loc": 7659
-        }
+      "technologies": [
+        "Django",
+        "FastAPI",
+        "Python"
       ],
       "total_loc": 7659
     },
     "database": {
-      "languages": [],
+      "technologies": [],
       "total_loc": 0
     },
     "devops": {
-      "languages": [],
+      "technologies": [],
       "total_loc": 0
     },
-    "other": {
-      "languages": [
-        {
-          "name": "Unknown",
-          "loc": 7755
-        },
-        {
-          "name": "Documentation",
-          "loc": 2267
-        },
-        {
-          "name": "Assets",
-          "loc": 267
-        }
-      ],
-      "total_loc": 10289
+    "ai_ml": {
+      "technologies": [],
+      "total_loc": 0
     }
   },
   "complexity_analysis": {

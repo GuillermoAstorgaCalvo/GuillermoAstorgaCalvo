@@ -206,11 +206,19 @@ def generate_enhanced_stats_from_unified(unified_stats: Dict[str, Any]) -> str:
     if tech_stack_analysis:
         tech_stack_insights = f"\n### **🛠️ Technology Stack**\n"
         for category, data in tech_stack_analysis.items():
-            if data.get('languages') and data.get('total_loc', 0) > 0:
+            # Handle both old format (languages) and new format (technologies)
+            technologies = []
+            if data.get('technologies'):
+                technologies = data.get('technologies', [])
+            elif data.get('languages'):
+                # Convert old format to new format
+                languages = data.get('languages', [])
+                technologies = [lang.get('name', '') for lang in languages if lang.get('name')]
+            
+            if technologies and len(technologies) > 0:
                 category_name = category.title()
                 total_loc = data.get('total_loc', 0)
-                languages = [lang['name'] for lang in data.get('languages', [])]
-                tech_stack_insights += f"**{category_name}:** {', '.join(languages[:3])} ({format_number(total_loc)} lines)\n"
+                tech_stack_insights += f"**{category_name}:** {', '.join(technologies[:5])} ({format_number(total_loc)} lines)\n"
     
     # Repository insights
     repo_insights = ""

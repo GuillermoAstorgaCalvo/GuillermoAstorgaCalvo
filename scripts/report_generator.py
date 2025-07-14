@@ -8,6 +8,7 @@ from typing import Dict, Any
 from stats_processor import UnifiedStats, AuthorStats
 from analytics_manager import get_analytics_manager
 from analytics_reporter import get_analytics_reporter
+from pathlib import Path
 
 
 class MarkdownReportGenerator:
@@ -510,53 +511,83 @@ class JSONReportGenerator:
         return report
     
     def _analyze_tech_stack(self, language_stats: Dict[str, Any]) -> Dict[str, Any]:
-        """Analyze technology stack from language statistics."""
-        if not language_stats:
-            return {}
-        
-        # Define categories to exclude (non-programming languages)
-        excluded_categories = {
-            'Unknown', 'Assets', 'Documentation', 'Image', 'Font', 'Archive', 'Binary',
-            'JSON', 'YAML', 'TOML', 'INI', 'Properties', 'Log', 'Markdown', 'reStructuredText', 'AsciiDoc', 'BibTeX'
+        """Analyze technology stack from actual dependencies in package.json and requirements.txt files."""
+        try:
+            # Import the dependency analyzer
+            from dependency_analyzer import DependencyAnalyzer
+            
+            # Initialize the analyzer
+            analyzer = DependencyAnalyzer()
+            
+            # Look for repositories in the current working directory
+            current_dir = Path.cwd()
+            repos_dir = current_dir / 'repos'
+            
+            if not repos_dir.exists():
+                # Try to find repositories in the current directory
+                repos_dir = current_dir
+            
+            # Analyze dependencies from all repositories
+            tech_stack = analyzer.analyze_all_repositories(repos_dir)
+            
+            # Convert to the expected format
+            categories = {
+                'frontend': {'technologies': tech_stack.get('frontend', {}).get('technologies', []), 'total_loc': 0},
+                'backend': {'technologies': tech_stack.get('backend', {}).get('technologies', []), 'total_loc': 0},
+                'database': {'technologies': tech_stack.get('database', {}).get('technologies', []), 'total_loc': 0},
+                'devops': {'technologies': tech_stack.get('devops', {}).get('technologies', []), 'total_loc': 0},
+                'ai_ml': {'technologies': tech_stack.get('ai_ml', {}).get('technologies', []), 'total_loc': 0}
+            }
+            
+            # Add LOC data from language stats for context
+            for lang, stats in language_stats.items():
+                loc = stats.get('loc', 0)
+                if lang in ['TypeScript', 'JavaScript', 'HTML', 'CSS']:
+                    categories['frontend']['total_loc'] += loc
+                elif lang == 'Python':
+                    categories['backend']['total_loc'] += loc
+            
+            return categories
+            
+        except ImportError:
+            # Fallback to language-based analysis if dependency analyzer is not available
+            print("⚠️ Dependency analyzer not available, falling back to language-based analysis")
+            return self._fallback_tech_stack_analysis(language_stats)
+    
+    def _fallback_tech_stack_analysis(self, language_stats: Dict[str, Any]) -> Dict[str, Any]:
+        """Fallback tech stack analysis based on programming languages."""
+        categories = {
+            'frontend': {'technologies': [], 'total_loc': 0},
+            'backend': {'technologies': [], 'total_loc': 0},
+            'database': {'technologies': [], 'total_loc': 0},
+            'devops': {'technologies': [], 'total_loc': 0},
+            'ai_ml': {'technologies': [], 'total_loc': 0}
         }
         
-        # Categorize languages by type
-        frontend_langs = ['JavaScript', 'TypeScript', 'HTML', 'CSS', 'React', 'Vue', 'Angular']
-        backend_langs = ['Python', 'Java', 'C#', 'PHP', 'Ruby', 'Go', 'Rust', 'Node.js']
-        database_langs = ['SQL', 'PL/SQL', 'T-SQL']
-        devops_langs = ['Shell', 'PowerShell', 'Dockerfile']
-        
-        categories = {
-            'frontend': {'languages': [], 'total_loc': 0},
-            'backend': {'languages': [], 'total_loc': 0},
-            'database': {'languages': [], 'total_loc': 0},
-            'devops': {'languages': [], 'total_loc': 0},
-            'other': {'languages': [], 'total_loc': 0}
+        # Map languages to technologies
+        lang_to_tech = {
+            'TypeScript': 'TypeScript',
+            'JavaScript': 'JavaScript',
+            'Python': 'Python',
+            'HTML': 'HTML',
+            'CSS': 'CSS'
         }
         
         for lang, stats in language_stats.items():
-            # Skip excluded categories
-            if lang in excluded_categories:
-                continue
+            if lang in lang_to_tech:
+                tech_name = lang_to_tech[lang]
+                loc = stats.get('loc', 0)
                 
-            loc = stats.get('loc', 0)
-            if lang in frontend_langs:
-                categories['frontend']['languages'].append({'name': lang, 'loc': loc})
-                categories['frontend']['total_loc'] += loc
-            elif lang in backend_langs:
-                categories['backend']['languages'].append({'name': lang, 'loc': loc})
-                categories['backend']['total_loc'] += loc
-            elif lang in database_langs:
-                categories['database']['languages'].append({'name': lang, 'loc': loc})
-                categories['database']['total_loc'] += loc
-            elif lang in devops_langs:
-                categories['devops']['languages'].append({'name': lang, 'loc': loc})
-                categories['devops']['total_loc'] += loc
-            else:
-                # Only add to 'other' if it's a real programming language
-                if loc > 0:  # Only include languages with actual code
-                    categories['other']['languages'].append({'name': lang, 'loc': loc})
-                    categories['other']['total_loc'] += loc
+                if lang in ['TypeScript', 'JavaScript', 'HTML', 'CSS']:
+                    categories['frontend']['technologies'].append(tech_name)
+                    categories['frontend']['total_loc'] += loc
+                elif lang == 'Python':
+                    categories['backend']['technologies'].append(tech_name)
+                    categories['backend']['total_loc'] += loc
+        
+        # Remove duplicates
+        for category in categories.values():
+            category['technologies'] = sorted(list(set(category['technologies'])))
         
         return categories
     
