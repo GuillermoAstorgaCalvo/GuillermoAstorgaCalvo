@@ -98,6 +98,10 @@ jobs:
         run: |
           cloc --skip-uniqueness --exclude-dir=.git,node_modules,venv,.venv,build,dist,coverage,.nyc_output,logs,generated,target,data,output --exclude-ext=json,toml,lock,yml,yaml,ini,cfg,conf,env,log,md,txt,svg,png,jpg,jpeg,gif,ico,bmp,tiff,webp . || true
 
+      - name: List all files in repo (for debugging)
+        run: |
+          find repo/ | sort
+
       - name: Process repository statistics
         env:
           REPO_NAME: ${{ matrix.repository.name }}
