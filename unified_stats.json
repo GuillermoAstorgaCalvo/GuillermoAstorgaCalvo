@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-07-14T11:08:42.876146Z",
+  "timestamp": "2025-07-14T11:34:13.551381Z",
   "metadata": {
     "version": "2.0",
     "generated_by": "Enhanced JSON Report Generator",
@@ -196,24 +196,11 @@
   },
   "tech_stack_analysis": {
     "frontend": {
-      "technologies": [
-        "CSS",
-        "HTML",
-        "JavaScript",
-        "Next.js",
-        "Node.js",
-        "React",
-        "TailwindCSS",
-        "TypeScript"
-      ],
+      "technologies": [],
       "total_loc": 108411
     },
     "backend": {
-      "technologies": [
-        "Django",
-        "FastAPI",
-        "Python"
-      ],
+      "technologies": [],
       "total_loc": 7659
     },
     "database": {
@@ -242,14 +229,13 @@
       "files_per_commit": 3.3016194331983804
     },
     "repository_diversity": {
-      "languages_used": 8,
+      "languages_used": 5,
       "project_types": 5
     }
   },
   "insights": {
     "strengths": [
-      "High commit frequency indicates consistent development activity",
-      "Diverse technology stack across multiple programming languages"
+      "High commit frequency indicates consistent development activity"
     ],
     "focus_areas": [
       "Large codebase suggests complex, enterprise-level projects"
