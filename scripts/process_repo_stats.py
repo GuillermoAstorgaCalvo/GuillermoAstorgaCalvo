@@ -242,6 +242,19 @@ def main():
         # generate_language_svg_bar_chart(cloc_language_stats, 'assets/language_stats.svg')
         # Note: SVG generation moved to aggregation job
         
+        # After processing repo stats, run dependency analyzer for this repo
+        from dependency_analyzer import DependencyAnalyzer
+        import os
+        from pathlib import Path
+        repo_dir = Path(os.getcwd())
+        analyzer = DependencyAnalyzer()
+        print(f"[DEBUG] (process_repo_stats.py) Analyzing dependencies in: {repo_dir}")
+        tech_stack = analyzer.analyze_all_repositories(repo_dir)
+        with open('tech_stack_analysis.json', 'w', encoding='utf-8') as f:
+            import json
+            json.dump(tech_stack, f, indent=2, ensure_ascii=False)
+        print(f"[DEBUG] (process_repo_stats.py) Saved tech_stack_analysis.json for {repo_dir}")
+        
     except KeyboardInterrupt:
         print("\n❌ Process interrupted by user")
         sys.exit(1)
