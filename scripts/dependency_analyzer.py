@@ -323,8 +323,15 @@ class DependencyAnalyzer:
         if repos_dir.exists():
             for repo_dir in repos_dir.iterdir():
                 if repo_dir.is_dir():
-                    print(f"[DEBUG] Analyzing dependencies in {repo_dir.name}")
-                    # Recursively search for package.json and requirements.txt
+                    # Check root of repo_dir
+                    for fname in ['package.json', 'requirements.txt']:
+                        root_file = repo_dir / fname
+                        if root_file.exists():
+                            print(f"[DEBUG] Found {fname} in {root_file}")
+                            repo_tech = self.analyze_repository_dependencies(repo_dir)
+                            for category, techs in repo_tech.items():
+                                all_technologies[category].update(techs)
+                    # Recursively search subdirectories
                     for file_path in repo_dir.rglob('package.json'):
                         print(f"[DEBUG] Found package.json in {file_path}")
                         repo_tech = self.analyze_repository_dependencies(file_path.parent)
