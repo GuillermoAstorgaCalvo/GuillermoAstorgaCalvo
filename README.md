@@ -68,10 +68,10 @@ I started coding because I wanted to build things that could actually help peopl
 
 
 ### **🛠️ Technology Stack**
-**Frontend:** JavaScript, HTML, CSS (108,411 lines)
+**Frontend:** JavaScript, HTML, TypeScript (108,411 lines)
 **Backend:** Python (7,659 lines)
-**Devops:** YAML, JSON (33,344 lines)
-**Other:** Unknown, Documentation, INI (10,437 lines)
+**Devops:** JSON, YAML (33,344 lines)
+**Other:** Unknown, Documentation, Assets (10,437 lines)
 
 
 
