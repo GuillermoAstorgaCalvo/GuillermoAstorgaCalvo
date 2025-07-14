@@ -458,8 +458,11 @@ class JSONReportGenerator:
                 }
             }
         
-        # Technology stack analysis
-        tech_stack = self._analyze_tech_stack(stats.unified_language_stats)
+        # Use tech stack data if already available in stats, otherwise analyze
+        if hasattr(stats, 'tech_stack_analysis') and stats.tech_stack_analysis:
+            tech_stack = stats.tech_stack_analysis
+        else:
+            tech_stack = self._analyze_tech_stack(stats.unified_language_stats)
         
         # Project complexity analysis
         complexity_analysis = self._analyze_complexity(stats)
