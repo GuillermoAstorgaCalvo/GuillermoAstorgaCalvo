@@ -8,6 +8,7 @@ import json
 import sys
 from pathlib import Path
 from typing import List
+import os
 
 # Add scripts directory to Python path for imports
 script_dir = Path(__file__).parent
@@ -144,6 +145,15 @@ def main():
         json_path = script_dir / json_filename
         json_generator.save_report(unified_stats, str(json_path))
         print(f"✅ JSON report saved to: {json_path}")
+
+        # Merge tech stack analysis
+        if os.path.exists('tech_stack_analysis.json'):
+            print("🔄 Loading tech_stack_analysis.json...")
+            with open('tech_stack_analysis.json', 'r', encoding='utf-8') as f:
+                tech_stack = json.load(f)
+            print(f"🔍 Loaded tech stack: {tech_stack}")
+            unified_stats.tech_stack_analysis = tech_stack
+            print(f"✅ Merged tech stack into unified_stats: {unified_stats.tech_stack_analysis}")
         
         # Print summary
         guillermo = unified_stats.guillermo_unified

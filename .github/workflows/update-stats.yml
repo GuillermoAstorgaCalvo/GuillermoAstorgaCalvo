@@ -196,3 +196,12 @@ jobs:
 
           git commit -m "📊 Update README and language ranking SVG - $(date '+%Y-%m-%d %H:%M UTC')"
           git push
+
+      - name: Debug: Enable shell command tracing
+        run: set -x
+
+      - name: Show tech_stack_analysis.json
+        run: cat tech_stack_analysis.json || echo "No tech_stack_analysis.json found"
+
+      - name: Show unified_stats.json
+        run: cat unified_stats.json || echo "No unified_stats.json found"
