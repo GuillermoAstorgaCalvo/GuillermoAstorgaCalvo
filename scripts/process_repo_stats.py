@@ -117,7 +117,6 @@ def main():
         # Repository is cloned to parent directory (root), not in scripts/
         repo_path = script_dir.parent / "repo"
         print(f"Looking for repository at: {repo_path}")
-        
         if not repo_path.exists():
             print(f"❌ Repository directory not found at: {repo_path}")
             print(f"Current working directory: {Path.cwd()}")

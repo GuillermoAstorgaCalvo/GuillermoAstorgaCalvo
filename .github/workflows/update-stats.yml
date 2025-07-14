@@ -76,6 +76,9 @@ jobs:
           if [[ "${REPO_NAME}" == "FacturaIA" || "${REPO_NAME}" == "restaurant-app" ]]; then
             ORG="GuillermoAstorgaCalvo"
             TOKEN="${PERSONAL_TOKEN}"
+          elif [[ "${REPO_NAME}" == "housing-hub-saas" || "${REPO_NAME}" == "backend-housing-hub-saas" || "${REPO_NAME}" == "IAbackend-inmoIA" ]]; then
+            ORG="guillermo-affiliaction"
+            TOKEN="${PRIVATE_TOKEN}"
           else
             ORG="guillermo-affiliaction"
             TOKEN="${PRIVATE_TOKEN}"
@@ -114,7 +117,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.repository.artifact_name }}
-          path: scripts/repo_stats.json
+          path: |
+            scripts/repo_stats.json
+            scripts/tech_stack_analysis.json
           retention-days: 1
 
   aggregate-and-commit:
