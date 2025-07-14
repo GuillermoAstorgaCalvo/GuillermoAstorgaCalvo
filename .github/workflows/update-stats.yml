@@ -207,7 +207,15 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
 
           # Add files that exist
-          git add unified_stats.json analytics_history.json README.md
+          if [[ -f "unified_stats.json" ]]; then
+            git add unified_stats.json
+          fi
+          if [[ -f "analytics_history.json" ]]; then
+            git add analytics_history.json
+          fi
+          if [[ -f "README.md" ]]; then
+            git add README.md
+          fi
           # Add SVG if it exists
           if [[ -f "assets/language_stats.svg" ]]; then
             git add assets/language_stats.svg
