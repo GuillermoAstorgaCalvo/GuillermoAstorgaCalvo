@@ -68,8 +68,9 @@ I started coding because I wanted to build things that could actually help peopl
 
 
 ### **🛠️ Technology Stack**
-**Frontend:** CSS, Framer Motion, HTML, JavaScript, Node.js (108,411 lines)
-**Backend:** FastAPI, OpenAI, Pydantic, Python, SQLAlchemy (7,659 lines)
+
+I believe in using the right tool for the job. Here's my current technology stack based on my projects:
+
 
 
 
@@ -178,25 +179,6 @@ Here are some projects I'm pretty proud of. Each one taught me something differe
 **The backstory:** This was the project that made me realize I could actually build things people would use. Seeing real customers place orders through something I built was incredibly satisfying.
 
 **🔗 [Check it out](https://restauranteguillermoastorga.up.railway.app/)**
-
----
-## 🛠️ **Technology Stack**
-
-<div align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=500&size=18&pause=1000&color=58A6FF&center=true&vCenter=true&width=400&height=40&lines=Modern+Technologies;Best+Practices;Clean+Code" alt="Tech Stack Typing" />
-</div>
-
-I believe in using the right tool for the job. Here's my current technology stack based on my projects:
-
-### **🌐 Frontend Development**
-<div align="center">
-  <img src="https://skillicons.dev/icons?i=css,framer,html,js,nodejs,radix,react,reactrouter" alt="Frontend Technologies" />
-</div>
-
-### **⚙️ Backend Development**
-<div align="center">
-  <img src="https://skillicons.dev/icons?i=fastapi,openai,pydantic,python,sqlalchemy,tesseract" alt="Backend Technologies" />
-</div>
 
 ---
 ## 💼 **Experience & Growth**

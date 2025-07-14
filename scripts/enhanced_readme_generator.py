@@ -200,25 +200,135 @@ def generate_enhanced_stats_from_unified(unified_stats: Dict[str, Any]) -> str:
         language_stats += '  <img src="assets/language_stats.svg" alt="Languages by Lines of Code" width="500" />\n'
         language_stats += '</p>\n'
     
-    # Tech stack analysis
+    # Tech stack analysis with skillicons.dev
     tech_stack_insights = ""
     tech_stack_analysis = unified_stats.get('tech_stack_analysis', {})
     if tech_stack_analysis:
-        tech_stack_insights = f"\n### **🛠️ Technology Stack**\n"
-        for category, data in tech_stack_analysis.items():
-            # Handle both old format (languages) and new format (technologies)
-            technologies = []
-            if data.get('technologies'):
-                technologies = data.get('technologies', [])
-            elif data.get('languages'):
-                # Convert old format to new format
-                languages = data.get('languages', [])
-                technologies = [lang.get('name', '') for lang in languages if lang.get('name')]
+        # Map actual technologies to skillicons.dev icons
+        tech_to_icon = {
+            # Frontend
+            'React': 'react', 'TypeScript': 'ts', 'JavaScript': 'js', 'Next.js': 'nextjs',
+            'TailwindCSS': 'tailwind', 'HTML': 'html', 'CSS': 'css', 'Vue.js': 'vuejs',
+            'Angular': 'angular', 'Framer Motion': 'framer', 'Radix UI': 'radix',
+            'TanStack Query': 'tanstack', 'React Router': 'reactrouter',
             
-            if technologies and len(technologies) > 0:
-                category_name = category.title()
-                total_loc = data.get('total_loc', 0)
-                tech_stack_insights += f"**{category_name}:** {', '.join(technologies[:5])} ({format_number(total_loc)} lines)\n"
+            # Backend
+            'Node.js': 'nodejs', 'Python': 'python', 'Express.js': 'express',
+            'FastAPI': 'fastapi', 'Django': 'django', 'Flask': 'flask',
+            'TypeScript': 'ts', 'Java': 'java', 'Spring Boot': 'spring',
+            
+            # Database & Cloud
+            'PostgreSQL': 'postgresql', 'MongoDB': 'mongodb', 'Redis': 'redis',
+            'AWS': 'aws', 'Docker': 'docker', 'Supabase': 'supabase',
+            'MySQL': 'mysql', 'SQLite': 'sqlite', 'Prisma': 'prisma',
+            
+            # AI & ML
+            'TensorFlow': 'tensorflow', 'PyTorch': 'pytorch', 'Scikit-learn': 'scikit',
+            'OpenAI': 'openai', 'Pandas': 'pandas', 'NumPy': 'numpy',
+            'Tesseract OCR': 'tesseract', 'Pillow': 'pillow',
+            
+            # DevOps & Tools
+            'Git': 'git', 'GitHub': 'github', 'VS Code': 'vscode',
+            'Linux': 'linux', 'Docker Compose': 'docker', 'Nginx': 'nginx',
+            'ESLint': 'eslint', 'TypeScript': 'ts', 'Webpack': 'webpack',
+            
+            # Additional
+            'Stripe': 'stripe', 'Framer Motion': 'framer', 'Radix UI': 'radix',
+            'TanStack Query': 'tanstack', 'Zod': 'zod', 'Lodash': 'lodash',
+            'Axios': 'axios', 'Moment.js': 'moment', 'Chart.js': 'chartjs'
+        }
+        
+        # Build dynamic tech stack
+        dynamic_tech_stack = {
+            'frontend': [],
+            'backend': [],
+            'database': [],
+            'ai_ml': [],
+            'devops': [],
+            'additional': []
+        }
+        
+        # Process each category
+        for category, data in tech_stack_analysis.items():
+            technologies = data.get('technologies', [])
+            for tech in technologies:
+                icon = tech_to_icon.get(tech, tech.lower().replace(' ', '').replace('.', ''))
+                if category == 'frontend':
+                    dynamic_tech_stack['frontend'].append(icon)
+                elif category == 'backend':
+                    dynamic_tech_stack['backend'].append(icon)
+                elif category == 'database':
+                    dynamic_tech_stack['database'].append(icon)
+                elif category == 'ai_ml':
+                    dynamic_tech_stack['ai_ml'].append(icon)
+                elif category == 'devops':
+                    dynamic_tech_stack['devops'].append(icon)
+                else:
+                    dynamic_tech_stack['additional'].append(icon)
+        
+        # Generate tech stack section
+        tech_stack_insights = "\n### **🛠️ Technology Stack**\n\n"
+        tech_stack_insights += "I believe in using the right tool for the job. Here's my current technology stack based on my projects:\n\n"
+        
+        # Frontend
+        if dynamic_tech_stack['frontend']:
+            icons = ','.join(dynamic_tech_stack['frontend'][:8])
+            tech_stack_insights += f"""#### **🌐 Frontend Development**
+<div align="center">
+  <img src="https://skillicons.dev/icons?i={icons}" alt="Frontend Technologies" />
+</div>
+
+"""
+        
+        # Backend
+        if dynamic_tech_stack['backend']:
+            icons = ','.join(dynamic_tech_stack['backend'][:8])
+            tech_stack_insights += f"""#### **⚙️ Backend Development**
+<div align="center">
+  <img src="https://skillicons.dev/icons?i={icons}" alt="Backend Technologies" />
+</div>
+
+"""
+        
+        # Database & Cloud
+        if dynamic_tech_stack['database']:
+            icons = ','.join(dynamic_tech_stack['database'][:8])
+            tech_stack_insights += f"""#### **🗄️ Database & Cloud**
+<div align="center">
+  <img src="https://skillicons.dev/icons?i={icons}" alt="Database & Cloud Technologies" />
+</div>
+
+"""
+        
+        # AI & ML
+        if dynamic_tech_stack['ai_ml']:
+            icons = ','.join(dynamic_tech_stack['ai_ml'][:8])
+            tech_stack_insights += f"""#### **🤖 AI & Machine Learning**
+<div align="center">
+  <img src="https://skillicons.dev/icons?i={icons}" alt="AI & ML Technologies" />
+</div>
+
+"""
+        
+        # DevOps & Tools
+        if dynamic_tech_stack['devops']:
+            icons = ','.join(dynamic_tech_stack['devops'][:8])
+            tech_stack_insights += f"""#### **🛠️ Development Tools**
+<div align="center">
+  <img src="https://skillicons.dev/icons?i={icons}" alt="Development Tools" />
+</div>
+
+"""
+        
+        # Additional Technologies
+        if dynamic_tech_stack['additional']:
+            icons = ','.join(dynamic_tech_stack['additional'][:8])
+            tech_stack_insights += f"""#### **📊 Additional Technologies**
+<div align="center">
+  <img src="https://skillicons.dev/icons?i={icons}" alt="Additional Technologies" />
+</div>
+
+"""
     
     # Repository insights
     repo_insights = ""
@@ -634,9 +744,6 @@ def generate_enhanced_readme(data: Dict[str, Any]) -> str:
     
     # Projects Section
     content += generate_projects_section()
-    
-    # Tech Stack Section
-    content += generate_dynamic_tech_stack_section(data)
     
     # Experience Section
     content += generate_experience_section()
