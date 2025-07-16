@@ -137,7 +137,7 @@ def generate_language_svg_bar_chart(language_stats: dict, output_path: str):
 def main():
     language_stats = {}  # Ensure language_stats is always defined
     try:
-        config = create_config_manager()
+        config = create_config_manager(str(script_dir.parent / "config.yml"))
         config_errors = config.validate_config()
         if config_errors:
             logger.error(f"Configuration validation errors: {config_errors}")

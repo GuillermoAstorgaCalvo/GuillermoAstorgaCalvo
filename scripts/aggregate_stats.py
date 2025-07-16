@@ -132,7 +132,7 @@ def aggregate_repository_data(repo_stats_list: List[Dict[str, Any]]) -> Dict[str
 @with_error_context({'component': 'aggregate_stats'})
 def main():
     try:
-        config = create_config_manager()
+        config = create_config_manager(str(script_dir.parent / "config.yml"))
         config_errors = config.validate_config()
         if config_errors:
             logger.error(f"Configuration validation errors: {config_errors}")
