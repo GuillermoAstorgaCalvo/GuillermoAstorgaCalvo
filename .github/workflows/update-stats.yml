@@ -6,7 +6,47 @@ on:
     - cron: "0 3 * * 1" # Every Monday at 3 AM UTC
 
 jobs:
+  setup:
+    runs-on: ubuntu-24.04
+    outputs:
+      python-version: ${{ steps.setver.outputs.python-version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Set Python version
+        id: setver
+        run: echo "python-version=3.12" >> $GITHUB_OUTPUT
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.setver.outputs.python-version }}
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Cache cloc
+        id: cache-cloc
+        uses: actions/cache@v3
+        with:
+          path: /usr/bin/cloc
+          key: cloc-${{ runner.os }}-v1
+      - name: Install cloc if not cached
+        if: steps.cache-cloc.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y cloc
+
   load-config:
+    needs: setup
     runs-on: ubuntu-24.04
     outputs:
       repositories: ${{ steps.config.outputs.repositories }}
@@ -82,7 +122,7 @@ jobs:
           EOF
 
   process-repositories:
-    needs: load-config
+    needs: [setup, load-config]
     runs-on: ubuntu-24.04
     strategy:
       matrix:
@@ -97,23 +137,7 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Cache pip dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
-      - name: Install dependencies
-        run: |
-          python3 -m pip install --upgrade pip --prefer-binary
-          pip install --prefer-binary -r requirements.txt
+      # Python, pip, and cloc are already set up by 'setup' job
 
       - name: Install code quality tools
         run: |
@@ -129,16 +153,11 @@ jobs:
         run: mypy scripts/
 
       - name: Check dependencies with Safety
-        run: safety check
+        run: safety scan --disable-telemetry --db
 
       - name: Validate configuration file
         run: |
           python3 scripts/validate_config.py
-
-      - name: Install cloc
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y cloc
 
       - name: Determine repository configuration
         id: repo-config
@@ -261,7 +280,7 @@ jobs:
           retention-days: 1
 
   aggregate-and-commit:
-    needs: process-repositories
+    needs: [setup, process-repositories]
     runs-on: ubuntu-24.04
     # Restrict permissions to only what's needed for profile README updates
     permissions:
@@ -309,23 +328,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 1
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Cache pip dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
-      - name: Install dependencies
-        run: |
-          python3 -m pip install --upgrade pip
-          pip install -r requirements.txt
+      # Python and pip are already set up by 'setup' job
 
       - name: Download all repository statistics
         uses: actions/download-artifact@v4

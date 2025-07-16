@@ -11,8 +11,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from scripts.config_manager import create_config_manager
-from scripts.error_handling import (
+from config_manager import create_config_manager
+from error_handling import (
     DataProcessingError,
     ErrorCodes,
     get_logger,
@@ -20,9 +20,9 @@ from scripts.error_handling import (
     setup_logging,
     with_error_context,
 )
-from scripts.git_fame_parser import GitFameParser
-from scripts.language_mapper import get_language_mapper
-from scripts.stats_processor import AuthorMatcher, StatsProcessor
+from git_fame_parser import GitFameParser
+from language_mapper import get_language_mapper
+from stats_processor import AuthorMatcher, StatsProcessor
 
 # Constants for resource limits
 MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024  # 2MB
@@ -249,7 +249,7 @@ def main() -> None:
         output_path = Path(__file__).parent / output_filename
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump(stats_dict, f, indent=2, ensure_ascii=False)
-        from scripts.dependency_analyzer import DependencyAnalyzer
+        from dependency_analyzer import DependencyAnalyzer
 
         repo_dir = Path(__file__).parent.parent / "repo"
         analyzer = DependencyAnalyzer()

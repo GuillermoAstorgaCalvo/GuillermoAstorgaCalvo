@@ -9,6 +9,10 @@ import sys
 from typing import Any
 
 import yaml
+from error_handling import get_logger
+
+# Set up logging for this module
+logger = get_logger(__name__)
 
 
 def validate_repository_config(repo: dict[str, Any], index: int) -> list[str]:
@@ -157,25 +161,23 @@ def print_validation_summary(
     repositories: list[dict[str, Any]], errors: list[str]
 ) -> bool:
     """Print a summary of the validation results."""
-    print("🔍 Configuration Validation Summary")
-    print("=" * 50)
+    logger.info("🔍 Configuration Validation Summary")
+    logger.info("=" * 50)
 
     if errors:
-        print(f"❌ Found {len(errors)} validation errors:")
+        logger.error(f"❌ Found {len(errors)} validation errors:")
         for i, error in enumerate(errors, 1):
-            print(f"  {i}. {error}")
-        print()
+            logger.error(f"  {i}. {error}")
         return False
     else:
-        print("✅ Configuration validation passed!")
-        print(f"📊 Found {len(repositories)} repositories:")
+        logger.info("✅ Configuration validation passed!")
+        logger.info(f"📊 Found {len(repositories)} repositories:")
         for repo in repositories:
             name = repo.get("name", "unnamed")
             display_name = repo.get("display_name", "No display name")
             org = repo.get("organization", "No organization")
             token_type = repo.get("token_type", "No token type")
-            print(f"  - {name} ({display_name}) - {org} ({token_type})")
-        print()
+            logger.info(f"  - {name} ({display_name}) - {org} ({token_type})")
         return True
 
 
@@ -185,7 +187,7 @@ def main() -> None:
 
     # Check if config file exists
     if not os.path.exists(config_path):
-        print(f"❌ Configuration file not found: {config_path}")
+        logger.error(f"❌ Configuration file not found: {config_path}")
         sys.exit(1)
 
     # Validate configuration
@@ -204,17 +206,16 @@ def main() -> None:
     is_valid = print_validation_summary(repositories, errors)
 
     if not is_valid:
-        print("💡 Configuration Tips:")
-        print(
+        logger.info("💡 Configuration Tips:")
+        logger.info(
             "  - Ensure all repositories have required fields: name, display_name, branch, artifact_name, organization, token_type"
         )
-        print("  - token_type must be either 'personal' or 'private'")
-        print("  - organization must be a non-empty string")
-        print("  - artifact_name must be unique across all repositories")
-        print("  - repository names must be unique")
-        print()
-        print("📝 Example repository configuration:")
-        print(
+        logger.info("  - token_type must be either 'personal' or 'private'")
+        logger.info("  - organization must be a non-empty string")
+        logger.info("  - artifact_name must be unique across all repositories")
+        logger.info("  - repository names must be unique")
+        logger.info("📝 Example repository configuration:")
+        logger.info(
             """
   - name: "my-repo"
     display_name: "My Repository"
@@ -226,7 +227,7 @@ def main() -> None:
         )
         sys.exit(1)
 
-    print("🎉 Configuration is valid and ready to use!")
+    logger.info("🎉 Configuration is valid and ready to use!")
     return None
 
 

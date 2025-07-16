@@ -5,6 +5,10 @@ Prints a summary and exits with nonzero code if any tool fails.
 """
 import subprocess
 import sys
+from error_handling import get_logger
+
+# Set up logging for this module
+logger = get_logger(__name__)
 
 TOOLS = [
     ("ruff (lint)", ["ruff", "check", "."]),
@@ -14,12 +18,12 @@ TOOLS = [
 
 
 def run_tool(name: str, cmd: list[str]) -> int:
-    print(f"\n=== Running {name} ===")
+    logger.info(f"\n=== Running {name} ===")
     result = subprocess.run(cmd)
     if result.returncode == 0:
-        print(f"{name}: PASS")
+        logger.info(f"{name}: PASS")
     else:
-        print(f"{name}: FAIL (exit code {result.returncode})")
+        logger.error(f"{name}: FAIL (exit code {result.returncode})")
     return result.returncode
 
 
@@ -29,11 +33,11 @@ def main() -> None:
         rc = run_tool(name, cmd)
         if rc != 0:
             failures += 1
-    print("\n=== Summary ===")
+    logger.info("\n=== Summary ===")
     if failures == 0:
-        print("All checks passed! 🎉")
+        logger.info("All checks passed! 🎉")
     else:
-        print(f"{failures} check(s) failed.")
+        logger.error(f"{failures} check(s) failed.")
     sys.exit(failures)
 
 

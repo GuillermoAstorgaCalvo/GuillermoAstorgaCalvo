@@ -58,17 +58,16 @@ def load_analytics_history() -> list[dict[str, Any]]:
             if os.path.exists(path):
                 with open(path, encoding="utf-8") as f:
                     data = json.load(f)
-                return data if isinstance(data, list) else []
+                if isinstance(data, list):
+                    return data
+                else:
+                    logger.warning("analytics_history.json does not contain a list")
+                    return []
+        
         logger.warning(
             "analytics_history.json not found in current or parent directory"
         )
         return []
-
-        if isinstance(data, list):
-            return data
-        else:
-            logger.warning("analytics_history.json does not contain a list")
-            return []
 
     except (FileNotFoundError, PermissionError) as e:
         logger.warning(f"Could not read analytics_history.json: {e}")

@@ -15,6 +15,9 @@ from typing import Any
 
 from error_handling import DataProcessingError, get_logger, log_and_raise
 
+# Set up logging for this module
+logger = get_logger(__name__)
+
 # Set up logging
 logger = get_logger(__name__)
 
@@ -660,21 +663,21 @@ class DependencyManager:
 
 def main() -> None:
     """Main function with enhanced dependency management."""
-    print("🔧 Enhanced Dependency Management Script")
-    print("=" * 60)
+    logger.info("🔧 Enhanced Dependency Management Script")
+    logger.info("=" * 60)
 
     try:
         # Initialize dependency manager
         manager = DependencyManager()
 
         # Perform comprehensive analysis
-        print("\n🔍 Performing comprehensive dependency analysis...")
+        logger.info("\n🔍 Performing comprehensive dependency analysis...")
         report = manager.analyze_dependencies()
 
         # Get packages info for the report
         requirements = manager.parse_requirements_file()
         if not requirements:
-            print(
+            logger.error(
                 "❌ No requirements found. Please check if requirements.txt exists and contains valid packages."
             )
             return
@@ -718,31 +721,31 @@ def main() -> None:
             )
 
         # Display summary
-        print("\n📊 Analysis Summary:")
-        print(f"  Total packages: {report.total_packages}")
-        print(f"  Up to date: {report.up_to_date}")
-        print(f"  Updates available: {report.updates_available}")
-        print(f"  Security updates: {report.security_updates}")
-        print(f"  Major updates: {report.major_updates}")
+        logger.info("\n📊 Analysis Summary:")
+        logger.info(f"  Total packages: {report.total_packages}")
+        logger.info(f"  Up to date: {report.up_to_date}")
+        logger.info(f"  Updates available: {report.updates_available}")
+        logger.info(f"  Security updates: {report.security_updates}")
+        logger.info(f"  Major updates: {report.major_updates}")
 
         if report.missing_dependencies:
-            print(f"  Missing dependencies: {len(report.missing_dependencies)}")
+            logger.info(f"  Missing dependencies: {len(report.missing_dependencies)}")
 
         if report.unused_dependencies:
-            print(f"  Unused dependencies: {len(report.unused_dependencies)}")
+            logger.info(f"  Unused dependencies: {len(report.unused_dependencies)}")
 
         # Show recommendations
         if report.recommendations:
-            print("\n💡 Recommendations:")
+            logger.info("\n💡 Recommendations:")
             for rec in report.recommendations:
-                print(f"  {rec}")
+                logger.info(f"  {rec}")
 
         # Ask for action
         if report.updates_available > 0:
-            print(f"\n🔄 {report.updates_available} updates available")
+            logger.info(f"\n🔄 {report.updates_available} updates available")
 
             if report.security_updates > 0:
-                print(f"🔒 {report.security_updates} security updates - RECOMMENDED")
+                logger.info(f"🔒 {report.security_updates} security updates - RECOMMENDED")
 
             response = (
                 input("\n❓ Update dependencies? (y/N/p for pin exact versions): ")
@@ -753,20 +756,20 @@ def main() -> None:
             if response in ["y", "yes"]:
                 # Update with >= versions
                 if manager.update_requirements_file(packages_info, pin_versions=False):
-                    print("✅ Successfully updated requirements.txt")
+                    logger.info("✅ Successfully updated requirements.txt")
                 else:
-                    print("❌ Failed to update requirements.txt")
+                    logger.error("❌ Failed to update requirements.txt")
 
             elif response == "p":
                 # Update with == versions (pinned)
                 if manager.update_requirements_file(packages_info, pin_versions=True):
-                    print(
+                    logger.info(
                         "✅ Successfully updated requirements.txt with pinned versions"
                     )
                 else:
-                    print("❌ Failed to update requirements.txt")
+                    logger.error("❌ Failed to update requirements.txt")
             else:
-                print("ℹ️ No changes made")
+                logger.info("ℹ️ No changes made")
 
         # Generate and save report
         report_content = manager.generate_dependency_report(report, packages_info)
@@ -775,15 +778,15 @@ def main() -> None:
         try:
             with open(report_file, "w", encoding="utf-8") as f:
                 f.write(report_content)
-            print(f"\n📄 Detailed report saved to: {report_file}")
+            logger.info(f"\n📄 Detailed report saved to: {report_file}")
         except Exception as e:
-            print(f"⚠️ Could not save report: {e}")
+            logger.warning(f"⚠️ Could not save report: {e}")
 
-        print("\n🎉 Dependency analysis completed!")
+        logger.info("\n🎉 Dependency analysis completed!")
 
     except Exception as e:
         logger.error(f"Error in dependency management: {e}")
-        print(f"❌ Error: {e}")
+        logger.error(f"❌ Error: {e}")
         sys.exit(1)
 
 
