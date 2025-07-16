@@ -18,9 +18,15 @@ logger = get_logger(__name__)
 def load_unified_stats() -> Dict[str, Any]:
     """Load unified statistics from JSON file."""
     try:
-        with open('unified_stats.json', 'r', encoding='utf-8') as f:
-            data = json.load(f)
-        return data
+        # Try current directory first, then parent directory
+        config_paths = ['unified_stats.json', '../unified_stats.json']
+        for path in config_paths:
+            if os.path.exists(path):
+                with open(path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                return data
+        logger.warning("unified_stats.json not found in current or parent directory")
+        return {}
     except (FileNotFoundError, PermissionError) as e:
         logger.warning(f"Could not read unified_stats.json: {e}")
         return {}
@@ -34,8 +40,15 @@ def load_unified_stats() -> Dict[str, Any]:
 def load_analytics_history() -> List[Dict[str, Any]]:
     """Load analytics history from JSON file."""
     try:
-        with open('analytics_history.json', 'r', encoding='utf-8') as f:
-            data = json.load(f)
+        # Try current directory first, then parent directory
+        config_paths = ['analytics_history.json', '../analytics_history.json']
+        for path in config_paths:
+            if os.path.exists(path):
+                with open(path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                return data if isinstance(data, list) else []
+        logger.warning("analytics_history.json not found in current or parent directory")
+        return []
         
         if isinstance(data, list):
             return data

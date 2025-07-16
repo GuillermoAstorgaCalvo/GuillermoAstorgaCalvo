@@ -153,7 +153,7 @@ def main():
                 display_name = repo_config.get('display_name', repo_name)
             else:
                 display_name = repo_name
-        git_fame_parser = GitFameParser(timeout_seconds=config.get_timeout_seconds())
+        git_fame_parser = GitFameParser(timeout_seconds=config.get_timeout())
         author_matcher = AuthorMatcher(
             guillermo_patterns=config.get_guillermo_patterns(),
             bot_patterns=config.get_bot_patterns()
