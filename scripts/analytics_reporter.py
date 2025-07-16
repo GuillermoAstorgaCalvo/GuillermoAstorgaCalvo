@@ -421,6 +421,11 @@ class AnalyticsReporter:
         return markdown
 
 
+def get_analytics_reporter() -> AnalyticsReporter:
+    """Get an instance of AnalyticsReporter."""
+    return AnalyticsReporter()
+
+
 def load_analytics_data() -> Dict[str, Any]:
     """Load analytics data from JSON files."""
     try:
