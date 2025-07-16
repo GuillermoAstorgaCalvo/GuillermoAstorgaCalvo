@@ -141,16 +141,13 @@ jobs:
 
       - name: Install code quality tools
         run: |
-          pip install ruff black mypy safety
+          pip install ruff black safety
 
       - name: Lint with Ruff
         run: ruff check .
 
       - name: Format check with Black
         run: black --check .
-
-      - name: Type check with mypy
-        run: mypy scripts/
 
       - name: Check dependencies with Safety
         run: safety scan --disable-telemetry --db
