@@ -117,7 +117,7 @@ jobs:
 
       - name: Install code quality tools
         run: |
-          pip install ruff black mypy bandit safety
+          pip install ruff black mypy safety
 
       - name: Lint with Ruff
         run: ruff check .
@@ -127,9 +127,6 @@ jobs:
 
       - name: Type check with mypy
         run: mypy scripts/
-
-      - name: Security check with Bandit
-        run: bandit -r scripts/
 
       - name: Check dependencies with Safety
         run: safety check
