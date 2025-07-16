@@ -278,9 +278,10 @@ jobs:
             exit 1
           fi
 
-          # Validate actor is the expected bot
-          if [[ "${{ github.actor }}" != "github-actions[bot]" ]]; then
+          # Validate actor is either the expected bot or the repository owner
+          if [[ "${{ github.actor }}" != "github-actions[bot]" && "${{ github.actor }}" != "GuillermoAstorgaCalvo" ]]; then
             echo "❌ Security violation: Unexpected actor: ${{ github.actor }}"
+            echo "Allowed actors: github-actions[bot], GuillermoAstorgaCalvo"
             exit 1
           fi
 

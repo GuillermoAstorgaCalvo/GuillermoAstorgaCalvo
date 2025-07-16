@@ -40,7 +40,6 @@ def run_cloc_on_repo(repo_path: Path) -> dict:
         result = subprocess.run([
             'cloc', '--json', '--quiet', f'--timeout={CLOC_PROCESS_TIMEOUT_SECONDS}',
             f'--max-file-size={MAX_FILE_SIZE_BYTES}',  # 2MB file size limit
-            f'--max-line-length={MAX_LINE_LENGTH_BYTES}',  # 50KB line length limit (increased for large TS/Python files)
             '--include-lang=Python,TypeScript,JavaScript,HTML,CSS,Shell',
             '--exclude-dir=.git,node_modules,venv,build,dist,data,output,logs,generated,target,coverage,.nyc_output',
             '--exclude-ext=json,toml,lock,yml,yaml,ini,cfg,conf,env,log,md,txt,svg,png,jpg,jpeg,gif,ico,bmp,tiff,webp',
