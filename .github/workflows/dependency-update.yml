@@ -10,24 +10,17 @@ on:
       - "scripts/update_dependencies.py"
 
 jobs:
-  dependency-check:
+  setup:
     runs-on: ubuntu-24.04
-    permissions:
-      contents: read
-      security-events: write
-      actions: read
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
       - name: Cache pip dependencies
         uses: actions/cache@v3
         with:
@@ -35,12 +28,27 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
-
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+      - name: Install and cache safety
+        run: |
+          pip install safety
 
+  dependency-check:
+    needs: setup
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    steps:
+      # Python and pip are already set up by 'setup' job
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
       - name: Run dependency analysis
         run: |
           cd scripts
@@ -58,9 +66,7 @@ jobs:
 
       - name: Check for security vulnerabilities
         run: |
-          # Install safety for security scanning
-          pip install safety
-
+          # Safety is already installed by setup job
           # Run security scan
           safety check --json --output safety-report.json || true
 
@@ -154,29 +160,19 @@ jobs:
             }
 
   auto-update-security:
+    needs: setup
     runs-on: ubuntu-24.04
-    if: github.event_name == 'schedule' # Only run on schedule
+    if: github.event_name == 'schedule'
     permissions:
       contents: write
       security-events: write
       actions: read
-
     steps:
+      # Python and pip are already set up by 'setup' job
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
       - name: Run security-focused dependency update
         run: |
           cd scripts
