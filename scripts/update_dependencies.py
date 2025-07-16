@@ -103,7 +103,6 @@ class DependencyManager:
                     "mypy",
                     "bandit",
                     "safety",
-                    "pre-commit",
                 ],
             )
         )
