@@ -33,3 +33,55 @@ Thumbs.db
 *.swp
 *.swo
 *~
+
+# Additions for production cleanliness
+.mypy_cache/
+.ruff_cache/
+assets.egg-info/
+scripts/__pycache__/
+.github/
+.pre-commit-config.yaml
+.bandit
+scripts/test_dependencies.py
+README.md
+.git/
+.gitignore
+
+# Safety CLI files
+.safety-project.ini
+safety-report.json
+safety-report.html
+safety-report.txt
+
+# Python packaging
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Backup files
+*.bak
+*.backup
+*.old

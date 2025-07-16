@@ -115,6 +115,25 @@ jobs:
           python3 -m pip install --upgrade pip --prefer-binary
           pip install --prefer-binary -r requirements.txt
 
+      - name: Install code quality tools
+        run: |
+          pip install ruff black mypy bandit safety
+
+      - name: Lint with Ruff
+        run: ruff check .
+
+      - name: Format check with Black
+        run: black --check .
+
+      - name: Type check with mypy
+        run: mypy scripts/
+
+      - name: Security check with Bandit
+        run: bandit -r scripts/
+
+      - name: Check dependencies with Safety
+        run: safety check
+
       - name: Validate configuration file
         run: |
           python3 scripts/validate_config.py
