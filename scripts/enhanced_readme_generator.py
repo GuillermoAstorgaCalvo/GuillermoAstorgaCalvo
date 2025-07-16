@@ -7,6 +7,7 @@ Creates an authentic, human-written GitHub profile README
 import json
 import os
 import sys
+from datetime import datetime
 from typing import Any
 
 from error_handling import (
@@ -132,12 +133,13 @@ def get_project_descriptions() -> dict[str, dict[str, Any]]:
     # Load configuration to get project URLs
     try:
         from config_manager import create_config_manager
+
         config = create_config_manager()
         project_urls = config.get_project_urls()
     except Exception as e:
         logger.warning(f"Could not load project URLs from config: {e}")
         project_urls = {}
-    
+
     return {
         "InmoIA Frontend": {
             "description": "A real estate platform that actually helps people find their perfect home. Started as a simple listing site and grew into something much bigger.",
@@ -148,7 +150,10 @@ def get_project_descriptions() -> dict[str, dict[str, Any]]:
                 "Analytics Dashboard",
             ],
             "status": "🟢 Active Development",
-            "url": project_urls.get("inmoia_frontend", "https://github.com/guillermo-affiliaction/housing-hub-saas"),
+            "url": project_urls.get(
+                "inmoia_frontend",
+                "https://github.com/guillermo-affiliaction/housing-hub-saas",
+            ),
             "story": "This one started small - just a basic property listing. But as I worked on it, I kept thinking 'what if we could make this smarter?' Now it's a full SaaS platform. The journey from simple to complex taught me so much about scaling React apps.",
         },
         "TypeScript Backend": {
@@ -156,7 +161,10 @@ def get_project_descriptions() -> dict[str, dict[str, Any]]:
             "tech_stack": ["Node.js", "TypeScript", "PostgreSQL", "Docker"],
             "features": ["REST APIs", "Authentication", "Database Management"],
             "status": "🟢 Active Development",
-            "url": project_urls.get("typescript_backend", "https://github.com/guillermo-affiliaction/backend-housing-hub-saas"),
+            "url": project_urls.get(
+                "typescript_backend",
+                "https://github.com/guillermo-affiliaction/backend-housing-hub-saas",
+            ),
             "story": "TypeScript changed everything for me. The first time I refactored this backend with proper types, I realized what I'd been missing. Now I can't imagine building anything complex without it.",
         },
         "Python AI MCP Backend": {
@@ -168,7 +176,10 @@ def get_project_descriptions() -> dict[str, dict[str, Any]]:
                 "MCP Integration",
             ],
             "status": "🟢 Active Development",
-            "url": project_urls.get("python_ai_backend", "https://github.com/guillermo-affiliaction/IAbackend-inmoIA"),
+            "url": project_urls.get(
+                "python_ai_backend",
+                "https://github.com/guillermo-affiliaction/IAbackend-inmoIA",
+            ),
             "story": "I was skeptical about AI at first, but seeing this system understand natural language requests blew my mind. It's like having a really smart assistant that actually gets things done.",
         },
         "FacturaIA": {
@@ -176,7 +187,9 @@ def get_project_descriptions() -> dict[str, dict[str, Any]]:
             "tech_stack": ["Python", "React", "TypeScript", "PostgreSQL"],
             "features": ["OCR Processing", "Data Extraction", "Invoice Management"],
             "status": "🟡 In Development",
-            "url": project_urls.get("facturaia", "https://github.com/GuillermoAstorgaCalvo/FacturaIA"),
+            "url": project_urls.get(
+                "facturaia", "https://github.com/GuillermoAstorgaCalvo/FacturaIA"
+            ),
             "story": "This was born from pure frustration. I was manually processing invoices one day and thought 'there has to be a better way.' Turns out there was - I just had to build it.",
         },
         "Restaurant App": {
@@ -184,7 +197,9 @@ def get_project_descriptions() -> dict[str, dict[str, Any]]:
             "tech_stack": ["React", "Node.js", "MongoDB", "Express.js"],
             "features": ["Order Management", "Menu System", "Admin Dashboard"],
             "status": "🟢 Live",
-            "url": project_urls.get("restaurant_app", "https://restauranteguillermoastorga.up.railway.app/"),
+            "url": project_urls.get(
+                "restaurant_app", "https://restauranteguillermoastorga.up.railway.app/"
+            ),
             "story": "This was the project that made me realize I could actually build things people would use. Seeing real customers place orders through something I built was incredibly satisfying.",
         },
     }
@@ -195,9 +210,9 @@ def generate_hero_section() -> str:
     # Load configuration for profile and animation settings
     try:
         from config_manager import create_config_manager
+
         config = create_config_manager()
         profile = config.get_profile_config()
-        contact = config.get_contact_config()
         typing_animation = config.get_typing_animation_config()
         badge_colors = config.get_badge_colors()
     except Exception as e:
@@ -207,11 +222,7 @@ def generate_hero_section() -> str:
             "name": "Guillermo",
             "title": "Full-Stack Developer",
             "subtitle": "AI Enthusiast | Problem Solver | Code Craftsman",
-            "description": "I build things. Sometimes they work, sometimes they don't, but I always learn something along the way."
-        }
-        contact = {
-            "linkedin": "guillermoastorgacalvo",
-            "email": "guillermo.astorga.calvo@gmail.com"
+            "description": "I build things. Sometimes they work, sometimes they don't, but I always learn something along the way.",
         }
         typing_animation = {
             "font": "Fira+Code",
@@ -223,24 +234,20 @@ def generate_hero_section() -> str:
             "vCenter": "true",
             "width": "600",
             "height": "100",
-            "lines": "Full-Stack+Developer;AI+Enthusiast;Problem+Solver;Code+Craftsman"
+            "lines": "Full-Stack+Developer;AI+Enthusiast;Problem+Solver;Code+Craftsman",
         }
-        badge_colors = {
-            "primary": "58A6FF",
-            "secondary": "4ECDC4",
-            "accent": "FF6B6B"
-        }
-    
+        badge_colors = {"primary": "58A6FF", "secondary": "4ECDC4", "accent": "FF6B6B"}
+
     # Build typing animation URL
     typing_url = f"https://readme-typing-svg.herokuapp.com?font={typing_animation.get('font', 'Fira+Code')}&weight={typing_animation.get('weight', '500')}&size={typing_animation.get('size', '28')}&pause={typing_animation.get('pause', '1000')}&color={typing_animation.get('color', '58A6FF')}&center={typing_animation.get('center', 'true')}&vCenter={typing_animation.get('vCenter', 'true')}&width={typing_animation.get('width', '600')}&height={typing_animation.get('height', '100')}&lines={typing_animation.get('lines', 'Full-Stack+Developer;AI+Enthusiast;Problem+Solver;Code+Craftsman')}"
-    
+
     return f"""# 👋 Hey! I'm {profile.get('name', 'Guillermo')}
 
 <div align="center">
   <img src="{typing_url}" alt="Typing SVG" />
 </div>
 
-{profile.get('description', 'I build things. Sometimes they work, sometimes they don\'t, but I always learn something along the way. Whether it\'s a simple script or a complex AI system, I love the challenge of turning ideas into reality.')}
+{profile.get("description", "I build things. Sometimes they work, sometimes they don't, but I always learn something along the way. Whether it's a simple script or a complex AI system, I love the challenge of turning ideas into reality.")}
 
 <div align="center">
   <img src="https://img.shields.io/badge/{profile.get('title', 'Full-Stack Developer').replace(' ', '--')}-React%20%7C%20Node.js%20%7C%20Python-{badge_colors.get('primary', '58A6FF')}?style=for-the-badge&logo=github&logoColor=white" alt="Full-Stack Developer" />
@@ -258,6 +265,7 @@ def generate_about_section() -> str:
     # Load configuration for contact information
     try:
         from config_manager import create_config_manager
+
         config = create_config_manager()
         contact = config.get_contact_config()
         external_services = config.get_external_services()
@@ -267,16 +275,21 @@ def generate_about_section() -> str:
         contact = {
             "linkedin": "guillermoastorgacalvo",
             "email": "guillermo.astorga.calvo@gmail.com",
-            "portfolio": "guillermoastorgacalvo.dev"
+            "portfolio": "guillermoastorgacalvo.dev",
         }
         external_services = {
             "linkedin": "https://linkedin.com/in/guillermoastorgacalvo",
-            "email": "mailto:guillermo.astorga.calvo@gmail.com"
+            "email": "mailto:guillermo.astorga.calvo@gmail.com",
         }
-    
-    linkedin_url = external_services.get("linkedin", f"https://linkedin.com/in/{contact.get('linkedin', 'guillermoastorgacalvo')}")
-    email_url = external_services.get("email", f"mailto:{contact.get('email', 'guillermo.astorga.calvo@gmail.com')}")
-    
+
+    linkedin_url = external_services.get(
+        "linkedin",
+        f"https://linkedin.com/in/{contact.get('linkedin', 'guillermoastorgacalvo')}",
+    )
+    email_url = external_services.get(
+        "email", f"mailto:{contact.get('email', 'guillermo.astorga.calvo@gmail.com')}"
+    )
+
     return f"""## 🚀 What I'm Up To
 
 ### 💼 **My Story**
@@ -325,6 +338,7 @@ def generate_enhanced_stats_from_unified(unified_stats: dict[str, Any]) -> str:
     # Load configuration for badge colors
     try:
         from config_manager import create_config_manager
+
         config = create_config_manager()
         badge_colors = config.get_badge_colors()
     except Exception as e:
@@ -333,7 +347,7 @@ def generate_enhanced_stats_from_unified(unified_stats: dict[str, Any]) -> str:
             "primary": "58A6FF",
             "secondary": "4ECDC4",
             "accent": "FF6B6B",
-            "purple": "9C27B0"
+            "purple": "9C27B0",
         }
 
     # Basic stats badges
@@ -660,6 +674,7 @@ def generate_stats_from_analytics(analytics_history: list[dict[str, Any]]) -> st
     # Load configuration for badge colors
     try:
         from config_manager import create_config_manager
+
         config = create_config_manager()
         badge_colors = config.get_badge_colors()
     except Exception as e:
@@ -668,7 +683,7 @@ def generate_stats_from_analytics(analytics_history: list[dict[str, Any]]) -> st
             "primary": "58A6FF",
             "secondary": "4ECDC4",
             "accent": "FF6B6B",
-            "purple": "9C27B0"
+            "purple": "9C27B0",
         }
 
     latest_data = analytics_history[-1]  # Get the most recent data
@@ -1008,6 +1023,7 @@ def generate_contact_section() -> str:
     # Load configuration for contact information and external services
     try:
         from config_manager import create_config_manager
+
         config = create_config_manager()
         contact = config.get_contact_config()
         external_services = config.get_external_services()
@@ -1019,24 +1035,27 @@ def generate_contact_section() -> str:
         contact = {
             "linkedin": "guillermoastorgacalvo",
             "email": "guillermo.astorga.calvo@gmail.com",
-            "portfolio": "guillermoastorgacalvo.dev"
+            "portfolio": "guillermoastorgacalvo.dev",
         }
         external_services = {
             "linkedin": "https://linkedin.com/in/guillermoastorgacalvo",
-            "email": "mailto:guillermo.astorga.calvo@gmail.com"
+            "email": "mailto:guillermo.astorga.calvo@gmail.com",
         }
-        github_config = {
-            "username": "GuillermoAstorgaCalvo"
-        }
-        badge_colors = {
-            "accent": "FF6B6B"
-        }
-    
-    linkedin_url = external_services.get("linkedin", f"https://linkedin.com/in/{contact.get('linkedin', 'guillermoastorgacalvo')}")
-    email_url = external_services.get("email", f"mailto:{contact.get('email', 'guillermo.astorga.calvo@gmail.com')}")
-    github_url = f"https://github.com/{github_config.get('username', 'GuillermoAstorgaCalvo')}"
+        github_config = {"username": "GuillermoAstorgaCalvo"}
+        badge_colors = {"accent": "FF6B6B"}
+
+    linkedin_url = external_services.get(
+        "linkedin",
+        f"https://linkedin.com/in/{contact.get('linkedin', 'guillermoastorgacalvo')}",
+    )
+    email_url = external_services.get(
+        "email", f"mailto:{contact.get('email', 'guillermo.astorga.calvo@gmail.com')}"
+    )
+    github_url = (
+        f"https://github.com/{github_config.get('username', 'GuillermoAstorgaCalvo')}"
+    )
     portfolio_url = f"https://{contact.get('portfolio', 'guillermoastorgacalvo.dev')}"
-    
+
     return f"""## 🌟 **Let's Connect**
 
 <div align="center">

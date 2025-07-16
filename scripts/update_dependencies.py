@@ -172,7 +172,7 @@ class DependencyManager:
                             return version
                     # Also check for version in parentheses
                     elif "(" in line and ")" in line:
-                        match = re.search(r'\(([0-9]+\.[0-9]+(?:\.[0-9]+)?)\)', line)
+                        match = re.search(r"\(([0-9]+\.[0-9]+(?:\.[0-9]+)?)\)", line)
                         if match:
                             version = match.group(1)
                             if version and version != "999.999.999":
@@ -185,11 +185,9 @@ class DependencyManager:
             if return_code != 0:
                 # Extract version from error message - try multiple patterns
                 patterns = [
-                    r"No matching distribution found for ([^=]+)==([0-9.]+)",
-                    r"Could not find a version that satisfies the requirement ([^=]+)==([0-9.]+)",
                     r"ERROR: No matching distribution found for ([^=]+)==([0-9.]+)",
                 ]
-                
+
                 for pattern in patterns:
                     match = re.search(pattern, stderr)
                     if match:
@@ -200,7 +198,7 @@ class DependencyManager:
             # Additional fallback: try pip show for installed packages
             cmd = ["pip", "show", package_name]
             return_code, stdout, stderr = self.run_command(cmd)
-            
+
             if return_code == 0:
                 # Look for version in pip show output
                 for line in stdout.split("\n"):
@@ -781,14 +779,18 @@ def main() -> None:
 
                 if response in ["y", "yes"]:
                     # Update with >= versions
-                    if manager.update_requirements_file(packages_info, pin_versions=False):
+                    if manager.update_requirements_file(
+                        packages_info, pin_versions=False
+                    ):
                         logger.info("✅ Successfully updated requirements.txt")
                     else:
                         logger.error("❌ Failed to update requirements.txt")
 
                 elif response == "p":
                     # Update with == versions (pinned)
-                    if manager.update_requirements_file(packages_info, pin_versions=True):
+                    if manager.update_requirements_file(
+                        packages_info, pin_versions=True
+                    ):
                         logger.info(
                             "✅ Successfully updated requirements.txt with pinned versions"
                         )
@@ -798,15 +800,19 @@ def main() -> None:
                     logger.info("ℹ️ No changes made")
             except EOFError:
                 # Non-interactive environment (like GitHub Actions)
-                logger.info("ℹ️ Non-interactive environment detected - no automatic updates")
-                logger.info("ℹ️ Run manually with interactive input to update dependencies")
+                logger.info(
+                    "ℹ️ Non-interactive environment detected - no automatic updates"
+                )
+                logger.info(
+                    "ℹ️ Run manually with interactive input to update dependencies"
+                )
             except Exception as e:
                 logger.warning(f"⚠️ Error reading input: {e}")
                 logger.info("ℹ️ No changes made")
 
         # Generate and save report
         report_content = manager.generate_dependency_report(report, packages_info)
-        
+
         # Save report in both locations for compatibility
         report_files = [
             Path(__file__).parent.parent / "dependency_report.md",  # Project root

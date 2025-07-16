@@ -564,7 +564,9 @@ class ConfigManager:
         """Get README generation configuration."""
         try:
             readme_config = self.config.get("readme", {})
-            logger.debug(f"Retrieved README configuration with {len(readme_config)} sections")
+            logger.debug(
+                f"Retrieved README configuration with {len(readme_config)} sections"
+            )
             return dict[str, Any](readme_config)
         except (KeyError, TypeError) as e:
             log_and_raise(
@@ -600,7 +602,7 @@ class ConfigManager:
         try:
             readme_config = self.get_readme_config()
             animation = readme_config.get("typing_animation", {})
-            logger.debug(f"Retrieved typing animation configuration")
+            logger.debug("Retrieved typing animation configuration")
             return dict[str, str](animation)
         except (KeyError, TypeError) as e:
             log_and_raise(
@@ -618,7 +620,7 @@ class ConfigManager:
         try:
             readme_config = self.get_readme_config()
             profile = readme_config.get("profile", {})
-            logger.debug(f"Retrieved profile configuration")
+            logger.debug("Retrieved profile configuration")
             return dict[str, str](profile)
         except (KeyError, TypeError) as e:
             log_and_raise(
@@ -636,7 +638,7 @@ class ConfigManager:
         try:
             readme_config = self.get_readme_config()
             contact = readme_config.get("contact", {})
-            logger.debug(f"Retrieved contact configuration")
+            logger.debug("Retrieved contact configuration")
             return dict[str, str](contact)
         except (KeyError, TypeError) as e:
             log_and_raise(
