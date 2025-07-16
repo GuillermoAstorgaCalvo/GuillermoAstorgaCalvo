@@ -21,7 +21,7 @@ logger = get_logger(__name__)
 script_dir = Path(__file__).parent
 sys.path.insert(0, str(script_dir))
 
-from config_manager import get_config_manager
+from config_manager import create_config_manager
 from stats_processor import StatsProcessor, AuthorMatcher, RepositoryStats, AuthorStats
 from report_generator import MarkdownReportGenerator, JSONReportGenerator
 from language_mapper import get_language_mapper
@@ -132,7 +132,7 @@ def aggregate_repository_data(repo_stats_list: List[Dict[str, Any]]) -> Dict[str
 @with_error_context({'component': 'aggregate_stats'})
 def main():
     try:
-        config = get_config_manager()
+        config = create_config_manager()
         config_errors = config.validate_config()
         if config_errors:
             logger.error(f"Configuration validation errors: {config_errors}")

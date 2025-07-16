@@ -360,7 +360,7 @@ class DependencyManager:
             'error_handling', 'config_manager', 'stats_processor', 'language_mapper',
             'git_fame_parser', 'dependency_analyzer', 'analytics_manager', 'analytics_reporter',
             'report_generator', 'update_dependencies', 'DependencyManager', 'PackageInfo',
-            'DependencyReport', 'get_logger', 'setup_logging', 'get_config_manager',
+            'DependencyReport', 'get_logger', 'setup_logging', 'create_config_manager',
             'get_language_mapper', 'get_analytics_manager', 'get_analytics_reporter',
             'DataProcessingError', 'StatsProcessingError', 'LanguageMappingError',
             'SvgGenerationError', 'AnalyticsError', 'GitFameParser', 'StatsProcessor',

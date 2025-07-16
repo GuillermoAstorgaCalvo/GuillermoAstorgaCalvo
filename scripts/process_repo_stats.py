@@ -27,7 +27,7 @@ logger = get_logger(__name__)
 script_dir = Path(__file__).parent
 sys.path.insert(0, str(script_dir))
 
-from config_manager import get_config_manager
+from config_manager import create_config_manager
 from git_fame_parser import GitFameParser
 from stats_processor import StatsProcessor, AuthorMatcher
 from language_mapper import get_language_mapper
@@ -137,7 +137,7 @@ def generate_language_svg_bar_chart(language_stats: dict, output_path: str):
 def main():
     language_stats = {}  # Ensure language_stats is always defined
     try:
-        config = get_config_manager()
+        config = create_config_manager()
         config_errors = config.validate_config()
         if config_errors:
             logger.error(f"Configuration validation errors: {config_errors}")
