@@ -522,16 +522,128 @@ class ConfigManager:
             return "repo_stats.json"  # This line will never be reached due to log_and_raise
 
     def get_full_config(self) -> dict[str, Any]:
-        """Get the complete configuration."""
+        """Get the complete configuration dictionary."""
+        return self.config
+
+    def get_external_services(self) -> dict[str, Any]:
+        """Get external services configuration."""
         try:
-            logger.debug("Retrieved full configuration")
-            return self.config.copy()
-        except (AttributeError, TypeError) as e:
+            services = self.config.get("external_services", {})
+            logger.debug(f"Retrieved external services with {len(services)} categories")
+            return dict[str, Any](services)
+        except (KeyError, TypeError) as e:
             log_and_raise(
                 ConfigError(
-                    f"Error retrieving full configuration: {e}",
-                    error_code=ErrorCodes.CONFIG_INVALID,
-                    context={"error": str(e)},
+                    f"Error retrieving external services: {e}",
+                    error_code=ErrorCodes.CONFIG_MISSING,
+                    context={"section": "external_services", "error": str(e)},
+                ),
+                logger=logger,
+            )
+            return {}  # This line will never be reached due to log_and_raise
+
+    def get_project_urls(self) -> dict[str, str]:
+        """Get project URLs configuration."""
+        try:
+            services = self.get_external_services()
+            project_urls = services.get("project_urls", {})
+            logger.debug(f"Retrieved {len(project_urls)} project URLs")
+            return dict[str, str](project_urls)
+        except (KeyError, TypeError) as e:
+            log_and_raise(
+                ConfigError(
+                    f"Error retrieving project URLs: {e}",
+                    error_code=ErrorCodes.CONFIG_MISSING,
+                    context={"section": "project_urls", "error": str(e)},
+                ),
+                logger=logger,
+            )
+            return {}  # This line will never be reached due to log_and_raise
+
+    def get_readme_config(self) -> dict[str, Any]:
+        """Get README generation configuration."""
+        try:
+            readme_config = self.config.get("readme", {})
+            logger.debug(f"Retrieved README configuration with {len(readme_config)} sections")
+            return dict[str, Any](readme_config)
+        except (KeyError, TypeError) as e:
+            log_and_raise(
+                ConfigError(
+                    f"Error retrieving README configuration: {e}",
+                    error_code=ErrorCodes.CONFIG_MISSING,
+                    context={"section": "readme", "error": str(e)},
+                ),
+                logger=logger,
+            )
+            return {}  # This line will never be reached due to log_and_raise
+
+    def get_badge_colors(self) -> dict[str, str]:
+        """Get badge colors configuration."""
+        try:
+            readme_config = self.get_readme_config()
+            colors = readme_config.get("badge_colors", {})
+            logger.debug(f"Retrieved {len(colors)} badge colors")
+            return dict[str, str](colors)
+        except (KeyError, TypeError) as e:
+            log_and_raise(
+                ConfigError(
+                    f"Error retrieving badge colors: {e}",
+                    error_code=ErrorCodes.CONFIG_MISSING,
+                    context={"section": "badge_colors", "error": str(e)},
+                ),
+                logger=logger,
+            )
+            return {}  # This line will never be reached due to log_and_raise
+
+    def get_typing_animation_config(self) -> dict[str, str]:
+        """Get typing animation configuration."""
+        try:
+            readme_config = self.get_readme_config()
+            animation = readme_config.get("typing_animation", {})
+            logger.debug(f"Retrieved typing animation configuration")
+            return dict[str, str](animation)
+        except (KeyError, TypeError) as e:
+            log_and_raise(
+                ConfigError(
+                    f"Error retrieving typing animation config: {e}",
+                    error_code=ErrorCodes.CONFIG_MISSING,
+                    context={"section": "typing_animation", "error": str(e)},
+                ),
+                logger=logger,
+            )
+            return {}  # This line will never be reached due to log_and_raise
+
+    def get_profile_config(self) -> dict[str, str]:
+        """Get profile information configuration."""
+        try:
+            readme_config = self.get_readme_config()
+            profile = readme_config.get("profile", {})
+            logger.debug(f"Retrieved profile configuration")
+            return dict[str, str](profile)
+        except (KeyError, TypeError) as e:
+            log_and_raise(
+                ConfigError(
+                    f"Error retrieving profile config: {e}",
+                    error_code=ErrorCodes.CONFIG_MISSING,
+                    context={"section": "profile", "error": str(e)},
+                ),
+                logger=logger,
+            )
+            return {}  # This line will never be reached due to log_and_raise
+
+    def get_contact_config(self) -> dict[str, str]:
+        """Get contact information configuration."""
+        try:
+            readme_config = self.get_readme_config()
+            contact = readme_config.get("contact", {})
+            logger.debug(f"Retrieved contact configuration")
+            return dict[str, str](contact)
+        except (KeyError, TypeError) as e:
+            log_and_raise(
+                ConfigError(
+                    f"Error retrieving contact config: {e}",
+                    error_code=ErrorCodes.CONFIG_MISSING,
+                    context={"section": "contact", "error": str(e)},
                 ),
                 logger=logger,
             )

@@ -38,6 +38,7 @@ repositories:
 github:
   organization: "guillermo-affiliaction" # Keep this for existing repos
   base_url: "https://github.com"
+  username: "GuillermoAstorgaCalvo"
 
 # External services and URLs
 external_services:
@@ -56,6 +57,14 @@ external_services:
   github_streak: "https://streak-stats.demolab.com"
   github_activity: "https://github-readme-activity-graph.vercel.app/graph"
   profile_views: "https://komarev.com/ghpvc"
+
+  # Project URLs
+  project_urls:
+    inmoia_frontend: "https://github.com/guillermo-affiliaction/housing-hub-saas"
+    typescript_backend: "https://github.com/guillermo-affiliaction/backend-housing-hub-saas"
+    python_ai_backend: "https://github.com/guillermo-affiliaction/IAbackend-inmoIA"
+    facturaia: "https://github.com/GuillermoAstorgaCalvo/FacturaIA"
+    restaurant_app: "https://restauranteguillermoastorga.up.railway.app/"
 
 # Author pattern matching
 author_patterns:
@@ -122,3 +131,40 @@ analytics:
     track_top_languages: 10
     show_percentage: true
     include_unknown: false
+
+# README generation settings
+readme:
+  # Badge colors and styling
+  badge_colors:
+    primary: "58A6FF"
+    secondary: "4ECDC4"
+    accent: "FF6B6B"
+    purple: "9C27B0"
+    dark: "0D1117"
+    light: "8B949E"
+
+  # Typing animation settings
+  typing_animation:
+    font: "Fira+Code"
+    weight: "500"
+    size: "28"
+    pause: "1000"
+    color: "58A6FF"
+    center: "true"
+    vCenter: "true"
+    width: "600"
+    height: "100"
+    lines: "Full-Stack+Developer;AI+Enthusiast;Problem+Solver;Code+Craftsman"
+
+  # Profile information
+  profile:
+    name: "Guillermo"
+    title: "Full-Stack Developer"
+    subtitle: "AI Enthusiast | Problem Solver | Code Craftsman"
+    description: "I build things. Sometimes they work, sometimes they don't, but I always learn something along the way."
+
+  # Contact information
+  contact:
+    linkedin: "guillermoastorgacalvo"
+    email: "guillermo.astorga.calvo@gmail.com"
+    portfolio: "guillermoastorgacalvo.dev"

@@ -5,6 +5,7 @@ Prints a summary and exits with nonzero code if any tool fails.
 """
 import subprocess
 import sys
+
 from error_handling import get_logger
 
 # Set up logging for this module

@@ -18,9 +18,6 @@ from error_handling import DataProcessingError, get_logger, log_and_raise
 # Set up logging for this module
 logger = get_logger(__name__)
 
-# Set up logging
-logger = get_logger(__name__)
-
 
 @dataclass
 class PackageInfo:
@@ -161,7 +158,7 @@ class DependencyManager:
     def get_latest_version(self, package_name: str) -> str | None:
         """Get the latest version of a package with enhanced error handling."""
         try:
-            # Try pip index first
+            # Try pip index first with better parsing
             cmd = ["pip", "index", "versions", package_name]
             return_code, stdout, stderr = self.run_command(cmd)
 
@@ -173,20 +170,44 @@ class DependencyManager:
                         version = line.split("LATEST:")[1].strip()
                         if version and version != "999.999.999":
                             return version
+                    # Also check for version in parentheses
+                    elif "(" in line and ")" in line:
+                        match = re.search(r'\(([0-9]+\.[0-9]+(?:\.[0-9]+)?)\)', line)
+                        if match:
+                            version = match.group(1)
+                            if version and version != "999.999.999":
+                                return version
 
-            # Fallback: try pip install with --dry-run
+            # Fallback: try pip install with --dry-run and better parsing
             cmd = ["pip", "install", f"{package_name}==999.999.999", "--dry-run"]
             return_code, stdout, stderr = self.run_command(cmd)
 
-            if return_code != 0 and "No matching distribution" in stderr:
-                # Extract version from error message
-                match = re.search(
-                    r"No matching distribution found for ([^=]+)==([0-9.]+)", stderr
-                )
-                if match:
-                    version = match.group(2)
-                    if version and version != "999.999.999":
-                        return version
+            if return_code != 0:
+                # Extract version from error message - try multiple patterns
+                patterns = [
+                    r"No matching distribution found for ([^=]+)==([0-9.]+)",
+                    r"Could not find a version that satisfies the requirement ([^=]+)==([0-9.]+)",
+                    r"ERROR: No matching distribution found for ([^=]+)==([0-9.]+)",
+                ]
+                
+                for pattern in patterns:
+                    match = re.search(pattern, stderr)
+                    if match:
+                        version = match.group(2)
+                        if version and version != "999.999.999":
+                            return version
+
+            # Additional fallback: try pip show for installed packages
+            cmd = ["pip", "show", package_name]
+            return_code, stdout, stderr = self.run_command(cmd)
+            
+            if return_code == 0:
+                # Look for version in pip show output
+                for line in stdout.split("\n"):
+                    if line.startswith("Version:"):
+                        version = line.split(":", 1)[1].strip()
+                        if version and version != "999.999.999":
+                            return version
 
             # If we still don't have a valid version, return None
             self.logger.warning(
@@ -740,47 +761,67 @@ def main() -> None:
             for rec in report.recommendations:
                 logger.info(f"  {rec}")
 
-        # Ask for action
+        # Ask for action (handle non-interactive environments)
         if report.updates_available > 0:
             logger.info(f"\n🔄 {report.updates_available} updates available")
 
             if report.security_updates > 0:
-                logger.info(f"🔒 {report.security_updates} security updates - RECOMMENDED")
+                logger.info(
+                    f"🔒 {report.security_updates} security updates - RECOMMENDED"
+                )
 
-            response = (
-                input("\n❓ Update dependencies? (y/N/p for pin exact versions): ")
-                .strip()
-                .lower()
-            )
+            # Check if we're in an interactive environment
+            try:
+                # Try to get input, but handle non-interactive environments gracefully
+                response = (
+                    input("\n❓ Update dependencies? (y/N/p for pin exact versions): ")
+                    .strip()
+                    .lower()
+                )
 
-            if response in ["y", "yes"]:
-                # Update with >= versions
-                if manager.update_requirements_file(packages_info, pin_versions=False):
-                    logger.info("✅ Successfully updated requirements.txt")
+                if response in ["y", "yes"]:
+                    # Update with >= versions
+                    if manager.update_requirements_file(packages_info, pin_versions=False):
+                        logger.info("✅ Successfully updated requirements.txt")
+                    else:
+                        logger.error("❌ Failed to update requirements.txt")
+
+                elif response == "p":
+                    # Update with == versions (pinned)
+                    if manager.update_requirements_file(packages_info, pin_versions=True):
+                        logger.info(
+                            "✅ Successfully updated requirements.txt with pinned versions"
+                        )
+                    else:
+                        logger.error("❌ Failed to update requirements.txt")
                 else:
-                    logger.error("❌ Failed to update requirements.txt")
-
-            elif response == "p":
-                # Update with == versions (pinned)
-                if manager.update_requirements_file(packages_info, pin_versions=True):
-                    logger.info(
-                        "✅ Successfully updated requirements.txt with pinned versions"
-                    )
-                else:
-                    logger.error("❌ Failed to update requirements.txt")
-            else:
+                    logger.info("ℹ️ No changes made")
+            except EOFError:
+                # Non-interactive environment (like GitHub Actions)
+                logger.info("ℹ️ Non-interactive environment detected - no automatic updates")
+                logger.info("ℹ️ Run manually with interactive input to update dependencies")
+            except Exception as e:
+                logger.warning(f"⚠️ Error reading input: {e}")
                 logger.info("ℹ️ No changes made")
 
         # Generate and save report
         report_content = manager.generate_dependency_report(report, packages_info)
-        report_file = "../dependency_report.md"  # Save in project root
+        
+        # Save report in both locations for compatibility
+        report_files = [
+            Path(__file__).parent.parent / "dependency_report.md",  # Project root
+            Path(__file__).parent / "dependency_report.md",  # Scripts directory
+        ]
 
-        try:
-            with open(report_file, "w", encoding="utf-8") as f:
-                f.write(report_content)
-            logger.info(f"\n📄 Detailed report saved to: {report_file}")
-        except Exception as e:
-            logger.warning(f"⚠️ Could not save report: {e}")
+        for report_file in report_files:
+            try:
+                with open(report_file, "w", encoding="utf-8") as f:
+                    f.write(report_content)
+                logger.info(f"\n📄 Detailed report saved to: {report_file}")
+                break  # Successfully saved, no need to try other locations
+            except Exception as e:
+                logger.warning(f"⚠️ Could not save report to {report_file}: {e}")
+                continue
 
         logger.info("\n🎉 Dependency analysis completed!")
 

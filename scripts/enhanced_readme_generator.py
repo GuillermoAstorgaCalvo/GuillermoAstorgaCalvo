@@ -63,7 +63,6 @@ def load_analytics_history() -> list[dict[str, Any]]:
                 else:
                     logger.warning("analytics_history.json does not contain a list")
                     return []
-        
         logger.warning(
             "analytics_history.json not found in current or parent directory"
         )
@@ -130,6 +129,15 @@ def format_number(num: int) -> str:
 
 def get_project_descriptions() -> dict[str, dict[str, Any]]:
     """Get comprehensive project descriptions with authentic narratives"""
+    # Load configuration to get project URLs
+    try:
+        from config_manager import create_config_manager
+        config = create_config_manager()
+        project_urls = config.get_project_urls()
+    except Exception as e:
+        logger.warning(f"Could not load project URLs from config: {e}")
+        project_urls = {}
+    
     return {
         "InmoIA Frontend": {
             "description": "A real estate platform that actually helps people find their perfect home. Started as a simple listing site and grew into something much bigger.",
@@ -140,7 +148,7 @@ def get_project_descriptions() -> dict[str, dict[str, Any]]:
                 "Analytics Dashboard",
             ],
             "status": "🟢 Active Development",
-            "url": "https://github.com/guillermo-affiliaction/housing-hub-saas",
+            "url": project_urls.get("inmoia_frontend", "https://github.com/guillermo-affiliaction/housing-hub-saas"),
             "story": "This one started small - just a basic property listing. But as I worked on it, I kept thinking 'what if we could make this smarter?' Now it's a full SaaS platform. The journey from simple to complex taught me so much about scaling React apps.",
         },
         "TypeScript Backend": {
@@ -148,7 +156,7 @@ def get_project_descriptions() -> dict[str, dict[str, Any]]:
             "tech_stack": ["Node.js", "TypeScript", "PostgreSQL", "Docker"],
             "features": ["REST APIs", "Authentication", "Database Management"],
             "status": "🟢 Active Development",
-            "url": "https://github.com/guillermo-affiliaction/backend-housing-hub-saas",
+            "url": project_urls.get("typescript_backend", "https://github.com/guillermo-affiliaction/backend-housing-hub-saas"),
             "story": "TypeScript changed everything for me. The first time I refactored this backend with proper types, I realized what I'd been missing. Now I can't imagine building anything complex without it.",
         },
         "Python AI MCP Backend": {
@@ -160,7 +168,7 @@ def get_project_descriptions() -> dict[str, dict[str, Any]]:
                 "MCP Integration",
             ],
             "status": "🟢 Active Development",
-            "url": "https://github.com/guillermo-affiliaction/IAbackend-inmoIA",
+            "url": project_urls.get("python_ai_backend", "https://github.com/guillermo-affiliaction/IAbackend-inmoIA"),
             "story": "I was skeptical about AI at first, but seeing this system understand natural language requests blew my mind. It's like having a really smart assistant that actually gets things done.",
         },
         "FacturaIA": {
@@ -168,7 +176,7 @@ def get_project_descriptions() -> dict[str, dict[str, Any]]:
             "tech_stack": ["Python", "React", "TypeScript", "PostgreSQL"],
             "features": ["OCR Processing", "Data Extraction", "Invoice Management"],
             "status": "🟡 In Development",
-            "url": "https://github.com/GuillermoAstorgaCalvo/FacturaIA",
+            "url": project_urls.get("facturaia", "https://github.com/GuillermoAstorgaCalvo/FacturaIA"),
             "story": "This was born from pure frustration. I was manually processing invoices one day and thought 'there has to be a better way.' Turns out there was - I just had to build it.",
         },
         "Restaurant App": {
@@ -176,7 +184,7 @@ def get_project_descriptions() -> dict[str, dict[str, Any]]:
             "tech_stack": ["React", "Node.js", "MongoDB", "Express.js"],
             "features": ["Order Management", "Menu System", "Admin Dashboard"],
             "status": "🟢 Live",
-            "url": "https://restauranteguillermoastorga.up.railway.app/",
+            "url": project_urls.get("restaurant_app", "https://restauranteguillermoastorga.up.railway.app/"),
             "story": "This was the project that made me realize I could actually build things people would use. Seeing real customers place orders through something I built was incredibly satisfying.",
         },
     }
@@ -184,18 +192,60 @@ def get_project_descriptions() -> dict[str, dict[str, Any]]:
 
 def generate_hero_section() -> str:
     """Generate authentic hero section with personal touch"""
-    return """# 👋 Hey! I'm Guillermo
+    # Load configuration for profile and animation settings
+    try:
+        from config_manager import create_config_manager
+        config = create_config_manager()
+        profile = config.get_profile_config()
+        contact = config.get_contact_config()
+        typing_animation = config.get_typing_animation_config()
+        badge_colors = config.get_badge_colors()
+    except Exception as e:
+        logger.warning(f"Could not load configuration for hero section: {e}")
+        # Fallback to default values
+        profile = {
+            "name": "Guillermo",
+            "title": "Full-Stack Developer",
+            "subtitle": "AI Enthusiast | Problem Solver | Code Craftsman",
+            "description": "I build things. Sometimes they work, sometimes they don't, but I always learn something along the way."
+        }
+        contact = {
+            "linkedin": "guillermoastorgacalvo",
+            "email": "guillermo.astorga.calvo@gmail.com"
+        }
+        typing_animation = {
+            "font": "Fira+Code",
+            "weight": "500",
+            "size": "28",
+            "pause": "1000",
+            "color": "58A6FF",
+            "center": "true",
+            "vCenter": "true",
+            "width": "600",
+            "height": "100",
+            "lines": "Full-Stack+Developer;AI+Enthusiast;Problem+Solver;Code+Craftsman"
+        }
+        badge_colors = {
+            "primary": "58A6FF",
+            "secondary": "4ECDC4",
+            "accent": "FF6B6B"
+        }
+    
+    # Build typing animation URL
+    typing_url = f"https://readme-typing-svg.herokuapp.com?font={typing_animation.get('font', 'Fira+Code')}&weight={typing_animation.get('weight', '500')}&size={typing_animation.get('size', '28')}&pause={typing_animation.get('pause', '1000')}&color={typing_animation.get('color', '58A6FF')}&center={typing_animation.get('center', 'true')}&vCenter={typing_animation.get('vCenter', 'true')}&width={typing_animation.get('width', '600')}&height={typing_animation.get('height', '100')}&lines={typing_animation.get('lines', 'Full-Stack+Developer;AI+Enthusiast;Problem+Solver;Code+Craftsman')}"
+    
+    return f"""# 👋 Hey! I'm {profile.get('name', 'Guillermo')}
 
 <div align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=500&size=28&pause=1000&color=58A6FF&center=true&vCenter=true&width=600&height=100&lines=Full-Stack+Developer;AI+Enthusiast;Problem+Solver;Code+Craftsman" alt="Typing SVG" />
+  <img src="{typing_url}" alt="Typing SVG" />
 </div>
 
-I build things. Sometimes they work, sometimes they don't, but I always learn something along the way. Whether it's a simple script or a complex AI system, I love the challenge of turning ideas into reality.
+{profile.get('description', 'I build things. Sometimes they work, sometimes they don\'t, but I always learn something along the way. Whether it\'s a simple script or a complex AI system, I love the challenge of turning ideas into reality.')}
 
 <div align="center">
-  <img src="https://img.shields.io/badge/Full--Stack%20Developer-React%20%7C%20Node.js%20%7C%20Python-58A6FF?style=for-the-badge&logo=github&logoColor=white" alt="Full-Stack Developer" />
-  <img src="https://img.shields.io/badge/AI%20Enthusiast-Machine%20Learning%20%7C%20NLP-4ECDC4?style=for-the-badge&logo=github&logoColor=white" alt="AI Enthusiast" />
-  <img src="https://img.shields.io/badge/Problem%20Solver-Clean%20Code%20%7C%20Best%20Practices-FF6B6B?style=for-the-badge&logo=github&logoColor=white" alt="Problem Solver" />
+  <img src="https://img.shields.io/badge/{profile.get('title', 'Full-Stack Developer').replace(' ', '--')}-React%20%7C%20Node.js%20%7C%20Python-{badge_colors.get('primary', '58A6FF')}?style=for-the-badge&logo=github&logoColor=white" alt="Full-Stack Developer" />
+  <img src="https://img.shields.io/badge/AI%20Enthusiast-Machine%20Learning%20%7C%20NLP-{badge_colors.get('secondary', '4ECDC4')}?style=for-the-badge&logo=github&logoColor=white" alt="AI Enthusiast" />
+  <img src="https://img.shields.io/badge/Problem%20Solver-Clean%20Code%20%7C%20Best%20Practices-{badge_colors.get('accent', 'FF6B6B')}?style=for-the-badge&logo=github&logoColor=white" alt="Problem Solver" />
 </div>
 
 ---
@@ -205,7 +255,29 @@ I build things. Sometimes they work, sometimes they don't, but I always learn so
 
 def generate_about_section() -> str:
     """Generate personal about section"""
-    return """## 🚀 What I'm Up To
+    # Load configuration for contact information
+    try:
+        from config_manager import create_config_manager
+        config = create_config_manager()
+        contact = config.get_contact_config()
+        external_services = config.get_external_services()
+    except Exception as e:
+        logger.warning(f"Could not load configuration for about section: {e}")
+        # Fallback to default values
+        contact = {
+            "linkedin": "guillermoastorgacalvo",
+            "email": "guillermo.astorga.calvo@gmail.com",
+            "portfolio": "guillermoastorgacalvo.dev"
+        }
+        external_services = {
+            "linkedin": "https://linkedin.com/in/guillermoastorgacalvo",
+            "email": "mailto:guillermo.astorga.calvo@gmail.com"
+        }
+    
+    linkedin_url = external_services.get("linkedin", f"https://linkedin.com/in/{contact.get('linkedin', 'guillermoastorgacalvo')}")
+    email_url = external_services.get("email", f"mailto:{contact.get('email', 'guillermo.astorga.calvo@gmail.com')}")
+    
+    return f"""## 🚀 What I'm Up To
 
 ### 💼 **My Story**
 I started coding because I wanted to build things that could actually help people. What began as simple scripts has turned into a passion for creating meaningful applications. I love the challenge of taking a complex problem and turning it into something elegant and useful.
@@ -214,7 +286,7 @@ I started coding because I wanted to build things that could actually help peopl
 **🌱 Learning:** New AI/ML techniques, microservices, and whatever catches my interest
 **👯 Looking for:** Cool projects to collaborate on, especially open source stuff
 **💬 Ask me about:** React, TypeScript, Python, AI/ML, or anything tech-related - I love talking shop!
-**📫 Get in touch:** [LinkedIn](https://linkedin.com/in/guillermoastorgacalvo) | [Email](mailto:guillermo.astorga.calvo@gmail.com)
+**📫 Get in touch:** [LinkedIn]({linkedin_url}) | [Email]({email_url})
 
 ### 🎯 **What I Do**
 - **Frontend Development**: Building interfaces that people actually want to use
@@ -250,6 +322,19 @@ def generate_dynamic_stats_section(data: dict[str, Any]) -> str:
 
 def generate_enhanced_stats_from_unified(unified_stats: dict[str, Any]) -> str:
     """Generate enhanced stats section from comprehensive unified stats"""
+    # Load configuration for badge colors
+    try:
+        from config_manager import create_config_manager
+        config = create_config_manager()
+        badge_colors = config.get_badge_colors()
+    except Exception as e:
+        logger.warning(f"Could not load badge colors from config: {e}")
+        badge_colors = {
+            "primary": "58A6FF",
+            "secondary": "4ECDC4",
+            "accent": "FF6B6B",
+            "purple": "9C27B0"
+        }
 
     # Basic stats badges
     global_summary = unified_stats.get("global_summary", {})
@@ -259,22 +344,22 @@ def generate_enhanced_stats_from_unified(unified_stats: dict[str, Any]) -> str:
     stats_badges = []
     if "total_loc" in global_summary:
         stats_badges.append(
-            f'<img src="https://img.shields.io/badge/📈_Lines_of_Code-{format_number(global_summary["total_loc"])}-58A6FF?style=for-the-badge&logo=github&logoColor=white" alt="Lines of Code" />'
+            f'<img src="https://img.shields.io/badge/📈_Lines_of_Code-{format_number(global_summary["total_loc"])}-{badge_colors.get("primary", "58A6FF")}?style=for-the-badge&logo=github&logoColor=white" alt="Lines of Code" />'
         )
 
     if "total_commits" in global_summary:
         stats_badges.append(
-            f'<img src="https://img.shields.io/badge/📝_Commits-{format_number(global_summary["total_commits"])}-4ECDC4?style=for-the-badge&logo=github&logoColor=white" alt="Total Commits" />'
+            f'<img src="https://img.shields.io/badge/📝_Commits-{format_number(global_summary["total_commits"])}-{badge_colors.get("secondary", "4ECDC4")}?style=for-the-badge&logo=github&logoColor=white" alt="Total Commits" />'
         )
 
     if "total_files" in global_summary:
         stats_badges.append(
-            f'<img src="https://img.shields.io/badge/📁_Files-{format_number(global_summary["total_files"])}-FF6B6B?style=for-the-badge&logo=github&logoColor=white" alt="Total Files" />'
+            f'<img src="https://img.shields.io/badge/📁_Files-{format_number(global_summary["total_files"])}-{badge_colors.get("accent", "FF6B6B")}?style=for-the-badge&logo=github&logoColor=white" alt="Total Files" />'
         )
 
     if "repositories_processed" in global_summary:
         stats_badges.append(
-            f'<img src="https://img.shields.io/badge/🏢_Repositories-{global_summary["repositories_processed"]}-9C27B0?style=for-the-badge&logo=github&logoColor=white" alt="Repositories" />'
+            f'<img src="https://img.shields.io/badge/🏢_Repositories-{global_summary["repositories_processed"]}-{badge_colors.get("purple", "9C27B0")}?style=for-the-badge&logo=github&logoColor=white" alt="Repositories" />'
         )
 
     # Personal contribution insights
@@ -572,28 +657,42 @@ def generate_stats_from_analytics(analytics_history: list[dict[str, Any]]) -> st
     if not analytics_history or len(analytics_history) == 0:
         return ""
 
+    # Load configuration for badge colors
+    try:
+        from config_manager import create_config_manager
+        config = create_config_manager()
+        badge_colors = config.get_badge_colors()
+    except Exception as e:
+        logger.warning(f"Could not load badge colors from config: {e}")
+        badge_colors = {
+            "primary": "58A6FF",
+            "secondary": "4ECDC4",
+            "accent": "FF6B6B",
+            "purple": "9C27B0"
+        }
+
     latest_data = analytics_history[-1]  # Get the most recent data
 
     # Basic stats badges
     stats_badges = []
     if "total_loc" in latest_data:
         stats_badges.append(
-            f'<img src="https://img.shields.io/badge/📈_Lines_of_Code-{format_number(latest_data["total_loc"])}-58A6FF?style=for-the-badge&logo=github&logoColor=white" alt="Lines of Code" />'
+            f'<img src="https://img.shields.io/badge/📈_Lines_of_Code-{format_number(latest_data["total_loc"])}-{badge_colors.get("primary", "58A6FF")}?style=for-the-badge&logo=github&logoColor=white" alt="Lines of Code" />'
         )
 
     if "total_commits" in latest_data:
         stats_badges.append(
-            f'<img src="https://img.shields.io/badge/📝_Commits-{format_number(latest_data["total_commits"])}-4ECDC4?style=for-the-badge&logo=github&logoColor=white" alt="Total Commits" />'
+            f'<img src="https://img.shields.io/badge/📝_Commits-{format_number(latest_data["total_commits"])}-{badge_colors.get("secondary", "4ECDC4")}?style=for-the-badge&logo=github&logoColor=white" alt="Total Commits" />'
         )
 
     if "total_files" in latest_data:
         stats_badges.append(
-            f'<img src="https://img.shields.io/badge/📁_Files-{format_number(latest_data["total_files"])}-FF6B6B?style=for-the-badge&logo=github&logoColor=white" alt="Total Files" />'
+            f'<img src="https://img.shields.io/badge/📁_Files-{format_number(latest_data["total_files"])}-{badge_colors.get("accent", "FF6B6B")}?style=for-the-badge&logo=github&logoColor=white" alt="Total Files" />'
         )
 
     if "repos_processed" in latest_data:
         stats_badges.append(
-            f'<img src="https://img.shields.io/badge/🏢_Repositories-{latest_data["repos_processed"]}-9C27B0?style=for-the-badge&logo=github&logoColor=white" alt="Repositories" />'
+            f'<img src="https://img.shields.io/badge/🏢_Repositories-{latest_data["repos_processed"]}-{badge_colors.get("purple", "9C27B0")}?style=for-the-badge&logo=github&logoColor=white" alt="Repositories" />'
         )
 
     # Personal contribution percentage
@@ -906,7 +1005,39 @@ The numbers in my stats aren't just metrics - they're late nights, debugging ses
 
 def generate_contact_section() -> str:
     """Generate authentic contact section"""
-    return """## 🌟 **Let's Connect**
+    # Load configuration for contact information and external services
+    try:
+        from config_manager import create_config_manager
+        config = create_config_manager()
+        contact = config.get_contact_config()
+        external_services = config.get_external_services()
+        github_config = config.get_github_config()
+        badge_colors = config.get_badge_colors()
+    except Exception as e:
+        logger.warning(f"Could not load configuration for contact section: {e}")
+        # Fallback to default values
+        contact = {
+            "linkedin": "guillermoastorgacalvo",
+            "email": "guillermo.astorga.calvo@gmail.com",
+            "portfolio": "guillermoastorgacalvo.dev"
+        }
+        external_services = {
+            "linkedin": "https://linkedin.com/in/guillermoastorgacalvo",
+            "email": "mailto:guillermo.astorga.calvo@gmail.com"
+        }
+        github_config = {
+            "username": "GuillermoAstorgaCalvo"
+        }
+        badge_colors = {
+            "accent": "FF6B6B"
+        }
+    
+    linkedin_url = external_services.get("linkedin", f"https://linkedin.com/in/{contact.get('linkedin', 'guillermoastorgacalvo')}")
+    email_url = external_services.get("email", f"mailto:{contact.get('email', 'guillermo.astorga.calvo@gmail.com')}")
+    github_url = f"https://github.com/{github_config.get('username', 'GuillermoAstorgaCalvo')}"
+    portfolio_url = f"https://{contact.get('portfolio', 'guillermoastorgacalvo.dev')}"
+    
+    return f"""## 🌟 **Let's Connect**
 
 <div align="center">
   <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=500&size=18&pause=1000&color=58A6FF&center=true&vCenter=true&width=400&height=40&lines=Let%27s+Build+Something+Amazing;Together!" alt="Contact Typing" />
@@ -915,17 +1046,17 @@ def generate_contact_section() -> str:
 I'm always up for connecting with fellow developers, discussing interesting projects, or exploring new opportunities. Whether you want to collaborate on something cool, ask about my projects, or just say hello - I'd love to hear from you!
 
 <div align="center">
-  <a href="https://linkedin.com/in/guillermoastorgacalvo">
+  <a href="{linkedin_url}">
     <img src="https://img.shields.io/badge/-LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" />
   </a>
-  <a href="https://github.com/guillermo-affiliaction">
+  <a href="{github_url}">
     <img src="https://img.shields.io/badge/-GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" />
   </a>
-  <a href="mailto:guillermo.astorga.calvo@gmail.com">
+  <a href="{email_url}">
     <img src="https://img.shields.io/badge/-Email-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Email" />
   </a>
-  <a href="https://guillermoastorgacalvo.dev">
-    <img src="https://img.shields.io/badge/-Portfolio-FF6B6B?style=for-the-badge&logo=github&logoColor=white" alt="Portfolio" />
+  <a href="{portfolio_url}">
+    <img src="https://img.shields.io/badge/-Portfolio-{badge_colors.get('accent', 'FF6B6B')}?style=for-the-badge&logo=github&logoColor=white" alt="Portfolio" />
   </a>
 </div>
 
