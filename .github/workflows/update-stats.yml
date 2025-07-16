@@ -126,6 +126,8 @@ jobs:
 
       - name: Determine repository configuration
         id: repo-config
+        env:
+          REPO_NAME: ${{ matrix.repository.name }}
         run: |
           # Load repository configuration from config.yml
           python3 << 'EOF'
