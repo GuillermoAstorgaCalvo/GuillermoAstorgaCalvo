@@ -3,7 +3,7 @@ name: Update Statistics
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 3 * * 1"
+    - cron: "0 3 * * 1" # Every Monday at 3 AM UTC
 
 jobs:
   load-config:
@@ -16,23 +16,69 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Load configuration matrix
+      - name: Load and validate configuration matrix
         id: config
         run: |
           python3 << 'EOF'
           import yaml
           import json
           import os
+          import sys
 
-          with open('config.yml', 'r') as f:
-              config = yaml.safe_load(f)
+          try:
+              with open('config.yml', 'r') as f:
+                  config = yaml.safe_load(f)
 
-          repositories = config.get('repositories', [])
-          matrix_json = json.dumps(repositories)
+              if not config:
+                  print("❌ config.yml is empty", file=sys.stderr)
+                  sys.exit(1)
 
-          print(f"repositories={matrix_json}")
-          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
-              f.write(f"repositories={matrix_json}\n")
+              repositories = config.get('repositories', [])
+              
+              if not repositories:
+                  print("❌ No repositories found in config.yml", file=sys.stderr)
+                  sys.exit(1)
+
+              # Validate each repository configuration
+              required_fields = ['name', 'display_name', 'branch', 'artifact_name', 'organization', 'token_type']
+              valid_token_types = ['personal', 'private']
+              
+              for i, repo in enumerate(repositories):
+                  repo_name = repo.get('name', f'repository[{i}]')
+                  
+                  # Check required fields
+                  for field in required_fields:
+                      if field not in repo:
+                          print(f"❌ Repository '{repo_name}' missing required field: {field}", file=sys.stderr)
+                          sys.exit(1)
+                  
+                  # Validate token type
+                  token_type = repo.get('token_type')
+                  if token_type not in valid_token_types:
+                      print(f"❌ Repository '{repo_name}' has invalid token_type: {token_type}. Must be one of: {valid_token_types}", file=sys.stderr)
+                      sys.exit(1)
+                  
+                  # Validate organization is not empty
+                  org = repo.get('organization')
+                  if not org or not org.strip():
+                      print(f"❌ Repository '{repo_name}' has empty organization", file=sys.stderr)
+                      sys.exit(1)
+
+              print(f"✅ Configuration validation passed. Found {len(repositories)} repositories")
+              
+              matrix_json = json.dumps(repositories)
+              with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+                  f.write(f"repositories={matrix_json}\n")
+
+          except FileNotFoundError:
+              print("❌ config.yml not found", file=sys.stderr)
+              sys.exit(1)
+          except yaml.YAMLError as e:
+              print(f"❌ Error parsing config.yml: {e}", file=sys.stderr)
+              sys.exit(1)
+          except Exception as e:
+              print(f"❌ Unexpected error loading configuration: {e}", file=sys.stderr)
+              sys.exit(1)
           EOF
 
   process-repositories:
@@ -42,6 +88,8 @@ jobs:
       matrix:
         repository: ${{ fromJson(needs.load-config.outputs.repositories) }}
       fail-fast: false
+      # Add concurrency limit to prevent rate limiting
+      max-parallel: 3
 
     steps:
       - name: Checkout repository
@@ -54,15 +102,89 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip --prefer-binary
           pip install --prefer-binary -r requirements.txt
 
+      - name: Validate configuration file
+        run: |
+          python3 scripts/validate_config.py
+
       - name: Install cloc
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y cloc
+
+      - name: Determine repository configuration
+        id: repo-config
+        run: |
+          # Load repository configuration from config.yml
+          python3 << 'EOF'
+          import yaml
+          import json
+          import os
+          import sys
+
+          repo_name = os.environ['REPO_NAME']
+
+          try:
+              with open('config.yml', 'r') as f:
+                  config = yaml.safe_load(f)
+
+              # Find repository in config
+              repo_config = None
+              for repo in config.get('repositories', []):
+                  if repo.get('name') == repo_name:
+                      repo_config = repo
+                      break
+
+              if not repo_config:
+                  print(f"❌ Repository '{repo_name}' not found in config.yml", file=sys.stderr)
+                  print("Available repositories:", file=sys.stderr)
+                  for repo in config.get('repositories', []):
+                      print(f"  - {repo.get('name', 'unnamed')}", file=sys.stderr)
+                  sys.exit(1)
+
+              # Get required configuration values
+              org = repo_config.get('organization')
+              token_type = repo_config.get('token_type')
+
+              if not org:
+                  print(f"❌ Missing 'organization' for repository '{repo_name}' in config.yml", file=sys.stderr)
+                  sys.exit(1)
+
+              if not token_type:
+                  print(f"❌ Missing 'token_type' for repository '{repo_name}' in config.yml", file=sys.stderr)
+                  sys.exit(1)
+
+              # Validate token type
+              if token_type not in ['personal', 'private']:
+                  print(f"❌ Invalid 'token_type' '{token_type}' for repository '{repo_name}'. Must be 'personal' or 'private'", file=sys.stderr)
+                  sys.exit(1)
+
+              print(f"org={org}")
+              print(f"token_type={token_type}")
+              print(f"✅ Configuration loaded for repository '{repo_name}'")
+
+          except FileNotFoundError:
+              print("❌ config.yml not found", file=sys.stderr)
+              sys.exit(1)
+          except yaml.YAMLError as e:
+              print(f"❌ Error parsing config.yml: {e}", file=sys.stderr)
+              sys.exit(1)
+          except Exception as e:
+              print(f"❌ Unexpected error loading configuration: {e}", file=sys.stderr)
+              sys.exit(1)
+          EOF
 
       - name: Clone repository
         env:
@@ -70,17 +192,15 @@ jobs:
           PRIVATE_TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
           REPO_NAME: ${{ matrix.repository.name }}
           BRANCH_NAME: ${{ matrix.repository.branch }}
+          ORG: ${{ steps.repo-config.outputs.org }}
+          TOKEN_TYPE: ${{ steps.repo-config.outputs.token_type }}
         run: |
           set -e
-          # Determine the organization and token based on repository name
-          if [[ "${REPO_NAME}" == "FacturaIA" || "${REPO_NAME}" == "restaurant-app" ]]; then
-            ORG="GuillermoAstorgaCalvo"
+
+          # Select token based on configuration
+          if [[ "${TOKEN_TYPE}" == "personal" ]]; then
             TOKEN="${PERSONAL_TOKEN}"
-          elif [[ "${REPO_NAME}" == "housing-hub-saas" || "${REPO_NAME}" == "backend-housing-hub-saas" || "${REPO_NAME}" == "IAbackend-inmoIA" ]]; then
-            ORG="guillermo-affiliaction"
-            TOKEN="${PRIVATE_TOKEN}"
           else
-            ORG="guillermo-affiliaction"
             TOKEN="${PRIVATE_TOKEN}"
           fi
 
@@ -92,7 +212,6 @@ jobs:
       - name: Check repo directory exists
         run: |
           if [ ! -d repo ]; then
-            echo "❌ repo directory does not exist!"
             exit 1
           fi
 
@@ -100,18 +219,6 @@ jobs:
         working-directory: repo
         run: |
           cloc --skip-uniqueness --exclude-dir=.git,node_modules,venv,.venv,build,dist,coverage,.nyc_output,logs,generated,target,data,output --exclude-ext=json,toml,lock,yml,yaml,ini,cfg,conf,env,log,md,txt,svg,png,jpg,jpeg,gif,ico,bmp,tiff,webp . || true
-
-      - name: List all files in repo (for debugging)
-        run: |
-          find repo/ | sort
-
-      - name: Debug GitHub Actions environment
-        env:
-          REPO_NAME: ${{ matrix.repository.name }}
-          DISPLAY_NAME: ${{ matrix.repository.display_name }}
-        run: |
-          cd scripts
-          python3 debug_github_actions.py
 
       - name: Process repository statistics
         env:
@@ -133,11 +240,45 @@ jobs:
   aggregate-and-commit:
     needs: process-repositories
     runs-on: ubuntu-24.04
+    # Restrict permissions to only what's needed for profile README updates
     permissions:
-      contents: write
-      actions: read
+      contents: write # Only for specific files in the profile repository
+      actions: read # Only for downloading artifacts
+      # Explicitly deny other permissions for security
+      id-token: none
+      security-events: none
+      pull-requests: none
+      issues: none
+      discussions: none
+      packages: none
+      deployments: none
+      checks: none
+      statuses: none
+      pages: none
 
     steps:
+      - name: Security validation
+        run: |
+          # Validate that we're running in the correct repository
+          if [[ "${{ github.repository }}" != "GuillermoAstorgaCalvo/GuillermoAstorgaCalvo" ]]; then
+            echo "❌ Security violation: This workflow should only run in GuillermoAstorgaCalvo/GuillermoAstorgaCalvo"
+            exit 1
+          fi
+
+          # Validate that we're on the main branch
+          if [[ "${{ github.ref }}" != "refs/heads/main" ]]; then
+            echo "❌ Security violation: This workflow should only run on main branch"
+            exit 1
+          fi
+
+          # Validate actor is the expected bot
+          if [[ "${{ github.actor }}" != "github-actions[bot]" ]]; then
+            echo "❌ Security violation: Unexpected actor: ${{ github.actor }}"
+            exit 1
+          fi
+
+          echo "✅ Security validation passed"
+
       - name: Checkout public profile
         uses: actions/checkout@v4
         with:
@@ -148,6 +289,14 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
 
       - name: Install dependencies
         run: |
@@ -183,43 +332,157 @@ jobs:
       - name: Validate README generation
         run: |
           if [[ ! -f "README.md" ]]; then
-            echo "❌ Error: README.md was not generated"
+            echo "❌ README.md was not generated"
             exit 1
           fi
 
           if [[ ! -s "README.md" ]]; then
-            echo "❌ Error: README.md is empty"
+            echo "❌ README.md is empty"
             exit 1
           fi
 
-          echo "✅ README.md generated successfully with private repository statistics"
+          echo "✅ README.md generated successfully"
+
+      - name: Validate generated files
+        run: |
+          # Check if any files were generated
+          files_generated=false
+
+          if [[ -f "unified_stats.json" ]]; then
+            echo "✅ unified_stats.json generated"
+            # Validate JSON structure
+            if ! python3 -c "import json; json.load(open('unified_stats.json'))"; then
+              echo "❌ unified_stats.json is not valid JSON"
+              exit 1
+            fi
+            files_generated=true
+          fi
+
+          if [[ -f "analytics_history.json" ]]; then
+            echo "✅ analytics_history.json generated"
+            # Validate JSON structure
+            if ! python3 -c "import json; json.load(open('analytics_history.json'))"; then
+              echo "❌ analytics_history.json is not valid JSON"
+              exit 1
+            fi
+            files_generated=true
+          fi
+
+          if [[ -f "assets/language_stats.svg" ]]; then
+            echo "✅ language_stats.svg generated"
+            # Validate SVG structure
+            if ! grep -q "<svg" "assets/language_stats.svg"; then
+              echo "❌ language_stats.svg is not a valid SVG file"
+              exit 1
+            fi
+            files_generated=true
+          fi
+
+          if [[ "$files_generated" == "false" ]]; then
+            echo "❌ No files were generated"
+            exit 1
+          fi
+
+          # Generate checksums for security audit trail
+          echo "🔒 File integrity checksums:"
+          for file in "README.md" "unified_stats.json" "analytics_history.json" "assets/language_stats.svg"; do
+            if [[ -f "$file" ]]; then
+              checksum=$(sha256sum "$file" | awk '{print $1}')
+              echo "  $file: $checksum"
+            fi
+          done
+
+      - name: Validate file integrity before commit
+        run: |
+          # Define allowed files for security
+          ALLOWED_FILES=("README.md" "unified_stats.json" "analytics_history.json" "assets/language_stats.svg")
+
+          # Check for any unexpected changes
+          CHANGED_FILES=$(git status --porcelain | awk '{print $2}')
+
+          for file in $CHANGED_FILES; do
+            # Skip if file is in allowed list
+            allowed=false
+            for allowed_file in "${ALLOWED_FILES[@]}"; do
+              if [[ "$file" == "$allowed_file" ]]; then
+                allowed=true
+                break
+              fi
+            done
+            
+            if [[ "$allowed" == "false" ]]; then
+              echo "❌ Security violation: Unexpected file change detected: $file"
+              echo "Only the following files are allowed to be modified:"
+              printf '%s\n' "${ALLOWED_FILES[@]}"
+              exit 1
+            fi
+          done
+
+          echo "✅ File integrity validation passed"
 
       - name: Commit results to profile
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Check if there are any changes to commit
           if [[ -z "$(git status --porcelain)" ]]; then
-            echo "No changes to commit"
+            echo "ℹ️ No changes to commit"
             exit 0
           fi
 
+          # Configure git with secure settings
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local core.autocrlf false
+          git config --local core.safecrlf true
 
-          # Add files that exist
-          if [[ -f "unified_stats.json" ]]; then
-            git add unified_stats.json
-          fi
-          if [[ -f "analytics_history.json" ]]; then
-            git add analytics_history.json
-          fi
-          if [[ -f "README.md" ]]; then
-            git add README.md
-          fi
-          # Add SVG if it exists
-          if [[ -f "assets/language_stats.svg" ]]; then
-            git add assets/language_stats.svg
+          # Add only specific files that should be updated (whitelist approach)
+          files_added=false
+          ALLOWED_FILES=("README.md" "unified_stats.json" "analytics_history.json" "assets/language_stats.svg")
+
+          for file in "${ALLOWED_FILES[@]}"; do
+            if [[ -f "$file" ]]; then
+              # Validate file content before adding
+              if [[ "$file" == "README.md" ]] && [[ ! -s "$file" ]]; then
+                echo "❌ Security violation: README.md is empty"
+                exit 1
+              fi
+              
+              if [[ "$file" == "unified_stats.json" ]] && ! python3 -m json.tool "$file" >/dev/null 2>&1; then
+                echo "❌ Security violation: unified_stats.json is not valid JSON"
+                exit 1
+              fi
+              
+              if [[ "$file" == "analytics_history.json" ]] && ! python3 -m json.tool "$file" >/dev/null 2>&1; then
+                echo "❌ Security violation: analytics_history.json is not valid JSON"
+                exit 1
+              fi
+              
+              git add "$file"
+              files_added=true
+              echo "✅ Added $file to commit"
+            fi
+          done
+
+          if [[ "$files_added" == "false" ]]; then
+            echo "ℹ️ No files to add"
+            exit 0
           fi
 
-          git commit -m "📊 Update README and language ranking SVG - $(date '+%Y-%m-%d %H:%M UTC')"
-          git push
+          # Create commit with descriptive message and security context
+          commit_message="📊 Update README and language ranking SVG - $(date '+%Y-%m-%d %H:%M UTC') [Automated by GitHub Actions]"
+
+          if git commit -m "$commit_message"; then
+            echo "✅ Changes committed successfully"
+          else
+            echo "❌ Failed to commit changes"
+            exit 1
+          fi
+
+          # Push changes with additional security checks
+          if git push origin HEAD:main; then
+            echo "✅ Changes pushed successfully"
+          else
+            echo "❌ Failed to push changes"
+            exit 1
+          fi

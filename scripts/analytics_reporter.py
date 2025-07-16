@@ -6,14 +6,14 @@ Generates markdown sections for growth tracking, velocity metrics, goal tracking
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 import math
+import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class AnalyticsReporter:
     """Generates enhanced analytics reports with historical trends and insights."""
-    
-    def __init__(self):
-        """Initialize the analytics reporter."""
-        pass
     
     def generate_growth_trends_section(self, trends: Dict[str, Any]) -> str:
         """
@@ -421,11 +421,109 @@ class AnalyticsReporter:
         return markdown
 
 
-def get_analytics_reporter() -> AnalyticsReporter:
-    """
-    Factory function to create and return an AnalyticsReporter instance.
-    
-    Returns:
-        AnalyticsReporter instance
-    """
-    return AnalyticsReporter() 
+def load_analytics_data() -> Dict[str, Any]:
+    """Load analytics data from JSON files."""
+    try:
+        analytics_data = {}
+        
+        # Load unified stats
+        try:
+            with open('unified_stats.json', 'r', encoding='utf-8') as f:
+                analytics_data['unified_stats'] = json.load(f)
+        except (FileNotFoundError, PermissionError) as e:
+            logger.warning(f"Could not read unified_stats.json: {e}")
+            analytics_data['unified_stats'] = {}
+        except (json.JSONDecodeError, TypeError) as e:
+            logger.error(f"Invalid JSON in unified_stats.json: {e}")
+            analytics_data['unified_stats'] = {}
+        except (OSError, IOError) as e:
+            logger.error(f"IO error reading unified_stats.json: {e}")
+            analytics_data['unified_stats'] = {}
+        
+        # Load analytics history
+        try:
+            with open('analytics_history.json', 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                if isinstance(data, list):
+                    analytics_data['analytics_history'] = data
+                else:
+                    logger.warning("analytics_history.json does not contain a list")
+                    analytics_data['analytics_history'] = []
+        except (FileNotFoundError, PermissionError) as e:
+            logger.warning(f"Could not read analytics_history.json: {e}")
+            analytics_data['analytics_history'] = []
+        except (json.JSONDecodeError, TypeError) as e:
+            logger.error(f"Invalid JSON in analytics_history.json: {e}")
+            analytics_data['analytics_history'] = []
+        except (OSError, IOError) as e:
+            logger.error(f"IO error reading analytics_history.json: {e}")
+            analytics_data['analytics_history'] = []
+        
+        return analytics_data
+        
+    except (TypeError, AttributeError, KeyError) as e:
+        logger.error(f"Error loading analytics data: {e}")
+        return {}
+
+def generate_analytics_report(data: Dict[str, Any]) -> str:
+    """Generate analytics report from data."""
+    try:
+        report = "# 📊 Analytics Report\n\n"
+        
+        # Add timestamp
+        report += f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
+        
+        # Add unified stats summary
+        unified_stats = data.get('unified_stats', {})
+        if unified_stats:
+            report += "## 📈 Current Statistics\n\n"
+            report += f"- **Total Lines of Code:** {unified_stats.get('total_loc', 0):,}\n"
+            report += f"- **Total Commits:** {unified_stats.get('total_commits', 0):,}\n"
+            report += f"- **Total Files:** {unified_stats.get('total_files', 0):,}\n"
+            report += f"- **Repositories Processed:** {unified_stats.get('repos_processed', 0)}\n\n"
+        
+        # Add analytics history summary
+        analytics_history = data.get('analytics_history', [])
+        if analytics_history:
+            report += "## 📊 Historical Trends\n\n"
+            report += f"- **Data Points:** {len(analytics_history)}\n"
+            
+            if len(analytics_history) >= 2:
+                first_point = analytics_history[0]
+                last_point = analytics_history[-1]
+                
+                try:
+                    first_date = datetime.fromisoformat(first_point.get('timestamp', '').replace('Z', '+00:00'))
+                    last_date = datetime.fromisoformat(last_point.get('timestamp', '').replace('Z', '+00:00'))
+                    days_span = (last_date - first_date).days
+                    report += f"- **Time Span:** {days_span} days\n"
+                except (ValueError, TypeError, KeyError) as e:
+                    logger.warning(f"Error parsing timestamps: {e}")
+        
+        return report
+        
+    except (TypeError, AttributeError, KeyError) as e:
+        logger.error(f"Error generating analytics report: {e}")
+        return "# 📊 Analytics Report\n\n*Error generating report*\n\n"
+    except (ValueError, OSError) as e:
+        logger.error(f"Error processing analytics data: {e}")
+        return "# 📊 Analytics Report\n\n*Error processing data*\n\n"
+
+def save_report(report: str, output_file: str = "analytics_report.md") -> bool:
+    """Save analytics report to file."""
+    try:
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write(report)
+        
+        logger.info(f"Analytics report saved to {output_file}")
+        return True
+        
+    except (PermissionError, OSError) as e:
+        logger.error(f"Could not write to {output_file}: {e}")
+        return False
+    except (TypeError, ValueError) as e:
+        logger.error(f"Error writing report content: {e}")
+        return False
+    except IOError as e:
+        logger.error(f"IO error writing {output_file}: {e}")
+        return False 

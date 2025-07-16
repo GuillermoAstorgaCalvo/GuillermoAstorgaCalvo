@@ -4,8 +4,9 @@ Handles core statistics processing logic including author matching and aggregati
 """
 
 import re
-from typing import Dict, List, Tuple, Any
+from typing import Dict, List, Tuple, Any, Optional
 from dataclasses import dataclass
+from error_handling import StatsProcessingError, log_and_raise, get_logger
 
 
 @dataclass
@@ -17,17 +18,25 @@ class AuthorStats:
     
     def add(self, other: 'AuthorStats') -> None:
         """Add another AuthorStats to this one."""
-        self.loc += other.loc
-        self.commits += other.commits
-        self.files += other.files
+        try:
+            self.loc += other.loc
+            self.commits += other.commits
+            self.files += other.files
+        except (TypeError, AttributeError) as e:
+            get_logger(__name__).error(f"Error adding AuthorStats: {e}")
+            raise
     
     def to_dict(self) -> Dict[str, int]:
         """Convert to dictionary."""
-        return {
-            'loc': self.loc,
-            'commits': self.commits,
-            'files': self.files
-        }
+        try:
+            return {
+                'loc': self.loc,
+                'commits': self.commits,
+                'files': self.files
+            }
+        except (TypeError, AttributeError) as e:
+            get_logger(__name__).error(f"Error converting AuthorStats to dict: {e}")
+            raise
 
 
 @dataclass
@@ -36,7 +45,7 @@ class RepositoryStats:
     display_name: str
     guillermo_stats: AuthorStats
     repo_totals: AuthorStats
-    language_stats: Dict[str, Dict[str, int]] = None
+    language_stats: Optional[Dict[str, Dict[str, int]]] = None
     
     def __post_init__(self):
         if self.language_stats is None:
@@ -44,12 +53,16 @@ class RepositoryStats:
     
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {
-            'display_name': self.display_name,
-            'guillermo_stats': self.guillermo_stats.to_dict(),
-            'repo_totals': self.repo_totals.to_dict(),
-            'language_stats': self.language_stats
-        }
+        try:
+            return {
+                'display_name': self.display_name,
+                'guillermo_stats': self.guillermo_stats.to_dict(),
+                'repo_totals': self.repo_totals.to_dict(),
+                'language_stats': self.language_stats
+            }
+        except (TypeError, AttributeError) as e:
+            get_logger(__name__).error(f"Error converting RepositoryStats to dict: {e}")
+            raise
 
 
 @dataclass
@@ -59,11 +72,11 @@ class UnifiedStats:
     total_files: int = 0
     total_loc: int = 0
     repos_processed: int = 0
-    guillermo_unified: AuthorStats = None
-    repo_breakdown: Dict[str, RepositoryStats] = None
-    unified_language_stats: Dict[str, Dict[str, int]] = None
-    other_unknown_breakdown: Dict[str, int] = None  # New: breakdown of other/unknown
-    validation_results: Dict[str, Any] = None       # New: validation results
+    guillermo_unified: Optional[AuthorStats] = None
+    repo_breakdown: Optional[Dict[str, RepositoryStats]] = None
+    unified_language_stats: Optional[Dict[str, Dict[str, int]]] = None
+    other_unknown_breakdown: Optional[Dict[str, int]] = None  # New: breakdown of other/unknown
+    validation_results: Optional[Dict[str, Any]] = None       # New: validation results
 
     def __post_init__(self):
         if self.guillermo_unified is None:
@@ -89,8 +102,26 @@ class AuthorMatcher:
             guillermo_patterns: Regex patterns to match Guillermo's authorship
             bot_patterns: Regex patterns to match bot authors
         """
-        self.guillermo_patterns = guillermo_patterns
-        self.bot_patterns = bot_patterns
+        self.logger = get_logger(__name__)
+        
+        try:
+            self.guillermo_patterns = guillermo_patterns
+            self.bot_patterns = bot_patterns
+            
+            # Validate patterns
+            for pattern in guillermo_patterns + bot_patterns:
+                re.compile(pattern, re.IGNORECASE)
+            
+            self.logger.info(f"AuthorMatcher initialized with {len(guillermo_patterns)} Guillermo patterns and {len(bot_patterns)} bot patterns")
+            
+        except re.error as e:
+            log_and_raise(StatsProcessingError, 
+                         f"Invalid regex pattern in AuthorMatcher: {e}", 
+                         error_code="INVALID_REGEX_PATTERN")
+        except Exception as e:
+            log_and_raise(StatsProcessingError, 
+                         f"Error initializing AuthorMatcher: {e}", 
+                         error_code="INITIALIZATION_ERROR")
     
     def is_guillermo(self, author_name: str) -> bool:
         """
@@ -102,8 +133,16 @@ class AuthorMatcher:
         Returns:
             True if matches Guillermo patterns
         """
-        return any(re.search(pattern, str(author_name), re.IGNORECASE) 
-                  for pattern in self.guillermo_patterns)
+        try:
+            if not author_name:
+                return False
+            
+            return any(re.search(pattern, str(author_name), re.IGNORECASE) 
+                      for pattern in self.guillermo_patterns)
+            
+        except (TypeError, AttributeError, re.error) as e:
+            self.logger.error(f"Error checking if '{author_name}' is Guillermo: {e}")
+            return False
     
     def is_bot(self, author_name: str) -> bool:
         """
@@ -115,8 +154,16 @@ class AuthorMatcher:
         Returns:
             True if matches bot patterns
         """
-        return any(re.search(pattern, str(author_name), re.IGNORECASE) 
-                  for pattern in self.bot_patterns)
+        try:
+            if not author_name:
+                return False
+            
+            return any(re.search(pattern, str(author_name), re.IGNORECASE) 
+                      for pattern in self.bot_patterns)
+            
+        except (TypeError, AttributeError, re.error) as e:
+            self.logger.error(f"Error checking if '{author_name}' is bot: {e}")
+            return False
     
     def classify_author(self, author_name: str) -> str:
         """
@@ -128,11 +175,20 @@ class AuthorMatcher:
         Returns:
             Classification string
         """
-        if self.is_bot(author_name):
-            return 'bot'
-        elif self.is_guillermo(author_name):
-            return 'guillermo'
-        else:
+        try:
+            if not author_name:
+                self.logger.warning("Empty author name provided, classifying as 'other'")
+                return 'other'
+            
+            if self.is_bot(author_name):
+                return 'bot'
+            elif self.is_guillermo(author_name):
+                return 'guillermo'
+            else:
+                return 'other'
+                
+        except (TypeError, AttributeError) as e:
+            self.logger.error(f"Error classifying author '{author_name}': {e}")
             return 'other'
 
 
@@ -146,7 +202,13 @@ class StatsProcessor:
         Args:
             author_matcher: AuthorMatcher instance for classifying authors
         """
+        self.logger = get_logger(__name__)
         self.author_matcher = author_matcher
+        
+        if not author_matcher:
+            log_and_raise(StatsProcessingError, 
+                         "AuthorMatcher is required for StatsProcessor", 
+                         error_code="MISSING_AUTHOR_MATCHER")
     
     def process_repository_data(self, authors: List[Tuple[str, int, int, int]], 
                               display_name: str) -> RepositoryStats:
@@ -158,116 +220,95 @@ class StatsProcessor:
             display_name: Display name for the repository
             
         Returns:
-            RepositoryStats object
+            RepositoryStats object with processed data
         """
-        guillermo_stats = AuthorStats()
-        repo_totals = AuthorStats()
-        
-        for author_name, loc, commits, files in authors:
-            author_classification = self.author_matcher.classify_author(author_name)
+        try:
+            guillermo_stats = AuthorStats()
+            repo_totals = AuthorStats()
+            language_stats: Dict[str, Dict[str, int]] = {}
             
-            # Only count human contributors (exclude bots)
-            if author_classification != 'bot':
-                repo_totals.loc += loc
-                repo_totals.commits += commits
-                repo_totals.files += files
-                
-                # Track Guillermo's contributions
-                if author_classification == 'guillermo':
-                    guillermo_stats.loc += loc
-                    guillermo_stats.commits += commits
-                    guillermo_stats.files += files
-        
-        return RepositoryStats(
-            display_name=display_name,
-            guillermo_stats=guillermo_stats,
-            repo_totals=repo_totals
-        )
+            for author_name, loc, commits, files in authors:
+                try:
+                    # Add to repo totals
+                    repo_totals.loc += loc
+                    repo_totals.commits += commits
+                    repo_totals.files += files
+                    
+                    # Classify author and add to appropriate stats
+                    author_type = self.author_matcher.classify_author(author_name)
+                    
+                    if author_type == 'guillermo':
+                        guillermo_stats.loc += loc
+                        guillermo_stats.commits += commits
+                        guillermo_stats.files += files
+                        
+                except (TypeError, ValueError, AttributeError) as e:
+                    self.logger.warning(f"Error processing author data for '{author_name}': {e}")
+                    continue
+            
+            return RepositoryStats(
+                display_name=display_name,
+                guillermo_stats=guillermo_stats,
+                repo_totals=repo_totals,
+                language_stats=language_stats
+            )
+            
+        except (TypeError, AttributeError, ValueError) as e:
+            log_and_raise(StatsProcessingError, 
+                         f"Error processing repository data for '{display_name}': {e}", 
+                         error_code="REPO_DATA_PROCESSING_ERROR")
+            return RepositoryStats(display_name=display_name, guillermo_stats=AuthorStats(), repo_totals=AuthorStats(), language_stats={})
     
     def aggregate_repository_stats(self, repository_stats_list: List[RepositoryStats]) -> UnifiedStats:
         """
-        Aggregate statistics from multiple repositories with exclusive counting and validation.
-        """
-        unified_stats = UnifiedStats()
-        unified_stats.repos_processed = len(repository_stats_list)
-        unified_stats.guillermo_unified = AuthorStats()
-        unified_stats.repo_breakdown = {}
-        unified_stats.unified_language_stats = {}
-        unified_stats.other_unknown_breakdown = {'other': 0, 'unknown': 0, 'multi': 0}
-        unified_stats.validation_results = {}
-
-        # Track files seen to avoid double-counting
-        seen_files = set()
-        language_totals = {'loc': 0, 'files': 0, 'commits': 0}
-        project_totals = {'loc': 0, 'files': 0, 'commits': 0}
-
-        for repo_stats in repository_stats_list:
-            # Add to unified totals using REAL data from author analysis
-            unified_stats.total_loc += repo_stats.repo_totals.loc
-            unified_stats.total_commits += repo_stats.repo_totals.commits
-            unified_stats.total_files += repo_stats.repo_totals.files
-
-            # Add to Guillermo's unified stats
-            unified_stats.guillermo_unified.add(repo_stats.guillermo_stats)
-
-            # Aggregate language stats (LOC only from --bytype, commits/files from author analysis)
-            for language, stats in repo_stats.language_stats.items():
-                if language not in unified_stats.unified_language_stats:
-                    unified_stats.unified_language_stats[language] = {
-                        'loc': 0,
-                        'commits': 0,
-                        'files': 0
-                    }
-                # Use LOC from language stats (from --bytype)
-                unified_stats.unified_language_stats[language]['loc'] += stats.get('loc', 0)
-                # Use commits/files from author analysis (real data)
-                # Note: We'll distribute the real commits/files proportionally to languages
-                # based on LOC distribution
-                language_totals['loc'] += stats.get('loc', 0)
-                # Track 'other' and 'unknown'
-                if language.lower() in ['other', 'unknown']:
-                    unified_stats.other_unknown_breakdown[language.lower()] += stats.get('loc', 0)
-
-            # Store individual repository breakdown
-            unified_stats.repo_breakdown[repo_stats.display_name] = repo_stats
-            project_totals['loc'] += repo_stats.repo_totals.loc
-            project_totals['commits'] += repo_stats.repo_totals.commits
-            project_totals['files'] += repo_stats.repo_totals.files
-
-        # Now distribute real commits and files proportionally to languages based on LOC
-        for repo_stats in repository_stats_list:
-            repo_total_loc = repo_stats.repo_totals.loc
-            repo_total_commits = repo_stats.repo_totals.commits
-            repo_total_files = repo_stats.repo_totals.files
+        Aggregate statistics from multiple repositories.
+        
+        Args:
+            repository_stats_list: List of RepositoryStats objects
             
-            if repo_total_loc > 0:
-                for language, stats in repo_stats.language_stats.items():
-                    if language in unified_stats.unified_language_stats:
-                        # Calculate proportion of this language's LOC in this repo
-                        lang_proportion = stats.get('loc', 0) / repo_total_loc
-                        # Distribute commits and files proportionally
-                        unified_stats.unified_language_stats[language]['commits'] += int(repo_total_commits * lang_proportion)
-                        unified_stats.unified_language_stats[language]['files'] += int(repo_total_files * lang_proportion)
-                        language_totals['commits'] += int(repo_total_commits * lang_proportion)
-                        language_totals['files'] += int(repo_total_files * lang_proportion)
-
-        # Validation: check if language/project totals match global totals
-        validation = {}
-        validation['sum_language_loc'] = language_totals['loc']
-        validation['sum_language_files'] = language_totals['files']
-        validation['sum_language_commits'] = language_totals['commits']
-        validation['sum_project_loc'] = project_totals['loc']
-        validation['sum_project_files'] = project_totals['files']
-        validation['sum_project_commits'] = project_totals['commits']
-        validation['total_loc'] = unified_stats.total_loc
-        validation['total_files'] = unified_stats.total_files
-        validation['total_commits'] = unified_stats.total_commits
-        validation['loc_mismatch'] = (unified_stats.total_loc != language_totals['loc'])
-        validation['files_mismatch'] = (unified_stats.total_files != language_totals['files'])
-        validation['commits_mismatch'] = (unified_stats.total_commits != language_totals['commits'])
-        unified_stats.validation_results = validation
-
-        return unified_stats
+        Returns:
+            UnifiedStats object with aggregated data
+        """
+        try:
+            unified_stats = UnifiedStats()
+            
+            for repo_stats in repository_stats_list:
+                try:
+                    # Add to unified totals
+                    unified_stats.total_loc += repo_stats.repo_totals.loc
+                    unified_stats.total_commits += repo_stats.repo_totals.commits
+                    unified_stats.total_files += repo_stats.repo_totals.files
+                    
+                    # Add to Guillermo's unified stats
+                    if unified_stats.guillermo_unified:
+                        unified_stats.guillermo_unified.add(repo_stats.guillermo_stats)
+                    
+                    # Add to repo breakdown
+                    if unified_stats.repo_breakdown:
+                        unified_stats.repo_breakdown[repo_stats.display_name] = repo_stats
+                    
+                    # Aggregate language stats
+                    if repo_stats.language_stats and unified_stats.unified_language_stats:
+                        for lang, stats in repo_stats.language_stats.items():
+                            if lang not in unified_stats.unified_language_stats:
+                                unified_stats.unified_language_stats[lang] = {'loc': 0, 'commits': 0, 'files': 0}
+                            unified_stats.unified_language_stats[lang]['loc'] += stats.get('loc', 0)
+                            unified_stats.unified_language_stats[lang]['commits'] += stats.get('commits', 0)
+                            unified_stats.unified_language_stats[lang]['files'] += stats.get('files', 0)
+                    
+                    unified_stats.repos_processed += 1
+                    
+                except (TypeError, AttributeError, KeyError) as e:
+                    self.logger.warning(f"Error aggregating stats for '{repo_stats.display_name}': {e}")
+                    continue
+            
+            return unified_stats
+            
+        except (TypeError, AttributeError, ValueError) as e:
+            log_and_raise(StatsProcessingError, 
+                         f"Error aggregating repository stats: {e}", 
+                         error_code="AGGREGATION_ERROR")
+            return UnifiedStats()
     
     def calculate_distribution_percentages(self, stats: AuthorStats, totals: AuthorStats) -> Tuple[float, float, float]:
         """
@@ -280,11 +321,16 @@ class StatsProcessor:
         Returns:
             Tuple of (loc_percentage, commits_percentage, files_percentage)
         """
-        loc_pct = (stats.loc / totals.loc * 100) if totals.loc > 0 else 0
-        commits_pct = (stats.commits / totals.commits * 100) if totals.commits > 0 else 0
-        files_pct = (stats.files / totals.files * 100) if totals.files > 0 else 0
-        
-        return (loc_pct, commits_pct, files_pct)
+        try:
+            loc_pct = (stats.loc / totals.loc * 100) if totals.loc > 0 else 0
+            commits_pct = (stats.commits / totals.commits * 100) if totals.commits > 0 else 0
+            files_pct = (stats.files / totals.files * 100) if totals.files > 0 else 0
+            
+            return (loc_pct, commits_pct, files_pct)
+            
+        except Exception as e:
+            self.logger.error(f"Error calculating distribution percentages: {e}")
+            return (0.0, 0.0, 0.0)
     
     def validate_unified_stats(self, stats: UnifiedStats) -> List[str]:
         """
@@ -296,18 +342,28 @@ class StatsProcessor:
         Returns:
             List of validation error messages
         """
-        errors = []
-        
-        if stats.guillermo_unified.loc == 0:
-            errors.append("No Guillermo contributions found")
-        
-        if stats.repos_processed == 0:
-            errors.append("No repositories processed")
-        
-        if stats.total_loc == 0:
-            errors.append("No lines of code found")
-        
-        if not stats.repo_breakdown:
-            errors.append("No repository breakdown data")
-        
-        return errors 
+        try:
+            errors = []
+            
+            if stats.guillermo_unified and stats.guillermo_unified.loc == 0:
+                errors.append("No Guillermo contributions found")
+            
+            if stats.repos_processed == 0:
+                errors.append("No repositories processed")
+            
+            if stats.total_loc == 0:
+                errors.append("No lines of code found")
+            
+            if not stats.repo_breakdown:
+                errors.append("No repository breakdown data")
+            
+            if errors:
+                self.logger.warning(f"Validation found {len(errors)} issues: {errors}")
+            else:
+                self.logger.info("Unified stats validation passed")
+            
+            return errors
+            
+        except Exception as e:
+            self.logger.error(f"Error validating unified stats: {e}")
+            return ["Validation error occurred"] 

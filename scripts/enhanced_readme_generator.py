@@ -8,33 +8,99 @@ import json
 import os
 from datetime import datetime
 from typing import Dict, List, Any
+from error_handling import (
+    setup_logging, DataProcessingError, log_and_raise, get_logger, ErrorCodes, with_error_context
+)
+
+# Set up logging for this module
+logger = get_logger(__name__)
+
+def load_unified_stats() -> Dict[str, Any]:
+    """Load unified statistics from JSON file."""
+    try:
+        with open('unified_stats.json', 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        return data
+    except (FileNotFoundError, PermissionError) as e:
+        logger.warning(f"Could not read unified_stats.json: {e}")
+        return {}
+    except (json.JSONDecodeError, TypeError) as e:
+        logger.error(f"Invalid JSON in unified_stats.json: {e}")
+        return {}
+    except (OSError, IOError) as e:
+        logger.error(f"IO error reading unified_stats.json: {e}")
+        return {}
+
+def load_analytics_history() -> List[Dict[str, Any]]:
+    """Load analytics history from JSON file."""
+    try:
+        with open('analytics_history.json', 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        
+        if isinstance(data, list):
+            return data
+        else:
+            logger.warning("analytics_history.json does not contain a list")
+            return []
+            
+    except (FileNotFoundError, PermissionError) as e:
+        logger.warning(f"Could not read analytics_history.json: {e}")
+        return []
+    except (json.JSONDecodeError, TypeError) as e:
+        logger.error(f"Invalid JSON in analytics_history.json: {e}")
+        return []
+    except (OSError, IOError) as e:
+        logger.error(f"IO error reading analytics_history.json: {e}")
+        return []
+
 
 def load_analytics_data() -> Dict[str, Any]:
-    """Load analytics data from JSON file in project root"""
+    """Load analytics data from unified stats and analytics history."""
     try:
-        root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        analytics_path = os.path.join(root_dir, 'analytics_history.json')
-        unified_stats_path = os.path.join(root_dir, 'unified_stats.json')
+        # Load unified stats
+        unified_stats = load_unified_stats()
         
         # Load analytics history
-        analytics_data = []
-        if os.path.exists(analytics_path):
-            with open(analytics_path, 'r', encoding='utf-8') as f:
-                analytics_data = json.load(f)
+        analytics_history = load_analytics_history()
         
-        # Load enhanced unified stats
-        unified_stats = {}
-        if os.path.exists(unified_stats_path):
-            with open(unified_stats_path, 'r', encoding='utf-8') as f:
-                unified_stats = json.load(f)
-        
-        return {
-            'analytics_history': analytics_data,
-            'unified_stats': unified_stats
+        # Combine the data
+        data = {
+            'unified_stats': unified_stats,
+            'analytics_history': analytics_history
         }
-    except FileNotFoundError:
-        print("Warning: analytics_history.json or unified_stats.json not found in project root")
-        return {}
+        
+        logger.info(f"Loaded analytics data: {len(unified_stats)} unified stats, {len(analytics_history)} history entries")
+        return data
+        
+    except Exception as e:
+        logger.error(f"Error loading analytics data: {e}")
+        # Return empty data structure to prevent crashes
+        return {
+            'unified_stats': {},
+            'analytics_history': []
+        }
+
+def save_readme(content: str, output_path: str = "../README.md") -> bool:
+    """Save README content to file."""
+    try:
+        # Ensure directory exists
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.write(content)
+        
+        logger.info(f"README saved to {output_path}")
+        return True
+        
+    except (PermissionError, OSError) as e:
+        logger.error(f"Could not write to {output_path}: {e}")
+        return False
+    except (TypeError, ValueError) as e:
+        logger.error(f"Error writing README content: {e}")
+        return False
+    except IOError as e:
+        logger.error(f"IO error writing {output_path}: {e}")
+        return False
 
 def format_number(num: int) -> str:
     """Format large numbers with commas"""
@@ -203,8 +269,6 @@ def generate_enhanced_stats_from_unified(unified_stats: Dict[str, Any]) -> str:
     # Tech stack analysis with skillicons.dev
     tech_stack_insights = ""
     tech_stack_analysis = unified_stats.get('tech_stack_analysis', {})
-    print("\n[DEBUG] Rendering tech stack section with the following data:")
-    print(json.dumps(tech_stack_analysis, indent=2))
     if tech_stack_analysis:
         # Map actual technologies to skillicons.dev icons
         tech_to_icon = {
@@ -241,7 +305,7 @@ def generate_enhanced_stats_from_unified(unified_stats: Dict[str, Any]) -> str:
         }
         
         # Build dynamic tech stack
-        dynamic_tech_stack = {
+        dynamic_tech_stack: Dict[str, list[str]] = {
             'frontend': [],
             'backend': [],
             'database': [],
@@ -569,7 +633,7 @@ def generate_dynamic_tech_stack_section(data: Dict[str, Any]) -> str:
         }
         
         # Build dynamic tech stack
-        dynamic_tech_stack = {
+        dynamic_tech_stack: Dict[str, list[str]] = {
             'frontend': [],
             'backend': [],
             'database': [],
@@ -755,26 +819,37 @@ def generate_enhanced_readme(data: Dict[str, Any]) -> str:
     
     return content
 
+@with_error_context({'component': 'enhanced_readme_generator'})
 def main():
     """Main function to generate enhanced README"""
-    print("🔄 Generating professional dynamic README...")
-    
-    # Load analytics data
-    data = load_analytics_data()
-    
-    # Generate enhanced README content
-    content = generate_enhanced_readme(data)
-    
-    # Always write to project root
-    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    readme_path = os.path.join(root_dir, 'README.md')
-    with open(readme_path, 'w', encoding='utf-8') as f:
-        f.write(content)
-    
-    print("✅ Professional README.md generated successfully!")
-    print(f"📊 Data source: analytics_history.json")
-    print(f"📅 Generated at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}")
-    print(f"🎨 Features: Authentic content, personal narrative, dynamic stats")
+    try:
+        # Load analytics data
+        data = load_analytics_data()
+        
+        # Generate enhanced README content
+        content = generate_enhanced_readme(data)
+        
+        # Always write to project root
+        root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        readme_path = os.path.join(root_dir, 'README.md')
+        with open(readme_path, 'w', encoding='utf-8') as f:
+            f.write(content)
+        
+        logger.info(f"Enhanced README generated successfully: {readme_path}")
+        
+    except KeyboardInterrupt:
+        logger.info("Process interrupted by user")
+        sys.exit(1)
+    except Exception as e:
+        log_and_raise(
+            DataProcessingError(
+                f"Failed to generate enhanced README: {e}",
+                error_code=ErrorCodes.DATA_PROCESSING_FAILED,
+                context={'script': 'enhanced_readme_generator'}
+            ),
+            logger=logger
+        )
 
 if __name__ == "__main__":
+    setup_logging()
     main() 

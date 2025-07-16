@@ -1,0 +1,66 @@
+# Dependency Management Configuration
+
+# Security-critical packages that should be updated immediately
+security_critical_packages:
+  - requests
+  - PyYAML
+  - urllib3
+  - cryptography
+  - ssl
+  - certifi
+  - chardet
+  - idna
+
+# Packages that should be pinned to exact versions (==)
+pin_exact_versions:
+  - requests
+  - PyYAML
+  - cryptography
+  - certifi
+
+# Optional dependencies mapping (package_name: import_name)
+optional_dependencies:
+  python-json-logger: pythonjsonlogger
+  svgwrite: svgwrite
+  requests: requests
+  PyYAML: yaml
+  colorama: colorama
+  tqdm: tqdm
+  git-fame: git_fame
+
+# Version constraints for major packages
+version_constraints:
+  git-fame: ">=3.1.0,<4.0.0"
+  PyYAML: ">=6.0.2,<7.0.0"
+  svgwrite: ">=1.4.3,<2.0.0"
+  requests: ">=2.32.4,<3.0.0"
+  colorama: ">=0.4.6,<1.0.0"
+  tqdm: ">=4.67.1,<5.0.0"
+  python-json-logger: ">=3.3.0,<4.0.0"
+
+# Update strategies
+update_strategies:
+  security: "auto" # auto, manual, disabled
+  major: "manual" # auto, manual, disabled
+  minor: "auto" # auto, manual, disabled
+  patch: "auto" # auto, manual, disabled
+
+# GitHub Actions settings
+github_actions:
+  auto_create_issues: true
+  auto_update_security: true
+  schedule: "0 2 * * 1" # Every Monday at 2 AM UTC
+  retention_days: 7
+
+# Reporting settings
+reporting:
+  generate_markdown: true
+  generate_json: true
+  include_security_scan: true
+  include_vulnerability_check: true
+
+# Excluded packages (won't be updated)
+excluded_packages:
+  - setuptools
+  - pip
+  - wheel

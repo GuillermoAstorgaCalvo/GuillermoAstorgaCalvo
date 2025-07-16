@@ -5,11 +5,12 @@ Handles growth tracking, velocity metrics, goal tracking, and trend visualizatio
 
 import json
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass, asdict
 import statistics
+from error_handling import AnalyticsError, log_and_raise, get_logger
 
 
 @dataclass
@@ -26,7 +27,11 @@ class HistoricalDataPoint:
     
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
-        return asdict(self)
+        try:
+            return asdict(self)
+        except (TypeError, AttributeError) as e:
+            get_logger(__name__).error(f"Error converting {self.__class__.__name__} to dict: {e}")
+            raise
 
 
 @dataclass
@@ -44,180 +49,185 @@ class VelocityMetrics:
     
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
-        return asdict(self)
-
-
-
+        try:
+            return asdict(self)
+        except (TypeError, AttributeError) as e:
+            get_logger(__name__).error(f"Error converting {self.__class__.__name__} to dict: {e}")
+            raise
 
 
 class AnalyticsManager:
     """Manages historical analytics, velocity metrics, and goal tracking."""
     
     def __init__(self, history_file: str = "analytics_history.json"):
-        """
-        Initialize the analytics manager.
-        
-        Args:
-            history_file: Path to the historical data file
-        """
-        self.history_file = Path(history_file)
-        self.history_data: List[HistoricalDataPoint] = []
+        """Initialize the analytics manager."""
+        self.history_file = history_file
+        self.logger = get_logger(__name__)
+        self.history_data: list[dict[str, Any]] = []
         self.load_history()
     
     def load_history(self) -> None:
         """Load historical data from file."""
         try:
-            if self.history_file.exists():
-                with open(self.history_file, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
-                    self.history_data = [
-                        HistoricalDataPoint(**point) for point in data
-                    ]
-        except Exception as e:
-            print(f"⚠️ Could not load historical data: {e}")
+            if not os.path.exists(self.history_file):
+                self.logger.info(f"History file {self.history_file} does not exist, starting with empty data")
+                self.history_data = []
+                return
+            
+            with open(self.history_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                
+            if isinstance(data, list):
+                self.history_data = data
+            else:
+                self.logger.warning(f"History file {self.history_file} does not contain a list, starting with empty data")
+                self.history_data = []
+                
+            self.logger.debug(f"Loading historical data from {self.history_file}")
+            
+        except (FileNotFoundError, PermissionError) as e:
+            self.logger.warning(f"Could not read history file {self.history_file}: {e}")
+            self.history_data = []
+        except (json.JSONDecodeError, TypeError) as e:
+            self.logger.error(f"Invalid JSON in history file {self.history_file}: {e}")
+            self.history_data = []
+        except (OSError, IOError) as e:
+            self.logger.error(f"IO error reading history file {self.history_file}: {e}")
             self.history_data = []
     
     def save_history(self) -> None:
         """Save historical data to file."""
         try:
-            data = [point.to_dict() for point in self.history_data]
+            # Create directory if it doesn't exist
+            os.makedirs(os.path.dirname(self.history_file), exist_ok=True)
+            
             with open(self.history_file, 'w', encoding='utf-8') as f:
-                json.dump(data, f, indent=2, ensure_ascii=False)
-        except Exception as e:
-            print(f"❌ Could not save historical data: {e}")
+                json.dump(self.history_data, f, indent=2, ensure_ascii=False)
+                
+            self.logger.debug(f"Saved {len(self.history_data)} data points to {self.history_file}")
+            
+        except (PermissionError, OSError) as e:
+            self.logger.error(f"Could not write to history file {self.history_file}: {e}")
+        except (TypeError, ValueError) as e:
+            self.logger.error(f"Error serializing history data: {e}")
+        except IOError as e:
+            self.logger.error(f"IO error writing history file {self.history_file}: {e}")
     
     def add_data_point(self, stats: Dict[str, Any]) -> None:
-        """
-        Add a new data point to the historical tracking.
-        
-        Args:
-            stats: Current statistics dictionary
-        """
-        data_point = HistoricalDataPoint(
-            timestamp=datetime.utcnow().isoformat() + 'Z',
-            total_loc=stats.get('total_loc', 0),
-            total_commits=stats.get('total_commits', 0),
-            total_files=stats.get('total_files', 0),
-            guillermo_loc=stats.get('guillermo_unified', {}).get('loc', 0),
-            guillermo_commits=stats.get('guillermo_unified', {}).get('commits', 0),
-            guillermo_files=stats.get('guillermo_unified', {}).get('files', 0),
-            repos_processed=stats.get('repos_processed', 0)
-        )
-        
-        self.history_data.append(data_point)
-        self.save_history()
-    
-    def get_growth_trends(self, days: int = 30) -> Dict[str, Any]:
-        """
-        Calculate growth trends over the specified period.
-        
-        Args:
-            days: Number of days to analyze
-            
-        Returns:
-            Dictionary with growth metrics
-        """
-        if len(self.history_data) < 2:
-            return {"error": "Insufficient historical data"}
-        
-        # Get data points within the specified period
-        cutoff_date = datetime.utcnow() - timedelta(days=days)
-        recent_data = [
-            point for point in self.history_data
-            if datetime.fromisoformat(point.timestamp.replace('Z', '+00:00')).replace(tzinfo=None) > cutoff_date
-        ]
-        
-        if len(recent_data) < 2:
-            return {"error": "Insufficient data in specified period"}
-        
-        # Calculate growth metrics
-        first_point = recent_data[0]
-        last_point = recent_data[-1]
-        
-        growth_metrics = {
-            'period_days': days,
-            'data_points': len(recent_data),
-            'total_loc': {
-                'start': first_point.total_loc,
-                'end': last_point.total_loc,
-                'growth': last_point.total_loc - first_point.total_loc,
-                'growth_percentage': ((last_point.total_loc - first_point.total_loc) / first_point.total_loc * 100) if first_point.total_loc > 0 else 0
-            },
-            'total_commits': {
-                'start': first_point.total_commits,
-                'end': last_point.total_commits,
-                'growth': last_point.total_commits - first_point.total_commits,
-                'growth_percentage': ((last_point.total_commits - first_point.total_commits) / first_point.total_commits * 100) if first_point.total_commits > 0 else 0
-            },
-            'guillermo_loc': {
-                'start': first_point.guillermo_loc,
-                'end': last_point.guillermo_loc,
-                'growth': last_point.guillermo_loc - first_point.guillermo_loc,
-                'growth_percentage': ((last_point.guillermo_loc - first_point.guillermo_loc) / first_point.guillermo_loc * 100) if first_point.guillermo_loc > 0 else 0
-            },
-            'guillermo_commits': {
-                'start': first_point.guillermo_commits,
-                'end': last_point.guillermo_commits,
-                'growth': last_point.guillermo_commits - first_point.guillermo_commits,
-                'growth_percentage': ((last_point.guillermo_commits - first_point.guillermo_commits) / first_point.guillermo_commits * 100) if first_point.guillermo_commits > 0 else 0
+        """Add a new data point to the history."""
+        try:
+            timestamp = datetime.now().isoformat()
+            data_point = {
+                'timestamp': timestamp,
+                'total_loc': stats.get('total_loc', 0),
+                'total_commits': stats.get('total_commits', 0),
+                'total_files': stats.get('total_files', 0),
+                'repos_processed': stats.get('repos_processed', 0)
             }
-        }
-        
-        return growth_metrics
+            
+            self.history_data.append(data_point)
+            self.save_history()
+            
+        except (TypeError, AttributeError, KeyError) as e:
+            self.logger.error(f"Error adding data point: {e}")
+        except (OSError, IOError) as e:
+            self.logger.error(f"Error saving data point: {e}")
+    
+    def calculate_growth_trends(self, days: int = 30) -> Dict[str, Any]:
+        """Calculate growth trends over the specified number of days."""
+        try:
+            if not self.history_data:
+                return {'error': 'No historical data available'}
+            
+            # Get recent data points
+            cutoff_date = datetime.now() - timedelta(days=days)
+            recent_data = []
+            
+            for point in self.history_data:
+                try:
+                    point_date = datetime.fromisoformat(point['timestamp'].replace('Z', '+00:00'))
+                    if point_date >= cutoff_date:
+                        recent_data.append(point)
+                except (ValueError, TypeError, KeyError) as e:
+                    self.logger.warning(f"Invalid timestamp in data point: {e}")
+                    continue
+            
+            if len(recent_data) < 2:
+                return {'error': f'Insufficient data for {days} day trend analysis'}
+            
+            # Calculate trends
+            first_point = recent_data[0]
+            last_point = recent_data[-1]
+            
+            trends = {
+                'period_days': days,
+                'data_points': len(recent_data),
+                'loc_growth': last_point.get('total_loc', 0) - first_point.get('total_loc', 0),
+                'commits_growth': last_point.get('total_commits', 0) - first_point.get('total_commits', 0),
+                'files_growth': last_point.get('total_files', 0) - first_point.get('total_files', 0),
+                'repos_growth': last_point.get('repos_processed', 0) - first_point.get('repos_processed', 0)
+            }
+            
+            self.logger.debug(f"Calculated growth trends for {days} days with {len(recent_data)} data points")
+            return trends
+            
+        except (TypeError, AttributeError, KeyError) as e:
+            self.logger.error(f"Error calculating growth trends: {e}")
+            return {'error': f'Error calculating trends: {e}'}
+        except (ValueError, OSError) as e:
+            self.logger.error(f"Error processing historical data: {e}")
+            return {'error': f'Error processing data: {e}'}
     
     def calculate_velocity_metrics(self, period: str = "weekly") -> List[VelocityMetrics]:
-        """
-        Calculate velocity metrics for the specified period.
-        
-        Args:
-            period: Time period ("weekly", "monthly", "quarterly")
+        """Calculate velocity metrics for the specified period."""
+        try:
+            if not self.history_data:
+                return []
             
-        Returns:
-            List of velocity metrics
-        """
-        if len(self.history_data) < 2:
+            # Sort data by timestamp
+            sorted_data = sorted(self.history_data, key=lambda x: x.get('timestamp', ''))
+            
+            if len(sorted_data) < 2:
+                return []
+            
+            velocity_metrics = []
+            
+            # Calculate velocity for each period
+            # Use zip to iterate over consecutive pairs more efficiently
+            for current, next_point in zip(sorted_data[:-1], sorted_data[1:]):
+                try:
+                    # Calculate time difference in days
+                    current_date = datetime.fromisoformat(current['timestamp'].replace('Z', '+00:00'))
+                    next_date = datetime.fromisoformat(next_point['timestamp'].replace('Z', '+00:00'))
+                    days_diff = (next_date - current_date).days
+                    
+                    if days_diff > 0:
+                        velocity = VelocityMetrics(
+                            period=period,
+                            start_date=current['timestamp'],
+                            end_date=next_point['timestamp'],
+                            loc_change=next_point.get('total_loc', 0) - current.get('total_loc', 0),
+                            commits_change=next_point.get('total_commits', 0) - current.get('total_commits', 0),
+                            files_change=next_point.get('total_files', 0) - current.get('total_files', 0),
+                            loc_velocity=(next_point.get('total_loc', 0) - current.get('total_loc', 0)) / days_diff,
+                            commits_velocity=(next_point.get('total_commits', 0) - current.get('total_commits', 0)) / days_diff,
+                            files_velocity=(next_point.get('total_files', 0) - current.get('total_files', 0)) / days_diff
+                        )
+                        velocity_metrics.append(velocity)
+                        
+                except (ValueError, TypeError, KeyError, ZeroDivisionError) as e:
+                    self.logger.warning(f"Error calculating velocity for period: {e}")
+                    continue
+            
+            self.logger.debug(f"Calculated {len(velocity_metrics)} velocity metrics for {period} period")
+            return velocity_metrics
+            
+        except (TypeError, AttributeError, KeyError) as e:
+            self.logger.error(f"Error calculating velocity metrics: {e}")
             return []
-        
-        # Sort data points by timestamp
-        sorted_data = sorted(self.history_data, key=lambda x: x.timestamp)
-        
-        velocity_metrics = []
-        
-        # Group data by period
-        if period == "weekly":
-            group_days = 7
-        elif period == "monthly":
-            group_days = 30
-        elif period == "quarterly":
-            group_days = 90
-        else:
+        except (ValueError, OSError) as e:
+            self.logger.error(f"Error processing velocity data: {e}")
             return []
-        
-        # Calculate velocity for each period
-        for i in range(len(sorted_data) - 1):
-            current = sorted_data[i]
-            next_point = sorted_data[i + 1]
-            
-            # Calculate time difference in days
-            current_date = datetime.fromisoformat(current.timestamp.replace('Z', '+00:00')).replace(tzinfo=None)
-            next_date = datetime.fromisoformat(next_point.timestamp.replace('Z', '+00:00')).replace(tzinfo=None)
-            days_diff = (next_date - current_date).days
-            
-            if days_diff > 0:
-                velocity = VelocityMetrics(
-                    period=period,
-                    start_date=current.timestamp,
-                    end_date=next_point.timestamp,
-                    loc_change=next_point.total_loc - current.total_loc,
-                    commits_change=next_point.total_commits - current.total_commits,
-                    files_change=next_point.total_files - current.total_files,
-                    loc_velocity=(next_point.total_loc - current.total_loc) / days_diff,
-                    commits_velocity=(next_point.total_commits - current.total_commits) / days_diff,
-                    files_velocity=(next_point.total_files - current.total_files) / days_diff
-                )
-                velocity_metrics.append(velocity)
-        
-        return velocity_metrics
     
     def track_language_usage(self, current_stats: Dict[str, Any], language_config: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -230,75 +240,101 @@ class AnalyticsManager:
         Returns:
             Dictionary with language usage analysis
         """
-        if not language_config.get('enabled', False):
-            return {}
-        
-        language_stats = current_stats.get('unified_language_stats', {})
-        if not language_stats:
-            return {}
-        
-        # Sort languages by LOC
-        sorted_languages = sorted(
-            language_stats.items(),
-            key=lambda x: x[1]['loc'],
-            reverse=True
-        )
-        
-        # Get top languages
-        top_count = language_config.get('track_top_languages', 10)
-        top_languages = sorted_languages[:top_count]
-        
-        # Calculate total LOC for percentage calculation
-        total_loc = sum(stats['loc'] for _, stats in language_stats.items())
-        
-        # Build language usage analysis
-        language_analysis = {
-            'total_languages': len(language_stats),
-            'top_languages': [],
-            'total_loc': total_loc,
-            'language_distribution': {}
-        }
-        
-        for language, stats in top_languages:
-            loc = stats['loc']
-            commits = stats['commits']
-            files = stats['files']
+        try:
+            if not language_config.get('enabled', False):
+                self.logger.debug("Language tracking disabled in config")
+                return {}
             
-            # Calculate percentage
-            percentage = (loc / total_loc * 100) if total_loc > 0 else 0
+            language_stats = current_stats.get('unified_language_stats', {})
+            if not language_stats:
+                self.logger.warning("No language stats available for tracking")
+                return {}
             
-            language_analysis['top_languages'].append({
-                'language': language,
-                'loc': loc,
-                'commits': commits,
-                'files': files,
-                'percentage': percentage
-            })
+            # Sort languages by LOC
+            sorted_languages = sorted(
+                language_stats.items(),
+                key=lambda x: x[1]['loc'],
+                reverse=True
+            )
             
-            language_analysis['language_distribution'][language] = {
-                'loc': loc,
-                'commits': commits,
-                'files': files,
-                'percentage': percentage
+            # Get top languages
+            top_count = language_config.get('track_top_languages', 10)
+            top_languages = sorted_languages[:top_count]
+            
+            # Calculate total LOC for percentage calculation
+            total_loc = sum(stats['loc'] for _, stats in language_stats.items())
+            
+            # Build language usage analysis
+            language_analysis = {
+                'total_languages': len(language_stats),
+                'top_languages': [],
+                'total_loc': total_loc,
+                'language_distribution': {}
             }
-        
-        return language_analysis
+            
+            for language, stats in top_languages:
+                try:
+                    loc = stats['loc']
+                    commits = stats['commits']
+                    files = stats['files']
+                    
+                    # Calculate percentage
+                    percentage = (loc / total_loc * 100) if total_loc > 0 else 0
+                    
+                    language_analysis['top_languages'].append({
+                        'language': language,
+                        'loc': loc,
+                        'commits': commits,
+                        'files': files,
+                        'percentage': percentage
+                    })
+                    
+                    language_analysis['language_distribution'][language] = {
+                        'loc': loc,
+                        'commits': commits,
+                        'files': files,
+                        'percentage': percentage
+                    }
+                    
+                except (TypeError, AttributeError, KeyError, ZeroDivisionError) as e:
+                    self.logger.error(f"Error processing language {language}: {e}")
+                    continue
+            
+            self.logger.info(f"Tracked {len(language_analysis['top_languages'])} top languages out of {language_analysis['total_languages']} total")
+            return language_analysis
+            
+        except (TypeError, AttributeError, KeyError) as e:
+            log_and_raise(AnalyticsError, 
+                         f"Error tracking language usage: {e}", 
+                         error_code="LANGUAGE_TRACKING_ERROR")
+            return {}
+        except (ValueError, OSError) as e:
+            log_and_raise(AnalyticsError, 
+                         f"Error processing language tracking data: {e}", 
+                         error_code="LANGUAGE_TRACKING_ERROR")
+            return {}
     
     def _get_current_value(self, stats: Dict[str, Any], metric: str) -> Optional[int]:
         """Extract current value for a given metric."""
-        if metric == 'total_loc':
-            return stats.get('total_loc', 0)
-        elif metric == 'total_commits':
-            return stats.get('total_commits', 0)
-        elif metric == 'total_files':
-            return stats.get('total_files', 0)
-        elif metric == 'guillermo_loc':
-            return stats.get('guillermo_unified', {}).get('loc', 0)
-        elif metric == 'guillermo_commits':
-            return stats.get('guillermo_unified', {}).get('commits', 0)
-        elif metric == 'guillermo_files':
-            return stats.get('guillermo_unified', {}).get('files', 0)
-        else:
+        try:
+            if metric == 'total_loc':
+                return stats.get('total_loc', 0)
+            elif metric == 'total_commits':
+                return stats.get('total_commits', 0)
+            elif metric == 'total_files':
+                return stats.get('total_files', 0)
+            elif metric == 'guillermo_loc':
+                return stats.get('guillermo_unified', {}).get('loc', 0)
+            elif metric == 'guillermo_commits':
+                return stats.get('guillermo_unified', {}).get('commits', 0)
+            elif metric == 'guillermo_files':
+                return stats.get('guillermo_unified', {}).get('files', 0)
+            else:
+                self.logger.warning(f"Unknown metric: {metric}")
+                return None
+                
+        except (TypeError, AttributeError, KeyError) as e:
+            self.logger.error(f"Error getting current value for metric {metric}: {e}")
             return None
     
     def get_trend_analysis(self) -> Dict[str, Any]:
@@ -308,37 +344,62 @@ class AnalyticsManager:
         Returns:
             Dictionary with trend analysis results
         """
-        if len(self.history_data) < 3:
-            return {"error": "Insufficient data for trend analysis"}
-        
-        # Calculate trends for different periods
-        trends = {
-            'weekly': self.get_growth_trends(7),
-            'monthly': self.get_growth_trends(30),
-            'quarterly': self.get_growth_trends(90),
-            'velocity': {
-                'weekly': self.calculate_velocity_metrics("weekly"),
-                'monthly': self.calculate_velocity_metrics("monthly")
+        try:
+            if len(self.history_data) < 3:
+                self.logger.warning("Insufficient data for trend analysis")
+                return {"error": "Insufficient data for trend analysis"}
+            
+            # Calculate trends for different periods
+            trends = {
+                'weekly': self.calculate_growth_trends(7),
+                'monthly': self.calculate_growth_trends(30),
+                'quarterly': self.calculate_growth_trends(90),
+                'velocity': {
+                    'weekly': self.calculate_velocity_metrics("weekly"),
+                    'monthly': self.calculate_velocity_metrics("monthly")
+                }
             }
-        }
-        
-        return trends
+            
+            self.logger.info("Completed comprehensive trend analysis")
+            return trends
+            
+        except (TypeError, AttributeError, KeyError) as e:
+            log_and_raise(AnalyticsError, 
+                         f"Error performing trend analysis: {e}", 
+                         error_code="TREND_ANALYSIS_ERROR")
+            return {}
+        except (ValueError, OSError) as e:
+            log_and_raise(AnalyticsError, 
+                         f"Error processing trend analysis data: {e}", 
+                         error_code="TREND_ANALYSIS_ERROR")
+            return {}
     
-    def cleanup_old_data(self, retention_days: int = 90) -> None:
-        """
-        Remove historical data older than the specified retention period.
-        
-        Args:
-            retention_days: Number of days to retain
-        """
-        cutoff_date = datetime.utcnow() - timedelta(days=retention_days)
-        
-        self.history_data = [
-            point for point in self.history_data
-            if datetime.fromisoformat(point.timestamp.replace('Z', '+00:00')).replace(tzinfo=None) > cutoff_date
-        ]
-        
-        self.save_history()
+    def cleanup_old_data(self, days_to_keep: int = 365) -> None:
+        """Remove data points older than the specified number of days."""
+        try:
+            if not self.history_data:
+                return
+            
+            cutoff_date = datetime.now() - timedelta(days=days_to_keep)
+            original_count = len(self.history_data)
+            
+            # Filter out old data points
+            self.history_data = [
+                point for point in self.history_data
+                if datetime.fromisoformat(point['timestamp'].replace('Z', '+00:00')) >= cutoff_date
+            ]
+            
+            removed_count = original_count - len(self.history_data)
+            if removed_count > 0:
+                self.save_history()
+                self.logger.info(f"Removed {removed_count} old data points, keeping {len(self.history_data)}")
+            else:
+                self.logger.debug("No old data to clean up")
+                
+        except (TypeError, AttributeError, KeyError) as e:
+            self.logger.error(f"Error cleaning up old data: {e}")
+        except (ValueError, OSError) as e:
+            self.logger.error(f"Error processing cleanup data: {e}")
 
 
 def get_analytics_manager(history_file: str = "analytics_history.json") -> AnalyticsManager:
@@ -351,4 +412,16 @@ def get_analytics_manager(history_file: str = "analytics_history.json") -> Analy
     Returns:
         AnalyticsManager instance
     """
-    return AnalyticsManager(history_file) 
+    try:
+        manager = AnalyticsManager(history_file)
+        get_logger(__name__).debug(f"Created AnalyticsManager with history file: {history_file}")
+        return manager
+    except (FileNotFoundError, PermissionError) as e:
+        get_logger(__name__).error(f"Could not create AnalyticsManager: {e}")
+        raise
+    except (json.JSONDecodeError, TypeError) as e:
+        get_logger(__name__).error(f"Invalid JSON in analytics history file: {e}")
+        raise
+    except (OSError, IOError) as e:
+        get_logger(__name__).error(f"IO error creating AnalyticsManager: {e}")
+        raise 

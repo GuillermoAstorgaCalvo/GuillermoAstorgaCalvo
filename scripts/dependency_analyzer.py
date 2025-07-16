@@ -10,7 +10,11 @@ import re
 from pathlib import Path
 from typing import Dict, List, Set, Any
 import subprocess
+from error_handling import (
+    setup_logging, DependencyAnalysisError, log_and_raise, get_logger, ErrorCodes, with_error_context
+)
 
+logger = get_logger(__name__)
 
 class DependencyAnalyzer:
     """Analyzes dependencies from package.json and requirements.txt files."""
@@ -242,122 +246,255 @@ class DependencyAnalyzer:
             'replicate': 'Replicate'
         }
     
+    @with_error_context({'component': 'dependency_analyzer'})
     def analyze_repository_dependencies(self, repo_path: Path) -> Dict[str, Set[str]]:
         """Analyze dependencies from a repository."""
-        categories = {
+        categories: Dict[str, set[str]] = {
             'frontend': set(),
             'backend': set(),
             'database': set(),
             'devops': set(),
             'ai_ml': set()
         }
-        
-        # Look for package.json files
-        package_json_files = list(repo_path.rglob('package.json'))
-        for package_file in package_json_files:
-            try:
-                with open(package_file, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
-                    
-                # Analyze dependencies
-                deps = data.get('dependencies', {})
-                dev_deps = data.get('devDependencies', {})
-                all_deps = {**deps, **dev_deps}
-                
-                for dep_name, version in all_deps.items():
-                    dep_lower = dep_name.lower()
-                    
-                    # Categorize the dependency
-                    if dep_lower in self.frontend_tech:
-                        categories['frontend'].add(self.frontend_tech[dep_lower])
-                    elif dep_lower in self.backend_tech:
-                        categories['backend'].add(self.backend_tech[dep_lower])
-                    elif dep_lower in self.database_tech:
-                        categories['database'].add(self.database_tech[dep_lower])
-                    elif dep_lower in self.devops_tech:
-                        categories['devops'].add(self.devops_tech[dep_lower])
-                    elif dep_lower in self.ai_ml_tech:
-                        categories['ai_ml'].add(self.ai_ml_tech[dep_lower])
-                        
-            except (json.JSONDecodeError, FileNotFoundError) as e:
-                print(f"⚠️ Could not parse {package_file}: {e}")
-        
-        # Look for requirements.txt files
-        requirements_files = list(repo_path.rglob('requirements.txt'))
-        for req_file in requirements_files:
-            try:
-                with open(req_file, 'r', encoding='utf-8') as f:
-                    lines = f.readlines()
-                
-                for line in lines:
-                    line = line.strip()
-                    if line and not line.startswith('#'):
-                        # Extract package name (remove version specifiers)
-                        package_name = re.split(r'[=<>!~]', line)[0].lower()
-                        
-                        # Categorize the package
-                        if package_name in self.backend_tech:
-                            categories['backend'].add(self.backend_tech[package_name])
-                        elif package_name in self.database_tech:
-                            categories['database'].add(self.database_tech[package_name])
-                        elif package_name in self.devops_tech:
-                            categories['devops'].add(self.devops_tech[package_name])
-                        elif package_name in self.ai_ml_tech:
-                            categories['ai_ml'].add(self.ai_ml_tech[package_name])
-                            
-            except FileNotFoundError as e:
-                print(f"⚠️ Could not read {req_file}: {e}")
-        
-        return categories
-    
+        try:
+            # Look for package.json files
+            package_json_files = list(repo_path.rglob('package.json'))
+            for package_file in package_json_files:
+                try:
+                    with open(package_file, 'r', encoding='utf-8') as f:
+                        data = json.load(f)
+                    # Analyze dependencies
+                    deps = data.get('dependencies', {})
+                    dev_deps = data.get('devDependencies', {})
+                    all_deps = {**deps, **dev_deps}
+                    for dep_name, version in all_deps.items():
+                        dep_lower = dep_name.lower()
+                        # Categorize the dependency
+                        if dep_lower in self.frontend_tech:
+                            categories['frontend'].add(self.frontend_tech[dep_lower])
+                        elif dep_lower in self.backend_tech:
+                            categories['backend'].add(self.backend_tech[dep_lower])
+                        elif dep_lower in self.database_tech:
+                            categories['database'].add(self.database_tech[dep_lower])
+                        elif dep_lower in self.devops_tech:
+                            categories['devops'].add(self.devops_tech[dep_lower])
+                        elif dep_lower in self.ai_ml_tech:
+                            categories['ai_ml'].add(self.ai_ml_tech[dep_lower])
+                except (json.JSONDecodeError, FileNotFoundError) as e:
+                    logger.warning(f"Failed to parse {package_file}: {e}", extra={'file': str(package_file)})
+                except Exception as e:
+                    log_and_raise(
+                        DependencyAnalysisError(
+                            f"Unexpected error analyzing {package_file}: {e}",
+                            error_code=ErrorCodes.DEPENDENCY_ANALYSIS_FAILED,
+                            context={'file': str(package_file)}
+                        ),
+                        logger=logger
+                    )
+            # Look for requirements.txt files
+            requirements_files = list(repo_path.rglob('requirements.txt'))
+            for req_file in requirements_files:
+                try:
+                    with open(req_file, 'r', encoding='utf-8') as f:
+                        lines = f.readlines()
+                    for line in lines:
+                        pkg = line.strip().split('==')[0].lower()
+                        if pkg in self.backend_tech:
+                            categories['backend'].add(self.backend_tech[pkg])
+                        elif pkg in self.database_tech:
+                            categories['database'].add(self.database_tech[pkg])
+                        elif pkg in self.devops_tech:
+                            categories['devops'].add(self.devops_tech[pkg])
+                        elif pkg in self.ai_ml_tech:
+                            categories['ai_ml'].add(self.ai_ml_tech[pkg])
+                except FileNotFoundError:
+                    logger.warning(f"Requirements file not found: {req_file}", extra={'file': str(req_file)})
+                except Exception as e:
+                    log_and_raise(
+                        DependencyAnalysisError(
+                            f"Unexpected error analyzing {req_file}: {e}",
+                            error_code=ErrorCodes.DEPENDENCY_ANALYSIS_FAILED,
+                            context={'file': str(req_file)}
+                        ),
+                        logger=logger
+                    )
+            return categories
+        except Exception as e:
+            log_and_raise(
+                DependencyAnalysisError(
+                    f"Failed to analyze repository dependencies: {e}",
+                    error_code=ErrorCodes.DEPENDENCY_ANALYSIS_FAILED,
+                    context={'repo_path': str(repo_path)}
+                ),
+                logger=logger
+            )
+            return {'frontend': set(), 'backend': set(), 'database': set(), 'devops': set(), 'ai_ml': set()}  # This line will never be reached due to log_and_raise
+
+    @with_error_context({'component': 'dependency_analyzer'})
     def analyze_all_repositories(self, repos_dir: Path) -> Dict[str, Any]:
         """Analyze dependencies from all repositories."""
-        all_technologies = {
+        all_technologies: Dict[str, set[str]] = {
             'frontend': set(),
             'backend': set(),
             'database': set(),
             'devops': set(),
             'ai_ml': set()
         }
-        print(f"[DEBUG] Scanning repositories in: {repos_dir.resolve()}")
-        if repos_dir.exists():
-            for repo_dir in repos_dir.iterdir():
-                if repo_dir.is_dir():
-                    # Check root of repo_dir
-                    for fname in ['package.json', 'requirements.txt']:
-                        root_file = repo_dir / fname
-                        if root_file.exists():
-                            print(f"[DEBUG] Found {fname} in {root_file}")
-                            repo_tech = self.analyze_repository_dependencies(repo_dir)
+        try:
+            if repos_dir.exists():
+                for repo_dir in repos_dir.iterdir():
+                    if repo_dir.is_dir():
+                        # Check root of repo_dir
+                        for fname in ['package.json', 'requirements.txt']:
+                            root_file = repo_dir / fname
+                            if root_file.exists():
+                                repo_tech = self.analyze_repository_dependencies(repo_dir)
+                                for category, techs in repo_tech.items():
+                                    all_technologies[category].update(techs)
+                        # Recursively search subdirectories
+                        for file_path in repo_dir.rglob('package.json'):
+                            repo_tech = self.analyze_repository_dependencies(file_path.parent)
                             for category, techs in repo_tech.items():
                                 all_technologies[category].update(techs)
-                    # Recursively search subdirectories
-                    for file_path in repo_dir.rglob('package.json'):
-                        print(f"[DEBUG] Found package.json in {file_path}")
-                        repo_tech = self.analyze_repository_dependencies(file_path.parent)
-                        for category, techs in repo_tech.items():
-                            all_technologies[category].update(techs)
-                    for file_path in repo_dir.rglob('requirements.txt'):
-                        print(f"[DEBUG] Found requirements.txt in {file_path}")
-                        repo_tech = self.analyze_repository_dependencies(file_path.parent)
-                        for category, techs in repo_tech.items():
-                            all_technologies[category].update(techs)
-        else:
-            print(f"[DEBUG] Directory does not exist: {repos_dir}")
-        # Convert sets to sorted lists
-        result = {}
-        for category, techs in all_technologies.items():
-            result[category] = {
-                'technologies': sorted(list(techs)),
-                'count': len(techs)
-            }
+                        for file_path in repo_dir.rglob('requirements.txt'):
+                            repo_tech = self.analyze_repository_dependencies(file_path.parent)
+                            for category, techs in repo_tech.items():
+                                all_technologies[category].update(techs)
+            # Convert sets to sorted lists
+            result = {}
+            for category, techs in all_technologies.items():
+                result[category] = {
+                    'technologies': sorted(list(techs)),
+                    'count': len(techs)
+                }
+            return result
+        except Exception as e:
+            log_and_raise(
+                DependencyAnalysisError(
+                    f"Failed to analyze all repositories: {e}",
+                    error_code=ErrorCodes.DEPENDENCY_ANALYSIS_FAILED,
+                    context={'repos_dir': str(repos_dir)}
+                ),
+                logger=logger
+            )
+            return {}  # This line will never be reached due to log_and_raise
 
-        # DEBUG: Print the detected technology stack
-        print("\n[DEBUG] Final detected technology stack by category:")
-        for category, techs in all_technologies.items():
-            print(f"  {category}: {sorted(list(techs))}")
+    def analyze_python_dependencies(self, repo_path: str) -> Dict[str, Any]:
+        """Analyze Python dependencies in a repository."""
+        try:
+            requirements_files = []
+            
+            # Find requirements files
+            for pattern in ['requirements.txt', 'requirements/*.txt', 'pyproject.toml', 'setup.py']:
+                try:
+                    for file_path in Path(repo_path).glob(pattern):
+                        if file_path.is_file():
+                            requirements_files.append(str(file_path))
+                except (OSError, IOError) as e:
+                    logger.warning(f"Error searching for {pattern} in {repo_path}: {e}")
+                    continue
+            
+            if not requirements_files:
+                logger.info(f"No Python dependency files found in {repo_path}")
+                return {}
+            
+            dependencies = {}
+            for req_file in requirements_files:
+                try:
+                    file_deps = self._parse_requirements_file(req_file)
+                    dependencies[req_file] = file_deps
+                except (FileNotFoundError, PermissionError) as e:
+                    logger.warning(f"Could not read {req_file}: {e}")
+                except (TypeError, ValueError) as e:
+                    logger.warning(f"Error parsing {req_file}: {e}")
+                except (OSError, IOError) as e:
+                    logger.warning(f"IO error reading {req_file}: {e}")
+            
+            return dependencies
+            
+        except (TypeError, AttributeError, KeyError) as e:
+            logger.error(f"Error analyzing Python dependencies in {repo_path}: {e}")
+            return {}
+        except (OSError, IOError) as e:
+            logger.error(f"IO error analyzing dependencies in {repo_path}: {e}")
+            return {}
+    
+    def analyze_node_dependencies(self, repo_path: str) -> Dict[str, Any]:
+        """Analyze Node.js dependencies in a repository."""
+        try:
+            package_json_path = Path(repo_path) / 'package.json'
+            
+            if not package_json_path.exists():
+                logger.info(f"No package.json found in {repo_path}")
+                return {}
+            
+            try:
+                with open(package_json_path, 'r', encoding='utf-8') as f:
+                    package_data = json.load(f)
+                
+                dependencies = {
+                    'dependencies': package_data.get('dependencies', {}),
+                    'devDependencies': package_data.get('devDependencies', {}),
+                    'peerDependencies': package_data.get('peerDependencies', {}),
+                    'optionalDependencies': package_data.get('optionalDependencies', {})
+                }
+                
+                return dependencies
+                
+            except (FileNotFoundError, PermissionError) as e:
+                logger.warning(f"Could not read package.json in {repo_path}: {e}")
+                return {}
+            except (json.JSONDecodeError, TypeError) as e:
+                logger.warning(f"Invalid JSON in package.json in {repo_path}: {e}")
+                return {}
+            except (OSError, IOError) as e:
+                logger.warning(f"IO error reading package.json in {repo_path}: {e}")
+                return {}
+                
+        except (TypeError, AttributeError, KeyError) as e:
+            logger.error(f"Error analyzing Node.js dependencies in {repo_path}: {e}")
+            return {}
+        except (OSError, IOError) as e:
+            logger.error(f"IO error analyzing Node.js dependencies in {repo_path}: {e}")
+            return {}
 
-        return result
+    def _parse_requirements_file(self, file_path: str) -> Dict[str, str]:
+        """Parse a requirements.txt file and return package name to version mapping."""
+        try:
+            dependencies = {}
+            with open(file_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith('#'):
+                        # Handle different formats: package==version, package>=version, etc.
+                        if '==' in line:
+                            package, version = line.split('==', 1)
+                        elif '>=' in line:
+                            package, version = line.split('>=', 1)
+                        elif '<=' in line:
+                            package, version = line.split('<=', 1)
+                        elif '>' in line:
+                            package, version = line.split('>', 1)
+                        elif '<' in line:
+                            package, version = line.split('<', 1)
+                        else:
+                            package, version = line, ''
+                        
+                        package = package.strip().lower()
+                        version = version.strip()
+                        if package:
+                            dependencies[package] = version
+            
+            return dependencies
+        except (FileNotFoundError, PermissionError) as e:
+            logger.warning(f"Could not read requirements file {file_path}: {e}")
+            return {}
+        except (TypeError, ValueError) as e:
+            logger.warning(f"Error parsing requirements file {file_path}: {e}")
+            return {}
+        except (OSError, IOError) as e:
+            logger.warning(f"IO error reading requirements file {file_path}: {e}")
+            return {}
 
 
 def main():
@@ -366,29 +503,16 @@ def main():
     
     import os
     from pathlib import Path
-    print(f"[DEBUG] REPOS_DIR env: {os.environ.get('REPOS_DIR')}")
     repos_dir = Path(os.environ.get('REPOS_DIR', 'repo-stats'))
     if not repos_dir.exists():
         repos_dir = Path.cwd()
     
-    print(f"🔍 Analyzing dependencies in: {repos_dir}")
-    
     tech_stack = analyzer.analyze_all_repositories(repos_dir)
-    
-    # Print results
-    print("\n📊 Technology Stack Analysis:")
-    for category, data in tech_stack.items():
-        if data['technologies']:
-            print(f"\n{category.title()}:")
-            for tech in data['technologies']:
-                print(f"  • {tech}")
     
     # Save results
     output_file = repos_dir / 'tech_stack_analysis.json'
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(tech_stack, f, indent=2, ensure_ascii=False)
-    
-    print(f"\n✅ Technology stack analysis saved to: {output_file}")
 
 
 if __name__ == "__main__":

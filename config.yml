@@ -5,29 +5,57 @@ repositories:
     display_name: "InmoIA Frontend"
     branch: "develop"
     artifact_name: "repo1-stats"
+    organization: "guillermo-affiliaction"
+    token_type: "private"
   - name: "backend-housing-hub-saas"
     display_name: "TypeScript Backend"
     branch: "develop"
     artifact_name: "repo2-stats"
+    organization: "guillermo-affiliaction"
+    token_type: "private"
   - name: "IAbackend-inmoIA"
     display_name: "Python AI MCP Backend"
     branch: "develop"
     artifact_name: "repo3-stats"
+    organization: "guillermo-affiliaction"
+    token_type: "private"
 
   # Your personal repositories
   - name: "FacturaIA"
     display_name: "FacturaIA"
     branch: "develop"
     artifact_name: "repo4-stats"
+    organization: "GuillermoAstorgaCalvo"
+    token_type: "personal"
   - name: "restaurant-app"
     display_name: "Restaurant App"
     branch: "develop"
     artifact_name: "repo5-stats"
+    organization: "GuillermoAstorgaCalvo"
+    token_type: "personal"
 
 # GitHub organization/user settings
 github:
   organization: "guillermo-affiliaction" # Keep this for existing repos
   base_url: "https://github.com"
+
+# External services and URLs
+external_services:
+  # Social media and contact
+  linkedin: "https://linkedin.com/in/guillermoastorgacalvo"
+  email: "mailto:guillermo.astorga.calvo@gmail.com"
+  portfolio: "https://guillermoastorgacalvo.dev"
+
+  # Badge services
+  shields_io: "https://img.shields.io/badge"
+  skill_icons: "https://skillicons.dev/icons"
+  readme_typing: "https://readme-typing-svg.herokuapp.com"
+
+  # GitHub stats services
+  github_stats: "https://github-readme-stats.vercel.app/api"
+  github_streak: "https://streak-stats.demolab.com"
+  github_activity: "https://github-readme-activity-graph.vercel.app/graph"
+  profile_views: "https://komarev.com/ghpvc"
 
 # Author pattern matching
 author_patterns:

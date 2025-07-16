@@ -2,6 +2,11 @@
 scripts/test_analytics_history.json
 scripts/test_analytics_report.md
 
+# Dependency management
+dependency_report.md
+safety-report.json
+*.log
+
 # Python cache
 __pycache__/
 *.pyc
@@ -10,4 +15,21 @@ __pycache__/
 
 # VSCode and editor settings
 .vscode/
-.idea/ 
+.idea/
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db 
+
+*.log
+*.tmp
+.env
+.env.local
+.env.*.local
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~

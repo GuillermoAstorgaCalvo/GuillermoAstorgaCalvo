@@ -1,0 +1,243 @@
+name: Dependency Update Check
+
+on:
+  schedule:
+    - cron: "0 2 * * 1" # Every Monday at 2 AM UTC
+  workflow_dispatch: # Allow manual trigger
+  push:
+    paths:
+      - "requirements.txt"
+      - "scripts/update_dependencies.py"
+
+jobs:
+  dependency-check:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run dependency analysis
+        run: |
+          cd scripts
+          python update_dependencies.py
+
+      - name: Upload dependency report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dependency-report
+          path: |
+            dependency_report.md
+            scripts/dependency_report.md
+          retention-days: 7
+
+      - name: Check for security vulnerabilities
+        run: |
+          # Install safety for security scanning
+          pip install safety
+
+          # Run security scan
+          safety check --json --output safety-report.json || true
+
+          # Check if any high/critical vulnerabilities found
+          if [ -f safety-report.json ]; then
+            VULNERABILITIES=$(python -c "
+            import json
+            try:
+                with open('safety-report.json', 'r') as f:
+                    data = json.load(f)
+                vulns = [v for v in data if v.get('severity') in ['high', 'critical']]
+                print(len(vulns))
+            except:
+                print(0)
+            ")
+            
+            if [ "$VULNERABILITIES" -gt 0 ]; then
+              echo "🚨 Found $VULNERABILITIES high/critical security vulnerabilities"
+              echo "::warning::Security vulnerabilities detected in dependencies"
+              exit 1
+            else
+              echo "✅ No high/critical security vulnerabilities found"
+            fi
+          fi
+
+      - name: Create issue for dependency updates
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            // Check if dependency report exists
+            let reportContent = '';
+            try {
+              if (fs.existsSync('dependency_report.md')) {
+                reportContent = fs.readFileSync('dependency_report.md', 'utf8');
+              } else if (fs.existsSync('scripts/dependency_report.md')) {
+                reportContent = fs.readFileSync('scripts/dependency_report.md', 'utf8');
+              }
+            } catch (error) {
+              console.log('Could not read dependency report');
+            }
+
+            // Create issue for dependency updates
+            const issueTitle = '🔧 Dependency Updates Available';
+            const issueBody = `
+            ## Dependency Update Required
+
+            The automated dependency check found updates that need attention.
+
+            ${reportContent ? '### Dependency Report\n\n```markdown\n' + reportContent + '\n```' : ''}
+
+            ### Next Steps
+
+            1. Review the dependency report above
+            2. Test the application with updated dependencies
+            3. Update requirements.txt if needed
+            4. Run the dependency update script: \`python scripts/update_dependencies.py\`
+
+            ### Security Notes
+
+            - Security updates should be prioritized
+            - Major version updates may require code changes
+            - Test thoroughly before deploying
+
+            ---
+            *This issue was automatically created by the dependency update workflow.*
+            `;
+
+            // Check if issue already exists
+            const existingIssues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: ['dependencies', 'automated']
+            });
+
+            const hasDependencyIssue = existingIssues.data.some(issue => 
+              issue.title.includes('Dependency Updates Available')
+            );
+
+            if (!hasDependencyIssue) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: issueTitle,
+                body: issueBody,
+                labels: ['dependencies', 'automated', 'maintenance']
+              });
+            }
+
+  auto-update-security:
+    runs-on: ubuntu-24.04
+    if: github.event_name == 'schedule' # Only run on schedule
+    permissions:
+      contents: write
+      security-events: write
+      actions: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run security-focused dependency update
+        run: |
+          cd scripts
+          # Run dependency analysis and auto-update security packages
+          python -c "
+          from update_dependencies import DependencyManager
+          import sys
+
+          manager = DependencyManager()
+          report = manager.analyze_dependencies()
+
+          # Only update if there are security updates
+          if report.security_updates > 0:
+              print(f'🔒 Found {report.security_updates} security updates - auto-updating')
+              # Get packages info for security updates
+              packages_info = []
+              requirements = manager.parse_requirements_file()
+              current_versions = manager.check_current_versions(requirements)
+              
+              for package, version_spec in requirements:
+                  if package in manager.security_critical:
+                      current_version = current_versions.get(package, 'Unknown')
+                      latest_version = manager.get_latest_version(package)
+                      if current_version != latest_version and latest_version:
+                          from update_dependencies import PackageInfo
+                          packages_info.append(PackageInfo(
+                              name=package,
+                              current_version=current_version,
+                              latest_version=latest_version,
+                              version_spec=version_spec,
+                              is_security_update=True,
+                              is_major_update=False,
+                              is_optional=False,
+                              used_in_code=True
+                          ))
+              
+              if packages_info:
+                  success = manager.update_requirements_file(packages_info, pin_versions=True)
+                  if success:
+                      print('✅ Security updates applied successfully')
+                      sys.exit(0)
+                  else:
+                      print('❌ Failed to apply security updates')
+                      sys.exit(1)
+              else:
+                  print('ℹ️ No security updates to apply')
+          else:
+              print('✅ No security updates needed')
+          "
+
+      - name: Commit security updates
+        if: success()
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git add requirements.txt
+            git commit -m "🔒 Auto-update security dependencies [skip ci]"
+            git push
+            echo "✅ Security updates committed"
+          else
+            echo "ℹ️ No changes to commit"
+          fi

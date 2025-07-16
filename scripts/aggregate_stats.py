@@ -7,8 +7,15 @@ Aggregates statistics from multiple repositories and generates unified reports.
 import json
 import sys
 from pathlib import Path
-from typing import List
+from typing import List, Dict, Any
 import os
+from error_handling import (
+    setup_logging, DataProcessingError, log_and_raise, get_logger, ErrorCodes, with_error_context
+)
+from datetime import datetime
+
+# Set up logging for this module
+logger = get_logger(__name__)
 
 # Add scripts directory to Python path for imports
 script_dir = Path(__file__).parent
@@ -20,138 +27,146 @@ from report_generator import MarkdownReportGenerator, JSONReportGenerator
 from language_mapper import get_language_mapper
 
 
-def load_repository_stats(stats_dir: str = None) -> List[RepositoryStats]:
-    """
-    Load repository statistics from artifact files.
-    
-    Args:
-        stats_dir: Directory containing repository statistics artifacts
-        
-    Returns:
-        List of RepositoryStats objects
-    """
-    stats_data = []
-    
-    # Default to parent directory where artifacts are downloaded
-    if stats_dir is None:
-        stats_dir = script_dir.parent / "repo-stats"
-    else:
-        stats_dir = Path(stats_dir)
-    
-    print(f"Looking for statistics in: {stats_dir}")
-    
-    if not stats_dir.exists():
-        print(f"❌ Statistics directory not found: {stats_dir}")
-        print(f"Current working directory: {Path.cwd()}")
-        print(f"Available files in parent directory:")
-        parent_dir = script_dir.parent
-        if parent_dir.exists():
-            for item in parent_dir.iterdir():
-                print(f"  - {item.name}")
-        return []
-    
-    # Process each artifact directory
-    for artifact_dir in stats_dir.iterdir():
-        if artifact_dir.is_dir():
-            stats_file = artifact_dir / 'repo_stats.json'
-            if stats_file.exists():
-                try:
-                    with open(stats_file, 'r', encoding='utf-8') as f:
-                        data = json.load(f)
-                    
-                    # Convert dictionary back to RepositoryStats object
-                    language_stats = data.get('language_stats', {})
-                    print(f"📊 Loading language stats for {data['display_name']}: {len(language_stats)} languages")
-                    
-                    repo_stats = RepositoryStats(
-                        display_name=data['display_name'],
-                        guillermo_stats=AuthorStats(**data['guillermo_stats']),
-                        repo_totals=AuthorStats(**data['repo_totals']),
-                        language_stats=language_stats
-                    )
-                    
-                    stats_data.append(repo_stats)
-                    print(f"✅ Loaded statistics for: {data['display_name']}")
-                    
-                except (json.JSONDecodeError, KeyError, TypeError) as e:
-                    print(f"❌ Failed to load statistics from {stats_file}: {e}")
-                except Exception as e:
-                    print(f"❌ Unexpected error loading {stats_file}: {e}")
-    
-    return stats_data
-
-
-def main():
-    """Main function to aggregate statistics and generate reports."""
+def load_repository_stats(repo_name: str) -> Dict[str, Any]:
+    """Load statistics for a specific repository."""
     try:
-        # Load configuration
-        config = get_config_manager()
+        stats_file = f"{repo_name}_stats.json"
         
-        # Validate configuration
+        if not os.path.exists(stats_file):
+            logger.warning(f"Stats file not found: {stats_file}")
+            return {}
+        
+        with open(stats_file, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        
+        logger.info(f"Loaded stats for {repo_name}: {len(data)} data points")
+        return data
+        
+    except (FileNotFoundError, PermissionError) as e:
+        logger.warning(f"Could not read {repo_name}_stats.json: {e}")
+        return {}
+    except (json.JSONDecodeError, TypeError) as e:
+        logger.error(f"Invalid JSON in {repo_name}_stats.json: {e}")
+        return {}
+    except (OSError, IOError) as e:
+        logger.error(f"IO error reading {repo_name}_stats.json: {e}")
+        return {}
+
+def save_unified_stats(stats: Dict[str, Any], output_file: str = "unified_stats.json") -> bool:
+    """Save unified statistics to JSON file."""
+    try:
+        with open(output_file, 'w', encoding='utf-8') as f:
+            json.dump(stats, f, indent=2, ensure_ascii=False)
+        
+        logger.info(f"Unified stats saved to {output_file}")
+        return True
+        
+    except (PermissionError, OSError) as e:
+        logger.error(f"Could not write to {output_file}: {e}")
+        return False
+    except (TypeError, ValueError) as e:
+        logger.error(f"Error serializing unified stats: {e}")
+        return False
+    except IOError as e:
+        logger.error(f"IO error writing {output_file}: {e}")
+        return False
+
+def aggregate_repository_data(repo_stats_list: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """Aggregate data from multiple repositories."""
+    try:
+        unified_stats: Dict[str, Any] = {
+            'total_loc': 0,
+            'total_commits': 0,
+            'total_files': 0,
+            'repos_processed': len(repo_stats_list),
+            'repository_breakdown': {},
+            'language_stats': {},
+            'last_updated': datetime.now().isoformat()
+        }
+        
+        for repo_data in repo_stats_list:
+            try:
+                repo_name = repo_data.get('repository_name', 'Unknown')
+                
+                # Aggregate totals
+                unified_stats['total_loc'] += repo_data.get('total_loc', 0)
+                unified_stats['total_commits'] += repo_data.get('total_commits', 0)
+                unified_stats['total_files'] += repo_data.get('total_files', 0)
+                
+                # Store individual repository data
+                unified_stats['repository_breakdown'][repo_name] = {
+                    'total_loc': repo_data.get('total_loc', 0),
+                    'total_commits': repo_data.get('total_commits', 0),
+                    'total_files': repo_data.get('total_files', 0),
+                    'language_breakdown': repo_data.get('language_breakdown', {})
+                }
+                
+                # Aggregate language statistics
+                for lang, lang_stats in repo_data.get('language_breakdown', {}).items():
+                    if lang not in unified_stats['language_stats']:
+                        unified_stats['language_stats'][lang] = {
+                            'loc': 0,
+                            'files': 0,
+                            'commits': 0
+                        }
+                    
+                    unified_stats['language_stats'][lang]['loc'] += lang_stats.get('loc', 0)
+                    unified_stats['language_stats'][lang]['files'] += lang_stats.get('files', 0)
+                    unified_stats['language_stats'][lang]['commits'] += lang_stats.get('commits', 0)
+                    
+            except (TypeError, AttributeError, KeyError) as e:
+                logger.warning(f"Error processing repository data: {e}")
+                continue
+        
+        logger.info(f"Aggregated data from {len(repo_stats_list)} repositories")
+        return unified_stats
+        
+    except (TypeError, AttributeError, KeyError) as e:
+        logger.error(f"Error aggregating repository data: {e}")
+        return {}
+    except (ValueError, OSError) as e:
+        logger.error(f"Error processing aggregated data: {e}")
+        return {}
+
+
+@with_error_context({'component': 'aggregate_stats'})
+def main():
+    try:
+        config = get_config_manager()
         config_errors = config.validate_config()
         if config_errors:
-            print("❌ Configuration validation failed:")
-            for error in config_errors:
-                print(f"   - {error}")
+            logger.error(f"Configuration validation errors: {config_errors}")
             sys.exit(1)
-        
-        # Initialize components
         author_matcher = AuthorMatcher(
             guillermo_patterns=config.get_guillermo_patterns(),
             bot_patterns=config.get_bot_patterns()
         )
         stats_processor = StatsProcessor(author_matcher)
         language_mapper = get_language_mapper()
-        
-        # Load repository statistics from artifacts
-        print("Loading repository statistics...")
         repository_stats_list = load_repository_stats()
-        
         if not repository_stats_list:
-            print("❌ Fatal error: Could not load any repository statistics")
+            logger.error("No repository statistics found.")
             sys.exit(1)
-        
-        print(f"📊 Loaded statistics from {len(repository_stats_list)} repositories")
-        
-        # Aggregate statistics
-        print("Aggregating unified statistics...")
         unified_stats = stats_processor.aggregate_repository_stats(repository_stats_list)
-        
-        # Debug: Check aggregated language stats
-        if hasattr(unified_stats, 'unified_language_stats') and unified_stats.unified_language_stats:
-            print(f"✅ Aggregated language stats: {len(unified_stats.unified_language_stats)} languages")
-            for lang, stats_data in unified_stats.unified_language_stats.items():
-                print(f"  - {lang}: {stats_data['loc']} LOC")
-        else:
-            print("⚠️ No aggregated language stats found")
-        
-        # Validate aggregated statistics
         validation_errors = stats_processor.validate_unified_stats(unified_stats)
         if validation_errors:
-            print("❌ Statistics validation failed:")
-            for error in validation_errors:
-                print(f"   - {error}")
+            logger.error(f"Unified stats validation errors: {validation_errors}")
             sys.exit(1)
-        
-        # Technology stack analysis
         from dependency_analyzer import DependencyAnalyzer
-        import os
-        from pathlib import Path
-        import json
         all_tech_stacks = []
         repos_dir = Path(os.environ.get('REPOS_DIR', 'repo-stats'))
         if not repos_dir.exists():
             repos_dir = Path.cwd()
-        print(f"[DEBUG] (aggregate_stats.py) Using repos_dir: {repos_dir.resolve()}")
-        # Aggregate tech_stack_analysis.json from each repo-stats subdir
         for subdir in repos_dir.iterdir():
             if subdir.is_dir():
                 tech_stack_file = subdir / 'tech_stack_analysis.json'
                 if tech_stack_file.exists():
-                    with open(tech_stack_file, 'r', encoding='utf-8') as f:
-                        stack = json.load(f)
-                        all_tech_stacks.append(stack)
-        # Merge all detected technologies
+                    try:
+                        with open(tech_stack_file, 'r', encoding='utf-8') as f:
+                            stack = json.load(f)
+                            all_tech_stacks.append(stack)
+                    except Exception as e:
+                        logger.warning(f"Failed to load tech stack file {tech_stack_file}: {e}", extra={'file': str(tech_stack_file)})
         merged_stack = {
             'frontend': set(),
             'backend': set(),
@@ -161,67 +176,45 @@ def main():
         }
         for stack in all_tech_stacks:
             for category in merged_stack:
-                merged_stack[category].update(stack.get(category, {}).get('technologies', []))
-        # Convert sets to sorted lists
+                if isinstance(stack, dict) and category in stack:
+                    category_data = stack[category]
+                    if isinstance(category_data, dict) and 'technologies' in category_data:
+                        technologies = category_data['technologies']
+                        if isinstance(technologies, list):
+                            merged_stack[category].update(technologies)
         merged_stack_final = {cat: {'technologies': sorted(list(techs)), 'count': len(techs)} for cat, techs in merged_stack.items()}
-        print(f"[DEBUG] (aggregate_stats.py) Merged tech stack from all repos:")
-        print(json.dumps(merged_stack_final, indent=2))
-        # Assign to unified_stats
         try:
             setattr(unified_stats, 'tech_stack_analysis', merged_stack_final)
         except Exception:
             if isinstance(unified_stats, dict):
                 unified_stats['tech_stack_analysis'] = merged_stack_final
-        print("[DEBUG] Merged tech_stack_analysis into unified_stats:")
-        if hasattr(unified_stats, 'tech_stack_analysis'):
-            print(json.dumps(getattr(unified_stats, 'tech_stack_analysis'), indent=2))
-        elif isinstance(unified_stats, dict) and 'tech_stack_analysis' in unified_stats:
-            print(json.dumps(unified_stats['tech_stack_analysis'], indent=2))
-        
-        # Generate reports
-        print("Generating reports...")
-        
-        # Initialize report generators with configuration
         report_config = config.get_report_config()
         json_generator = JSONReportGenerator()
-        
-        # Generate JSON report in scripts directory
         json_filename = "unified_stats.json"
         json_path = script_dir / json_filename
         json_generator.save_report(unified_stats, str(json_path))
-        print(f"✅ JSON report saved to: {json_path}")
-        
-        # Print summary
         guillermo = unified_stats.guillermo_unified
         global_totals = AuthorStats(
             loc=unified_stats.total_loc,
             commits=unified_stats.total_commits,
             files=unified_stats.total_files
         )
-        
         loc_pct, commits_pct, files_pct = stats_processor.calculate_distribution_percentages(
             guillermo, global_totals
         )
-        
-        print("\n📈 Final Summary:")
-        print(f"   Repositories processed: {unified_stats.repos_processed}")
-        print(f"   Total LOC: {unified_stats.total_loc:,}")
-        print(f"   Total commits: {unified_stats.total_commits:,}")
-        print(f"   Total files: {unified_stats.total_files:,}")
-        print(f"   Guillermo's contributions: {guillermo.loc:,} LOC ({loc_pct:.1f}%), "
-              f"{guillermo.commits:,} commits ({commits_pct:.1f}%), "
-              f"{guillermo.files:,} files ({files_pct:.1f}%)")
-        
-        print("\n✅ Statistics aggregation completed successfully!")
-        print("📝 All statistics will be displayed in README.md through the enhanced README generator")
-        
     except KeyboardInterrupt:
-        print("\n❌ Process interrupted by user")
+        logger.info("Process interrupted by user")
         sys.exit(1)
     except Exception as e:
-        print(f"❌ Unexpected error: {e}")
-        sys.exit(1)
-
+        log_and_raise(
+            DataProcessingError(
+                f"Failed to aggregate statistics: {e}",
+                error_code=ErrorCodes.DATA_PROCESSING_FAILED,
+                context={'script': 'aggregate_stats'}
+            ),
+            logger=logger
+        )
 
 if __name__ == "__main__":
+    setup_logging()
     main() 
