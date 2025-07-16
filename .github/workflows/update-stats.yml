@@ -176,6 +176,11 @@ jobs:
               print(f"org={org}")
               print(f"token_type={token_type}")
               print(f"✅ Configuration loaded for repository '{repo_name}'")
+              
+              # Set GitHub Actions outputs
+              with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+                  f.write(f"org={org}\n")
+                  f.write(f"token_type={token_type}\n")
 
           except FileNotFoundError:
               print("❌ config.yml not found", file=sys.stderr)
