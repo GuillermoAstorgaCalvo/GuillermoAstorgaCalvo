@@ -101,7 +101,6 @@ class DependencyManager:
                     "ruff",
                     "black",
                     "mypy",
-                    "bandit",
                     "safety",
                 ],
             )
