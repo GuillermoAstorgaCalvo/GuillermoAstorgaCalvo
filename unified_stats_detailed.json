@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-07-22T07:36:47.596965Z",
+  "timestamp": "2025-07-22T07:44:32.124977Z",
   "metadata": {
     "version": "2.0",
     "generated_by": "Enhanced JSON Report Generator",
@@ -84,24 +84,56 @@
   },
   "tech_stack_analysis": {
     "frontend": {
-      "technologies": [],
-      "total_loc": 9662
+      "technologies": [
+        "ESLint",
+        "ESLint Prettier",
+        "ESLint Security",
+        "ESLint SonarJS",
+        "Lodash",
+        "Proj4js",
+        "Supabase",
+        "TypeScript",
+        "dotenv"
+      ],
+      "count": 9
     },
     "backend": {
-      "technologies": [],
-      "total_loc": 0
+      "technologies": [
+        "Artillery",
+        "CORS",
+        "Compression",
+        "Cron Jobs",
+        "Express.js",
+        "Helmet",
+        "LRU Cache",
+        "Node Cache",
+        "Prometheus",
+        "Rate Limiting",
+        "Redis",
+        "Undici",
+        "Winston",
+        "XML Parser",
+        "XML2JS",
+        "ts-jest",
+        "ts-node-dev",
+        "tsc-alias",
+        "tsconfig-paths"
+      ],
+      "count": 19
     },
     "database": {
       "technologies": [],
-      "total_loc": 0
+      "count": 0
     },
     "devops": {
-      "technologies": [],
-      "total_loc": 0
+      "technologies": [
+        "AWS SES"
+      ],
+      "count": 1
     },
     "ai_ml": {
       "technologies": [],
-      "total_loc": 0
+      "count": 0
     }
   },
   "complexity_analysis": {
