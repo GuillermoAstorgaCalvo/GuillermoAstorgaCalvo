@@ -283,10 +283,19 @@ def main() -> None:
                         technologies = category_data["technologies"]
                         if isinstance(technologies, list):
                             merged_stack[category].update(technologies)
-        merged_stack_final = {
+        # Map technologies to valid skillicon IDs
+        from skillicon_mapper import SkilliconMapper
+
+        mapper = SkilliconMapper()
+
+        # Create the basic tech stack structure
+        basic_tech_stack = {
             cat: {"technologies": sorted(techs), "count": len(techs)}
             for cat, techs in merged_stack.items()
         }
+
+        # Map to valid skillicons for the detailed report
+        mapped_stack_final = mapper.map_technologies(basic_tech_stack)
         # Convert UnifiedStats to dictionary for JSON serialization
         unified_stats_dict = {
             "total_loc": unified_stats.total_loc,
@@ -309,7 +318,7 @@ def main() -> None:
             "unified_language_stats": unified_stats.unified_language_stats or {},
             "other_unknown_breakdown": unified_stats.other_unknown_breakdown or {},
             "validation_results": unified_stats.validation_results or {},
-            "tech_stack_analysis": merged_stack_final,
+            "tech_stack_analysis": mapped_stack_final,
             "last_updated": datetime.now().isoformat(),
         }
 
@@ -320,7 +329,7 @@ def main() -> None:
         json_generator = JSONReportGenerator()
         json_filename = "unified_stats_detailed.json"
         json_path = script_dir / json_filename
-        json_generator.save_report(unified_stats, str(json_path), merged_stack_final)
+        json_generator.save_report(unified_stats, str(json_path), mapped_stack_final)
         guillermo = unified_stats.guillermo_unified
         global_totals = AuthorStats(
             loc=unified_stats.total_loc,

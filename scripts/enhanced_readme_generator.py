@@ -808,11 +808,11 @@ def generate_dynamic_tech_stack_section(data: dict[str, Any]) -> str:
     # Default tech stack if no data is available
     default_tech_stack = {
         "frontend": ["react", "ts", "js", "nextjs", "tailwind", "html", "css"],
-        "backend": ["nodejs", "python", "express", "fastapi"],
-        "database": ["postgresql", "mongodb", "aws", "docker"],
-        "ai_ml": ["tensorflow", "scikit", "openai"],
+        "backend": ["nodejs", "py", "express", "fastapi"],
+        "database": ["postgres", "mongodb", "aws", "docker"],
+        "ai_ml": ["tensorflow", "sklearn", "opencv"],
         "devops": ["git", "github", "vscode", "linux"],
-        "additional": ["supabase", "stripe", "framer"],
+        "additional": ["supabase", "stripe", "vite"],
     }
 
     # Try to get actual tech stack from unified stats
@@ -820,66 +820,8 @@ def generate_dynamic_tech_stack_section(data: dict[str, Any]) -> str:
     tech_stack_analysis = unified_stats.get("tech_stack_analysis", {})
 
     if tech_stack_analysis:
-        # Map actual technologies to skillicons.dev icons
-        tech_to_icon = {
-            # Frontend
-            "React": "react",
-            "TypeScript": "ts",
-            "JavaScript": "js",
-            "Next.js": "nextjs",
-            "TailwindCSS": "tailwind",
-            "HTML": "html",
-            "CSS": "css",
-            "Vue.js": "vuejs",
-            "Angular": "angular",
-            "React Router": "reactrouter",
-            # Backend
-            "Node.js": "nodejs",
-            "Python": "python",
-            "Express.js": "express",
-            "FastAPI": "fastapi",
-            "Django": "django",
-            "Flask": "flask",
-            "Java": "java",
-            "Spring Boot": "spring",
-            # Database & Cloud
-            "PostgreSQL": "postgresql",
-            "MongoDB": "mongodb",
-            "Redis": "redis",
-            "AWS": "aws",
-            "Docker": "docker",
-            "Supabase": "supabase",
-            "MySQL": "mysql",
-            "SQLite": "sqlite",
-            "Prisma": "prisma",
-            # AI & ML
-            "TensorFlow": "tensorflow",
-            "PyTorch": "pytorch",
-            "Scikit-learn": "scikit",
-            "OpenAI": "openai",
-            "Pandas": "pandas",
-            "NumPy": "numpy",
-            "Tesseract OCR": "tesseract",
-            "Pillow": "pillow",
-            # DevOps & Tools
-            "Git": "git",
-            "GitHub": "github",
-            "VS Code": "vscode",
-            "Linux": "linux",
-            "Docker Compose": "docker",
-            "Nginx": "nginx",
-            "ESLint": "eslint",
-            "Webpack": "webpack",
-            # Additional
-            "Stripe": "stripe",
-            "Zod": "zod",
-            "Lodash": "lodash",
-            "Axios": "axios",
-            "Moment.js": "moment",
-            "Chart.js": "chartjs",
-        }
-
-        # Build dynamic tech stack
+        # Use the mapped skillicon IDs directly from the tech stack analysis
+        # These are already mapped to valid skillicon IDs by the SkilliconMapper
         dynamic_tech_stack: dict[str, list[str]] = {
             "frontend": [],
             "backend": [],
@@ -889,25 +831,22 @@ def generate_dynamic_tech_stack_section(data: dict[str, Any]) -> str:
             "additional": [],
         }
 
-        # Process each category
+        # Process each category - technologies are already mapped to valid skillicon IDs
         for category, data in tech_stack_analysis.items():
             technologies = data.get("technologies", [])
-            for tech in technologies:
-                icon = tech_to_icon.get(
-                    tech, tech.lower().replace(" ", "").replace(".", "")
-                )
-                if category == "frontend":
-                    dynamic_tech_stack["frontend"].append(icon)
-                elif category == "backend":
-                    dynamic_tech_stack["backend"].append(icon)
-                elif category == "database":
-                    dynamic_tech_stack["database"].append(icon)
-                elif category == "ai_ml":
-                    dynamic_tech_stack["ai_ml"].append(icon)
-                elif category == "devops":
-                    dynamic_tech_stack["devops"].append(icon)
-                else:
-                    dynamic_tech_stack["additional"].append(icon)
+            if category == "frontend":
+                dynamic_tech_stack["frontend"].extend(technologies)
+            elif category == "backend":
+                dynamic_tech_stack["backend"].extend(technologies)
+            elif category == "database":
+                dynamic_tech_stack["database"].extend(technologies)
+            elif category == "ai_ml":
+                dynamic_tech_stack["ai_ml"].extend(technologies)
+            elif category == "devops":
+                dynamic_tech_stack["devops"].extend(technologies)
+            else:
+                # Any other categories go to additional
+                dynamic_tech_stack["additional"].extend(technologies)
 
         # Use dynamic tech stack if we have data, otherwise use default
         tech_stack = (
