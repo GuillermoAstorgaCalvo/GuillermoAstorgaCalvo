@@ -1,0 +1,198 @@
+{
+  "timestamp": "2025-07-22T07:36:47.596965Z",
+  "metadata": {
+    "version": "2.0",
+    "generated_by": "Enhanced JSON Report Generator",
+    "data_source": "Private Repository Analytics"
+  },
+  "global_summary": {
+    "repositories_processed": 1,
+    "total_commits": 30,
+    "total_files": 140,
+    "total_loc": 40871,
+    "guillermo_contribution": {
+      "loc": 40840,
+      "commits": 29,
+      "files": 138,
+      "percentages": {
+        "loc": 99.92,
+        "commits": 96.67,
+        "files": 98.57
+      }
+    }
+  },
+  "productivity_metrics": {
+    "avg_loc_per_commit": 1408.28,
+    "avg_files_per_commit": 4.76,
+    "code_efficiency": {
+      "loc_per_file": 295.94202898550725,
+      "commits_per_file": 0.21014492753623187
+    }
+  },
+  "language_analysis": {
+    "Unknown": {
+      "lines": 3867,
+      "commits": 0,
+      "files": 12,
+      "percentage": 9.46,
+      "avg_loc_per_commit": 0
+    },
+    "Markdown": {
+      "lines": 27148,
+      "commits": 0,
+      "files": 54,
+      "percentage": 66.42,
+      "avg_loc_per_commit": 0
+    },
+    "TypeScript": {
+      "lines": 9579,
+      "commits": 0,
+      "files": 19,
+      "percentage": 23.44,
+      "avg_loc_per_commit": 0
+    },
+    "JavaScript": {
+      "lines": 83,
+      "commits": 0,
+      "files": 1,
+      "percentage": 0.2,
+      "avg_loc_per_commit": 0
+    }
+  },
+  "repository_analysis": {
+    "TypeScript Backend": {
+      "guillermo_stats": {
+        "loc": 40840,
+        "commits": 29,
+        "files": 138
+      },
+      "repo_totals": {
+        "loc": 40871,
+        "commits": 30,
+        "files": 140
+      },
+      "percentages": {
+        "loc": 99.92,
+        "commits": 96.67,
+        "files": 98.57
+      },
+      "productivity": {
+        "avg_loc_per_commit": 1408.2758620689656,
+        "avg_files_per_commit": 4.758620689655173
+      }
+    }
+  },
+  "tech_stack_analysis": {
+    "frontend": {
+      "technologies": [],
+      "total_loc": 9662
+    },
+    "backend": {
+      "technologies": [],
+      "total_loc": 0
+    },
+    "database": {
+      "technologies": [],
+      "total_loc": 0
+    },
+    "devops": {
+      "technologies": [],
+      "total_loc": 0
+    },
+    "ai_ml": {
+      "technologies": [],
+      "total_loc": 0
+    }
+  },
+  "complexity_analysis": {
+    "project_scale": {
+      "total_projects": 1,
+      "avg_loc_per_project": 40871.0,
+      "avg_commits_per_project": 30.0,
+      "avg_files_per_project": 140.0
+    },
+    "code_distribution": {
+      "loc_per_file": 291.9357142857143,
+      "commits_per_file": 0.21428571428571427,
+      "files_per_commit": 4.666666666666667
+    },
+    "repository_diversity": {
+      "languages_used": 2,
+      "project_types": 1
+    }
+  },
+  "insights": {
+    "strengths": [],
+    "focus_areas": [],
+    "achievements": [],
+    "recommendations": [
+      "Consider expanding technology stack for broader expertise"
+    ]
+  },
+  "raw_data": {
+    "guillermo_unified": {
+      "loc": 40840,
+      "commits": 29,
+      "files": 138
+    },
+    "repository_breakdown": {
+      "TypeScript Backend": {
+        "display_name": "TypeScript Backend",
+        "guillermo_stats": {
+          "loc": 40840,
+          "commits": 29,
+          "files": 138
+        },
+        "repo_totals": {
+          "loc": 40871,
+          "commits": 30,
+          "files": 140
+        },
+        "language_stats": {
+          "Unknown": {
+            "loc": 3867,
+            "commits": 0,
+            "files": 12
+          },
+          "Markdown": {
+            "loc": 27148,
+            "commits": 0,
+            "files": 54
+          },
+          "TypeScript": {
+            "loc": 9579,
+            "commits": 0,
+            "files": 19
+          },
+          "JavaScript": {
+            "loc": 83,
+            "commits": 0,
+            "files": 1
+          }
+        }
+      }
+    },
+    "language_breakdown": {
+      "Unknown": {
+        "loc": 3867,
+        "commits": 0,
+        "files": 12
+      },
+      "Markdown": {
+        "loc": 27148,
+        "commits": 0,
+        "files": 54
+      },
+      "TypeScript": {
+        "loc": 9579,
+        "commits": 0,
+        "files": 19
+      },
+      "JavaScript": {
+        "loc": 83,
+        "commits": 0,
+        "files": 1
+      }
+    }
+  }
+}
