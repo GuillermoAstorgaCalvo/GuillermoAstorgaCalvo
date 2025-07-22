@@ -5,48 +5,12 @@ on:
   schedule:
     - cron: "0 3 * * 1" # Every Monday at 3 AM UTC
 
-jobs:
-  setup:
-    runs-on: ubuntu-24.04
-    outputs:
-      python-version: ${{ steps.setver.outputs.python-version }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-      - name: Set Python version
-        id: setver
-        run: echo "python-version=3.12" >> $GITHUB_OUTPUT
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ steps.setver.outputs.python-version }}
-      - name: Cache pip dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-      - name: Install dependencies
-        run: |
-          python3 -m pip install --upgrade pip
-          pip install -r requirements.txt
-      - name: Cache cloc
-        id: cache-cloc
-        uses: actions/cache@v3
-        with:
-          path: /usr/bin/cloc
-          key: cloc-${{ runner.os }}-v1
-      - name: Install cloc if not cached
-        if: steps.cache-cloc.outputs.cache-hit != 'true'
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y cloc
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
+jobs:
   load-config:
-    needs: setup
     runs-on: ubuntu-24.04
     outputs:
       repositories: ${{ steps.config.outputs.repositories }}
@@ -122,8 +86,9 @@ jobs:
           EOF
 
   process-repositories:
-    needs: [setup, load-config]
+    needs: [load-config]
     runs-on: ubuntu-24.04
+    timeout-minutes: 30
     strategy:
       matrix:
         repository: ${{ fromJson(needs.load-config.outputs.repositories) }}
@@ -137,7 +102,45 @@ jobs:
         with:
           fetch-depth: 1
 
-      # Python, pip, and cloc are already set up by 'setup' job
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install Python dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Cache cloc
+        id: cache-cloc
+        uses: actions/cache@v3
+        with:
+          path: /usr/bin/cloc
+          key: cloc-${{ runner.os }}-v1
+
+      - name: Install cloc if not cached
+        if: steps.cache-cloc.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y cloc
+
+      - name: Verify tools installation
+        run: |
+          echo "Verifying tool installations..."
+          python3 --version
+          pip --version
+          cloc --version
+          git-fame --version
+          echo "✅ All tools verified successfully"
 
       - name: Install code quality tools
         run: |
@@ -233,6 +236,17 @@ jobs:
         run: |
           set -e
 
+          # Validate required environment variables
+          if [[ -z "${PERSONAL_TOKEN}" && "${TOKEN_TYPE}" == "personal" ]]; then
+            echo "❌ PERSONAL_REPOS_TOKEN secret is not set"
+            exit 1
+          fi
+
+          if [[ -z "${PRIVATE_TOKEN}" && "${TOKEN_TYPE}" == "private" ]]; then
+            echo "❌ PRIVATE_REPO_TOKEN secret is not set"
+            exit 1
+          fi
+
           # Select token based on configuration
           if [[ "${TOKEN_TYPE}" == "personal" ]]; then
             TOKEN="${PERSONAL_TOKEN}"
@@ -240,10 +254,20 @@ jobs:
             TOKEN="${PRIVATE_TOKEN}"
           fi
 
+          # Validate token is not empty
+          if [[ -z "${TOKEN}" ]]; then
+            echo "❌ Token is empty for ${TOKEN_TYPE} repository"
+            exit 1
+          fi
+
+          echo "🔐 Cloning ${ORG}/${REPO_NAME} (${TOKEN_TYPE}) from branch ${BRANCH_NAME}"
+
           # Use full clone to get complete history for accurate git fame analysis
           git clone --branch "${BRANCH_NAME}" --single-branch \
             "https://x-access-token:${TOKEN}@github.com/${ORG}/${REPO_NAME}.git" \
             repo
+
+          echo "✅ Repository cloned successfully"
 
       - name: Check repo directory exists
         run: |
@@ -262,7 +286,29 @@ jobs:
           DISPLAY_NAME: ${{ matrix.repository.display_name }}
         run: |
           cd scripts
-          python3 process_repo_stats.py
+
+          echo "📊 Processing statistics for ${REPO_NAME} (${DISPLAY_NAME})"
+
+          # Run the statistics processing script
+          if python3 process_repo_stats.py; then
+            echo "✅ Statistics processing completed successfully"
+          else
+            echo "❌ Statistics processing failed"
+            exit 1
+          fi
+
+          # Verify output files were created
+          if [[ ! -f "repo_stats.json" ]]; then
+            echo "❌ repo_stats.json was not generated"
+            exit 1
+          fi
+
+          if [[ ! -f "tech_stack_analysis.json" ]]; then
+            echo "❌ tech_stack_analysis.json was not generated"
+            exit 1
+          fi
+
+          echo "✅ Output files verified"
 
       - name: Upload repository statistics
         uses: actions/upload-artifact@v4
@@ -274,8 +320,9 @@ jobs:
           retention-days: 1
 
   aggregate-and-commit:
-    needs: [setup, process-repositories]
+    needs: [process-repositories]
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
     # Restrict permissions to only what's needed for profile README updates
     permissions:
       contents: write # Only for specific files in the profile repository
@@ -322,12 +369,46 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 1
 
-      # Python and pip are already set up by 'setup' job
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install Python dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Download all repository statistics
         uses: actions/download-artifact@v4
         with:
           path: repo-stats
+
+      - name: Validate downloaded artifacts
+        run: |
+          if [[ ! -d "repo-stats" ]]; then
+            echo "❌ No artifacts directory found"
+            exit 1
+          fi
+
+          # Count downloaded artifacts
+          artifact_count=$(find repo-stats -name "*.json" | wc -l)
+          echo "📦 Found $artifact_count artifact files"
+
+          if [[ $artifact_count -eq 0 ]]; then
+            echo "❌ No artifact files found"
+            exit 1
+          fi
+
+          echo "✅ Artifacts validation passed"
 
       - name: Generate unified statistics and README
         env:
