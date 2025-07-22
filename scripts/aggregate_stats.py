@@ -211,7 +211,9 @@ def main() -> None:
 
         repository_stats_list = []
         for repo_data in repository_stats_data:
-            logger.info(f"Processing repository data: {repo_data.get('display_name', 'Unknown')}")
+            logger.info(
+                f"Processing repository data: {repo_data.get('display_name', 'Unknown')}"
+            )
             try:
                 display_name = repo_data.get("display_name", "Unknown")
                 guillermo_stats = AuthorStats(

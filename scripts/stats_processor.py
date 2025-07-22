@@ -299,7 +299,9 @@ class StatsProcessor:
         """
         try:
             unified_stats = UnifiedStats()
-            self.logger.info(f"Aggregating stats from {len(repository_stats_list)} repositories")
+            self.logger.info(
+                f"Aggregating stats from {len(repository_stats_list)} repositories"
+            )
 
             for repo_stats in repository_stats_list:
                 self.logger.info(f"Processing repository: {repo_stats.display_name}")
@@ -335,7 +337,9 @@ class StatsProcessor:
                             ] += stats.get("files", 0)
 
                     unified_stats.repos_processed += 1
-                    self.logger.info(f"Successfully processed {repo_stats.display_name}")
+                    self.logger.info(
+                        f"Successfully processed {repo_stats.display_name}"
+                    )
 
                 except (TypeError, AttributeError, KeyError) as e:
                     self.logger.warning(
@@ -343,9 +347,15 @@ class StatsProcessor:
                     )
                     continue
 
-            self.logger.info(f"Aggregation complete. Processed {unified_stats.repos_processed} repositories")
-            self.logger.info(f"Total LOC: {unified_stats.total_loc}, Total commits: {unified_stats.total_commits}")
-            self.logger.info(f"Repo breakdown contains {len(unified_stats.repo_breakdown)} repositories")
+            self.logger.info(
+                f"Aggregation complete. Processed {unified_stats.repos_processed} repositories"
+            )
+            self.logger.info(
+                f"Total LOC: {unified_stats.total_loc}, Total commits: {unified_stats.total_commits}"
+            )
+            self.logger.info(
+                f"Repo breakdown contains {len(unified_stats.repo_breakdown)} repositories"
+            )
 
             return unified_stats
 
