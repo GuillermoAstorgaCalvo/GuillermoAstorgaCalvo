@@ -464,17 +464,40 @@ def main() -> None:
                     )
                 )
 
-        # Extract language analysis
-        language_analysis = unified_stats.get("language_analysis", {})
-        if not language_analysis:
+        # Extract language stats
+        language_stats = unified_stats.get("unified_language_stats", {})
+        if not language_stats:
             log_and_raise(
                 SvgGenerationError(
-                    "No language analysis data found in unified stats",
+                    "No language stats data found in unified stats",
                     error_code="NO_LANGUAGE_DATA",
                 )
             )
 
-        logger.info(f"Found language analysis with {len(language_analysis)} languages")
+        # Convert language stats to the format expected by the SVG generator
+        language_analysis = {}
+        for lang, stats in language_stats.items():
+            language_analysis[lang] = {
+                "lines": stats.get("loc", 0),
+                "commits": stats.get("commits", 0),
+                "files": stats.get("files", 0),
+                "percentage": 0,  # Will be calculated below
+            }
+
+        # Calculate percentages
+        total_loc = sum(stats.get("loc", 0) for stats in language_stats.values())
+        for lang in language_analysis:
+            if total_loc > 0:
+                language_analysis[lang]["percentage"] = round(
+                    (language_analysis[lang]["lines"] / total_loc) * 100, 2
+                )
+
+        logger.info(f"Found language stats with {len(language_stats)} languages")
+        logger.info(
+            f"Converted to language analysis with {len(language_analysis)} languages"
+        )
+        if language_analysis:
+            logger.info(f"Languages found: {list(language_analysis.keys())}")
 
         # Generate SVG
         svg_path = root_dir / "assets" / "language_stats.svg"
