@@ -512,6 +512,12 @@ jobs:
           # Define allowed files for security
           ALLOWED_FILES=("README.md" "unified_stats.json" "analytics_history.json" "assets/language_stats.svg")
 
+          # Clean up temporary artifacts directory
+          if [[ -d "repo-stats" ]]; then
+            echo "🧹 Cleaning up temporary artifacts directory"
+            rm -rf repo-stats
+          fi
+
           # Check for any unexpected changes
           CHANGED_FILES=$(git status --porcelain | awk '{print $2}')
 
@@ -524,7 +530,7 @@ jobs:
                 break
               fi
             done
-            
+
             if [[ "$allowed" == "false" ]]; then
               echo "❌ Security violation: Unexpected file change detected: $file"
               echo "Only the following files are allowed to be modified:"
