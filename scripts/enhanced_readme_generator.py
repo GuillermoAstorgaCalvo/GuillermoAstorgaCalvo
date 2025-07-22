@@ -8,6 +8,7 @@ import json
 import os
 import sys
 from datetime import datetime
+from pathlib import Path
 from typing import Any
 
 from error_handling import (
@@ -134,7 +135,7 @@ def get_project_descriptions() -> dict[str, dict[str, Any]]:
     try:
         from config_manager import create_config_manager
 
-        config = create_config_manager()
+        config = create_config_manager(str(Path(__file__).parent.parent / "config.yml"))
         project_urls = config.get_project_urls()
     except Exception as e:
         logger.warning(f"Could not load project URLs from config: {e}")
@@ -211,7 +212,7 @@ def generate_hero_section() -> str:
     try:
         from config_manager import create_config_manager
 
-        config = create_config_manager()
+        config = create_config_manager(str(Path(__file__).parent.parent / "config.yml"))
         profile = config.get_profile_config()
         typing_animation = config.get_typing_animation_config()
         badge_colors = config.get_badge_colors()
@@ -266,7 +267,7 @@ def generate_about_section() -> str:
     try:
         from config_manager import create_config_manager
 
-        config = create_config_manager()
+        config = create_config_manager(str(Path(__file__).parent.parent / "config.yml"))
         contact = config.get_contact_config()
         external_services = config.get_external_services()
     except Exception as e:
@@ -339,7 +340,7 @@ def generate_enhanced_stats_from_unified(unified_stats: dict[str, Any]) -> str:
     try:
         from config_manager import create_config_manager
 
-        config = create_config_manager()
+        config = create_config_manager(str(Path(__file__).parent.parent / "config.yml"))
         badge_colors = config.get_badge_colors()
     except Exception as e:
         logger.warning(f"Could not load badge colors from config: {e}")
@@ -675,7 +676,7 @@ def generate_stats_from_analytics(analytics_history: list[dict[str, Any]]) -> st
     try:
         from config_manager import create_config_manager
 
-        config = create_config_manager()
+        config = create_config_manager(str(Path(__file__).parent.parent / "config.yml"))
         badge_colors = config.get_badge_colors()
     except Exception as e:
         logger.warning(f"Could not load badge colors from config: {e}")
@@ -1024,7 +1025,7 @@ def generate_contact_section() -> str:
     try:
         from config_manager import create_config_manager
 
-        config = create_config_manager()
+        config = create_config_manager(str(Path(__file__).parent.parent / "config.yml"))
         contact = config.get_contact_config()
         external_services = config.get_external_services()
         github_config = config.get_github_config()

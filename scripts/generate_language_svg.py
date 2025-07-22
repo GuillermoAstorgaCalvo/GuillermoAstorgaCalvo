@@ -447,9 +447,10 @@ def main() -> None:
 
         if not unified_stats_path.exists():
             log_and_raise(
-                SvgGenerationError,
-                f"unified_stats.json not found at {unified_stats_path}",
-                error_code="STATS_FILE_NOT_FOUND",
+                SvgGenerationError(
+                    f"unified_stats.json not found at {unified_stats_path}",
+                    error_code="STATS_FILE_NOT_FOUND",
+                )
             )
 
         logger.debug(f"Loading unified stats from {unified_stats_path}")
@@ -457,18 +458,20 @@ def main() -> None:
             unified_stats = json.load(f)
             if not isinstance(unified_stats, dict):
                 log_and_raise(
-                    SvgGenerationError,
-                    "Unified stats data is not a dictionary",
-                    error_code="INVALID_DATA_FORMAT",
+                    SvgGenerationError(
+                        "Unified stats data is not a dictionary",
+                        error_code="INVALID_DATA_FORMAT",
+                    )
                 )
 
         # Extract language analysis
         language_analysis = unified_stats.get("language_analysis", {})
         if not language_analysis:
             log_and_raise(
-                SvgGenerationError,
-                "No language analysis data found in unified stats",
-                error_code="NO_LANGUAGE_DATA",
+                SvgGenerationError(
+                    "No language analysis data found in unified stats",
+                    error_code="NO_LANGUAGE_DATA",
+                )
             )
 
         logger.info(f"Found language analysis with {len(language_analysis)} languages")
@@ -485,27 +488,31 @@ def main() -> None:
         raise
     except FileNotFoundError as e:
         log_and_raise(
-            SvgGenerationError,
-            f"Required file not found: {e}",
-            error_code="FILE_NOT_FOUND",
+            SvgGenerationError(
+                f"Required file not found: {e}",
+                error_code="FILE_NOT_FOUND",
+            )
         )
     except json.JSONDecodeError as e:
         log_and_raise(
-            SvgGenerationError,
-            f"Invalid JSON in unified stats: {e}",
-            error_code="INVALID_JSON",
+            SvgGenerationError(
+                f"Invalid JSON in unified stats: {e}",
+                error_code="INVALID_JSON",
+            )
         )
     except PermissionError as e:
         log_and_raise(
-            SvgGenerationError,
-            f"Permission denied: {e}",
-            error_code="PERMISSION_DENIED",
+            SvgGenerationError(
+                f"Permission denied: {e}",
+                error_code="PERMISSION_DENIED",
+            )
         )
     except Exception as e:
         log_and_raise(
-            SvgGenerationError,
-            f"Unexpected error in SVG generation: {e}",
-            error_code="UNEXPECTED_ERROR",
+            SvgGenerationError(
+                f"Unexpected error in SVG generation: {e}",
+                error_code="UNEXPECTED_ERROR",
+            )
         )
 
 
