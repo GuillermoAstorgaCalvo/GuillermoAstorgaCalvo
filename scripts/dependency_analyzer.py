@@ -335,7 +335,7 @@ class DependencyAnalyzer:
             "ai_ml": set(),
         }
         try:
-            # Look for package.json files
+            # Look for package.json files (Node.js/JavaScript)
             package_json_files = list(repo_path.rglob("package.json"))
             for package_file in package_json_files:
                 try:
@@ -372,36 +372,586 @@ class DependencyAnalyzer:
                         ),
                         logger=logger,
                     )
-            # Look for requirements.txt files
-            requirements_files = list(repo_path.rglob("requirements.txt"))
-            for req_file in requirements_files:
+
+            # Look for Python dependency files
+            python_files = (
+                list(repo_path.rglob("requirements.txt"))
+                + list(repo_path.rglob("pyproject.toml"))
+                + list(repo_path.rglob("setup.py"))
+            )
+            for py_file in python_files:
                 try:
-                    with open(req_file, encoding="utf-8") as f:
-                        lines = f.readlines()
-                    for line in lines:
-                        pkg = line.strip().split("==")[0].lower()
-                        if pkg in self.backend_tech:
-                            categories["backend"].add(self.backend_tech[pkg])
-                        elif pkg in self.database_tech:
-                            categories["database"].add(self.database_tech[pkg])
-                        elif pkg in self.devops_tech:
-                            categories["devops"].add(self.devops_tech[pkg])
-                        elif pkg in self.ai_ml_tech:
-                            categories["ai_ml"].add(self.ai_ml_tech[pkg])
+                    if py_file.name == "requirements.txt":
+                        with open(py_file, encoding="utf-8") as f:
+                            lines = f.readlines()
+                        for line in lines:
+                            pkg = (
+                                line.strip()
+                                .split("==")[0]
+                                .split(">=")[0]
+                                .split("<=")[0]
+                                .lower()
+                            )
+                            if pkg in self.backend_tech:
+                                categories["backend"].add(self.backend_tech[pkg])
+                            elif pkg in self.database_tech:
+                                categories["database"].add(self.database_tech[pkg])
+                            elif pkg in self.devops_tech:
+                                categories["devops"].add(self.devops_tech[pkg])
+                            elif pkg in self.ai_ml_tech:
+                                categories["ai_ml"].add(self.ai_ml_tech[pkg])
+                    elif py_file.name == "pyproject.toml":
+                        # Add Python as backend technology when pyproject.toml is found
+                        categories["backend"].add("Python")
+                    elif py_file.name == "setup.py":
+                        # Add Python as backend technology when setup.py is found
+                        categories["backend"].add("Python")
                 except FileNotFoundError:
                     logger.warning(
-                        f"Requirements file not found: {req_file}",
-                        extra={"file": str(req_file)},
+                        f"Python file not found: {py_file}",
+                        extra={"file": str(py_file)},
                     )
                 except Exception as e:
                     log_and_raise(
                         DependencyAnalysisError(
-                            f"Unexpected error analyzing {req_file}: {e}",
+                            f"Unexpected error analyzing {py_file}: {e}",
                             error_code=ErrorCodes.DEPENDENCY_ANALYSIS_FAILED,
-                            context={"file": str(req_file)},
+                            context={"file": str(py_file)},
                         ),
                         logger=logger,
                     )
+
+            # Look for Docker files
+            docker_files = (
+                list(repo_path.rglob("Dockerfile"))
+                + list(repo_path.rglob("docker-compose.yml"))
+                + list(repo_path.rglob("docker-compose.yaml"))
+            )
+            if docker_files:
+                categories["devops"].add("Docker")
+
+            # Look for Kubernetes files
+            k8s_files = list(repo_path.rglob("*.yaml")) + list(repo_path.rglob("*.yml"))
+            for k8s_file in k8s_files:
+                try:
+                    with open(k8s_file, encoding="utf-8") as f:
+                        content = f.read().lower()
+                        if "apiVersion:" in content and ("kind:" in content):
+                            categories["devops"].add("Kubernetes")
+                            break
+                except Exception:
+                    continue
+
+            # Look for Terraform files
+            terraform_files = list(repo_path.rglob("*.tf")) + list(
+                repo_path.rglob("*.tfvars")
+            )
+            if terraform_files:
+                categories["devops"].add("Terraform")
+
+            # Look for GitHub Actions
+            github_actions_dir = repo_path / ".github" / "workflows"
+            if github_actions_dir.exists():
+                categories["devops"].add("GitHub Actions")
+
+            # Look for GitLab CI
+            gitlab_ci_files = list(repo_path.rglob(".gitlab-ci.yml"))
+            if gitlab_ci_files:
+                categories["devops"].add("GitLab")
+
+            # Look for Nginx configuration
+            nginx_files = list(repo_path.rglob("nginx.conf")) + list(
+                repo_path.rglob("*.nginx")
+            )
+            if nginx_files:
+                categories["devops"].add("Nginx")
+
+            # Look for Redis configuration
+            redis_files = list(repo_path.rglob("redis.conf")) + list(
+                repo_path.rglob("*.redis")
+            )
+            if redis_files:
+                categories["database"].add("Redis")
+
+            # Look for PostgreSQL configuration
+            postgres_files = list(repo_path.rglob("*.sql")) + list(
+                repo_path.rglob("postgresql.conf")
+            )
+            if postgres_files:
+                categories["database"].add("PostgreSQL")
+
+                # Look for MongoDB configuration
+            mongo_files = list(repo_path.rglob("mongod.conf")) + list(
+                repo_path.rglob("*.mongo")
+            )
+            if mongo_files:
+                categories["database"].add("MongoDB")
+
+            # Look for additional technology indicators
+            # React/Next.js
+            react_files = list(repo_path.rglob("*.jsx")) + list(
+                repo_path.rglob("*.tsx")
+            )
+            if react_files:
+                categories["frontend"].add("React")
+
+            # Vue.js
+            vue_files = list(repo_path.rglob("*.vue"))
+            if vue_files:
+                categories["frontend"].add("Vue")
+
+            # Angular
+            angular_files = list(repo_path.rglob("angular.json")) + list(
+                repo_path.rglob("*.component.ts")
+            )
+            if angular_files:
+                categories["frontend"].add("Angular")
+
+            # Svelte
+            svelte_files = list(repo_path.rglob("*.svelte"))
+            if svelte_files:
+                categories["frontend"].add("Svelte")
+
+            # Astro
+            astro_files = list(repo_path.rglob("astro.config.*"))
+            if astro_files:
+                categories["frontend"].add("Astro")
+
+            # Gatsby
+            gatsby_files = list(repo_path.rglob("gatsby-config.*"))
+            if gatsby_files:
+                categories["frontend"].add("Gatsby")
+
+            # Remix
+            remix_files = list(repo_path.rglob("remix.config.*"))
+            if remix_files:
+                categories["frontend"].add("Remix")
+
+            # Tailwind CSS
+            tailwind_files = list(repo_path.rglob("tailwind.config.*"))
+            if tailwind_files:
+                categories["frontend"].add("Tailwind")
+
+            # Bootstrap
+            bootstrap_files = list(repo_path.rglob("bootstrap.*")) + list(
+                repo_path.rglob("*.bootstrap.*")
+            )
+            if bootstrap_files:
+                categories["frontend"].add("Bootstrap")
+
+            # Material UI
+            material_files = list(repo_path.rglob("*.mui.*")) + list(
+                repo_path.rglob("material-ui.*")
+            )
+            if material_files:
+                categories["frontend"].add("MaterialUI")
+
+            # Styled Components
+            styled_files = list(repo_path.rglob("*.styled.*")) + list(
+                repo_path.rglob("styled-components.*")
+            )
+            if styled_files:
+                categories["frontend"].add("StyledComponents")
+
+            # SASS/SCSS
+            sass_files = list(repo_path.rglob("*.scss")) + list(
+                repo_path.rglob("*.sass")
+            )
+            if sass_files:
+                categories["frontend"].add("Sass")
+
+            # LESS
+            less_files = list(repo_path.rglob("*.less"))
+            if less_files:
+                categories["frontend"].add("Less")
+
+            # TypeScript
+            ts_files = (
+                list(repo_path.rglob("*.ts"))
+                + list(repo_path.rglob("*.tsx"))
+                + list(repo_path.rglob("tsconfig.*"))
+            )
+            if ts_files:
+                categories["frontend"].add("TypeScript")
+
+            # JavaScript
+            js_files = list(repo_path.rglob("*.js")) + list(repo_path.rglob("*.jsx"))
+            if js_files:
+                categories["frontend"].add("JavaScript")
+
+            # Vite
+            vite_files = list(repo_path.rglob("vite.config.*"))
+            if vite_files:
+                categories["frontend"].add("Vite")
+
+            # Webpack
+            webpack_files = list(repo_path.rglob("webpack.config.*"))
+            if webpack_files:
+                categories["frontend"].add("Webpack")
+
+            # Rollup
+            rollup_files = list(repo_path.rglob("rollup.config.*"))
+            if rollup_files:
+                categories["frontend"].add("RollupJS")
+
+            # Gulp
+            gulp_files = list(repo_path.rglob("gulpfile.*"))
+            if gulp_files:
+                categories["frontend"].add("Gulp")
+
+            # HTMX
+            htmx_files = list(repo_path.rglob("*.htmx.*")) + list(
+                repo_path.rglob("htmx.*")
+            )
+            if htmx_files:
+                categories["frontend"].add("HTMX")
+
+            # Three.js
+            threejs_files = list(repo_path.rglob("*.three.*")) + list(
+                repo_path.rglob("three.*")
+            )
+            if threejs_files:
+                categories["frontend"].add("ThreeJS")
+
+            # D3.js
+            d3_files = list(repo_path.rglob("*.d3.*")) + list(repo_path.rglob("d3.*"))
+            if d3_files:
+                categories["frontend"].add("D3")
+
+            # P5.js
+            p5_files = list(repo_path.rglob("*.p5.*")) + list(repo_path.rglob("p5.*"))
+            if p5_files:
+                categories["frontend"].add("P5JS")
+
+            # Express.js
+            express_files = list(repo_path.rglob("express.*")) + list(
+                repo_path.rglob("*.express.*")
+            )
+            if express_files:
+                categories["backend"].add("Express")
+
+            # FastAPI
+            fastapi_files = list(repo_path.rglob("fastapi.*")) + list(
+                repo_path.rglob("*.fastapi.*")
+            )
+            if fastapi_files:
+                categories["backend"].add("FastAPI")
+
+            # Django
+            django_files = (
+                list(repo_path.rglob("django.*"))
+                + list(repo_path.rglob("*.django.*"))
+                + list(repo_path.rglob("manage.py"))
+            )
+            if django_files:
+                categories["backend"].add("Django")
+
+            # Flask
+            flask_files = list(repo_path.rglob("flask.*")) + list(
+                repo_path.rglob("*.flask.*")
+            )
+            if flask_files:
+                categories["backend"].add("Flask")
+
+            # NestJS
+            nestjs_files = list(repo_path.rglob("nest-cli.*")) + list(
+                repo_path.rglob("*.nestjs.*")
+            )
+            if nestjs_files:
+                categories["backend"].add("NestJS")
+
+            # Laravel
+            laravel_files = list(repo_path.rglob("artisan")) + list(
+                repo_path.rglob("*.laravel.*")
+            )
+            if laravel_files:
+                categories["backend"].add("Laravel")
+
+            # Rails
+            rails_files = list(repo_path.rglob("Gemfile")) + list(
+                repo_path.rglob("*.rails.*")
+            )
+            if rails_files:
+                categories["backend"].add("Rails")
+
+            # Spring
+            spring_files = list(repo_path.rglob("*.spring.*")) + list(
+                repo_path.rglob("spring.*")
+            )
+            if spring_files:
+                categories["backend"].add("Spring")
+
+            # .NET
+            dotnet_files = list(repo_path.rglob("*.csproj")) + list(
+                repo_path.rglob("*.sln")
+            )
+            if dotnet_files:
+                categories["backend"].add(".NET")
+
+            # Go
+            go_files = list(repo_path.rglob("*.go")) + list(repo_path.rglob("go.mod"))
+            if go_files:
+                categories["backend"].add("Go")
+
+            # Rust
+            rust_files = list(repo_path.rglob("*.rs")) + list(
+                repo_path.rglob("Cargo.toml")
+            )
+            if rust_files:
+                categories["backend"].add("Rust")
+
+            # Java
+            java_files = list(repo_path.rglob("*.java")) + list(
+                repo_path.rglob("pom.xml")
+            )
+            if java_files:
+                categories["backend"].add("Java")
+
+            # Kotlin
+            kotlin_files = list(repo_path.rglob("*.kt")) + list(
+                repo_path.rglob("*.kts")
+            )
+            if kotlin_files:
+                categories["backend"].add("Kotlin")
+
+            # Scala
+            scala_files = list(repo_path.rglob("*.scala"))
+            if scala_files:
+                categories["backend"].add("Scala")
+
+            # PHP
+            php_files = list(repo_path.rglob("*.php"))
+            if php_files:
+                categories["backend"].add("PHP")
+
+            # Ruby
+            ruby_files = list(repo_path.rglob("*.rb"))
+            if ruby_files:
+                categories["backend"].add("Ruby")
+
+            # Clojure
+            clojure_files = list(repo_path.rglob("*.clj")) + list(
+                repo_path.rglob("project.clj")
+            )
+            if clojure_files:
+                categories["backend"].add("Clojure")
+
+            # Elixir
+            elixir_files = list(repo_path.rglob("*.ex")) + list(
+                repo_path.rglob("mix.exs")
+            )
+            if elixir_files:
+                categories["backend"].add("Elixir")
+
+            # Haskell
+            haskell_files = list(repo_path.rglob("*.hs")) + list(
+                repo_path.rglob("*.cabal")
+            )
+            if haskell_files:
+                categories["backend"].add("Haskell")
+
+            # Crystal
+            crystal_files = list(repo_path.rglob("*.cr")) + list(
+                repo_path.rglob("shard.yml")
+            )
+            if crystal_files:
+                categories["backend"].add("Crystal")
+
+            # Nim
+            nim_files = list(repo_path.rglob("*.nim")) + list(
+                repo_path.rglob("*.nimble")
+            )
+            if nim_files:
+                categories["backend"].add("Nim")
+
+            # Zig
+            zig_files = list(repo_path.rglob("*.zig")) + list(
+                repo_path.rglob("build.zig")
+            )
+            if zig_files:
+                categories["backend"].add("Zig")
+
+            # V
+            v_files = list(repo_path.rglob("*.v"))
+            if v_files:
+                categories["backend"].add("V")
+
+            # R
+            r_files = list(repo_path.rglob("*.r")) + list(repo_path.rglob("*.R"))
+            if r_files:
+                categories["backend"].add("R")
+
+            # MATLAB
+            matlab_files = list(repo_path.rglob("*.m"))
+            if matlab_files:
+                categories["backend"].add("MATLAB")
+
+            # Octave
+            octave_files = list(repo_path.rglob("*.octave.*")) + list(
+                repo_path.rglob("octave.*")
+            )
+            if octave_files:
+                categories["backend"].add("Octave")
+
+            # Perl
+            perl_files = list(repo_path.rglob("*.pl")) + list(repo_path.rglob("*.pm"))
+            if perl_files:
+                categories["backend"].add("Perl")
+
+            # Dart
+            dart_files = list(repo_path.rglob("*.dart")) + list(
+                repo_path.rglob("pubspec.yaml")
+            )
+            if dart_files:
+                categories["backend"].add("Dart")
+
+            # Lua
+            lua_files = list(repo_path.rglob("*.lua"))
+            if lua_files:
+                categories["backend"].add("Lua")
+
+            # Haxe
+            haxe_files = list(repo_path.rglob("*.hx")) + list(repo_path.rglob("*.hxml"))
+            if haxe_files:
+                categories["backend"].add("Haxe")
+
+            # Forth
+            forth_files = list(repo_path.rglob("*.fs")) + list(repo_path.rglob("*.fth"))
+            if forth_files:
+                categories["backend"].add("Forth")
+
+            # Fortran
+            fortran_files = list(repo_path.rglob("*.f90")) + list(
+                repo_path.rglob("*.f95")
+            )
+            if fortran_files:
+                categories["backend"].add("Fortran")
+
+            # OCaml
+            ocaml_files = list(repo_path.rglob("*.ml")) + list(repo_path.rglob("*.mli"))
+            if ocaml_files:
+                categories["backend"].add("OCaml")
+
+            # Swift
+            swift_files = list(repo_path.rglob("*.swift"))
+            if swift_files:
+                categories["backend"].add("Swift")
+
+            # Vala
+            vala_files = list(repo_path.rglob("*.vala"))
+            if vala_files:
+                categories["backend"].add("Vala")
+
+            # C/C++
+            c_files = (
+                list(repo_path.rglob("*.c"))
+                + list(repo_path.rglob("*.cpp"))
+                + list(repo_path.rglob("*.h"))
+                + list(repo_path.rglob("*.hpp"))
+            )
+            if c_files:
+                categories["backend"].add("C")
+
+            # Additional DevOps tools
+            # Ansible
+            ansible_files = list(repo_path.rglob("*.yml")) + list(
+                repo_path.rglob("*.yaml")
+            )
+            for ansible_file in ansible_files:
+                try:
+                    with open(ansible_file, encoding="utf-8") as f:
+                        content = f.read().lower()
+                        if "ansible" in content and (
+                            "hosts:" in content or "tasks:" in content
+                        ):
+                            categories["devops"].add("Ansible")
+                            break
+                except Exception:
+                    continue
+
+            # Prometheus
+            prometheus_files = list(repo_path.rglob("prometheus.*")) + list(
+                repo_path.rglob("*.prometheus.*")
+            )
+            if prometheus_files:
+                categories["devops"].add("Prometheus")
+
+            # Grafana
+            grafana_files = list(repo_path.rglob("grafana.*")) + list(
+                repo_path.rglob("*.grafana.*")
+            )
+            if grafana_files:
+                categories["devops"].add("Grafana")
+
+            # Elasticsearch
+            elasticsearch_files = list(repo_path.rglob("elasticsearch.*")) + list(
+                repo_path.rglob("*.elasticsearch.*")
+            )
+            if elasticsearch_files:
+                categories["devops"].add("Elasticsearch")
+
+            # Kafka
+            kafka_files = list(repo_path.rglob("kafka.*")) + list(
+                repo_path.rglob("*.kafka.*")
+            )
+            if kafka_files:
+                categories["devops"].add("Kafka")
+
+            # RabbitMQ
+            rabbitmq_files = list(repo_path.rglob("rabbitmq.*")) + list(
+                repo_path.rglob("*.rabbitmq.*")
+            )
+            if rabbitmq_files:
+                categories["devops"].add("RabbitMQ")
+
+            # IPFS
+            ipfs_files = list(repo_path.rglob("ipfs.*")) + list(
+                repo_path.rglob("*.ipfs.*")
+            )
+            if ipfs_files:
+                categories["devops"].add("IPFS")
+
+            # Sentry
+            sentry_files = list(repo_path.rglob("sentry.*")) + list(
+                repo_path.rglob("*.sentry.*")
+            )
+            if sentry_files:
+                categories["devops"].add("Sentry")
+
+            # Additional AI/ML tools
+            # TensorFlow
+            tensorflow_files = list(repo_path.rglob("tensorflow.*")) + list(
+                repo_path.rglob("*.tensorflow.*")
+            )
+            if tensorflow_files:
+                categories["ai_ml"].add("TensorFlow")
+
+            # PyTorch
+            pytorch_files = list(repo_path.rglob("pytorch.*")) + list(
+                repo_path.rglob("*.pytorch.*")
+            )
+            if pytorch_files:
+                categories["ai_ml"].add("PyTorch")
+
+            # Scikit-learn
+            sklearn_files = list(repo_path.rglob("sklearn.*")) + list(
+                repo_path.rglob("*.sklearn.*")
+            )
+            if sklearn_files:
+                categories["ai_ml"].add("Scikit-learn")
+
+            # OpenCV
+            opencv_files = list(repo_path.rglob("opencv.*")) + list(
+                repo_path.rglob("*.opencv.*")
+            )
+            if opencv_files:
+                categories["ai_ml"].add("OpenCV")
+
+            # Processing
+            processing_files = list(repo_path.rglob("*.pde"))
+            if processing_files:
+                categories["ai_ml"].add("Processing")
+
             return categories
         except Exception as e:
             log_and_raise(

@@ -38,7 +38,9 @@ def load_unified_stats() -> dict[str, Any]:
                 else:
                     logger.error("Unified stats data is not a dictionary")
                     return {}
-        logger.warning("unified_stats.json not found in current or parent directory")
+        logger.debug(
+            "unified_stats.json not found in current or parent directory (this is normal for first run)"
+        )
         return {}
     except (FileNotFoundError, PermissionError) as e:
         logger.warning(f"Could not read unified_stats.json: {e}")
@@ -65,8 +67,8 @@ def load_analytics_history() -> list[dict[str, Any]]:
                 else:
                     logger.warning("analytics_history.json does not contain a list")
                     return []
-        logger.warning(
-            "analytics_history.json not found in current or parent directory"
+        logger.debug(
+            "analytics_history.json not found in current or parent directory (this is normal for first run)"
         )
         return []
 
