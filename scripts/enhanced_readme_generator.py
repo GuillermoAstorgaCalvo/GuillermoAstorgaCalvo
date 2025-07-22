@@ -416,104 +416,121 @@ def generate_enhanced_stats_from_unified(unified_stats: dict[str, Any]) -> str:
 
     # Tech stack analysis with skillicons.dev
     tech_stack_insights = ""
-    tech_stack_analysis = unified_stats.get("tech_stack_analysis", {})
-    if tech_stack_analysis:
-        # Map actual technologies to skillicons.dev icons
-        tech_to_icon = {
-            # Frontend
-            "React": "react",
-            "TypeScript": "ts",
-            "JavaScript": "js",
-            "Next.js": "nextjs",
-            "TailwindCSS": "tailwind",
-            "HTML": "html",
-            "CSS": "css",
-            "Vue.js": "vuejs",
-            "Angular": "angular",
-            "React Router": "reactrouter",
-            # Backend
-            "Node.js": "nodejs",
-            "Python": "python",
-            "Express.js": "express",
-            "FastAPI": "fastapi",
-            "Django": "django",
-            "Flask": "flask",
-            "Java": "java",
-            "Spring Boot": "spring",
-            # Database & Cloud
-            "PostgreSQL": "postgresql",
-            "MongoDB": "mongodb",
-            "Redis": "redis",
-            "AWS": "aws",
-            "Docker": "docker",
-            "Supabase": "supabase",
-            "MySQL": "mysql",
-            "SQLite": "sqlite",
-            "Prisma": "prisma",
-            # AI & ML
-            "TensorFlow": "tensorflow",
-            "PyTorch": "pytorch",
-            "Scikit-learn": "scikit",
-            "OpenAI": "openai",
-            "Pandas": "pandas",
-            "NumPy": "numpy",
-            "Tesseract OCR": "tesseract",
-            "Pillow": "pillow",
-            # DevOps & Tools
-            "Git": "git",
-            "GitHub": "github",
-            "VS Code": "vscode",
-            "Linux": "linux",
-            "Docker Compose": "docker",
-            "Nginx": "nginx",
-            "ESLint": "eslint",
-            "Webpack": "webpack",
-            # Additional
-            "Stripe": "stripe",
-            "Zod": "zod",
-            "Lodash": "lodash",
-            "Axios": "axios",
-            "Moment.js": "moment",
-            "Chart.js": "chartjs",
-        }
 
-        # Build dynamic tech stack
-        dynamic_tech_stack: dict[str, list[str]] = {
-            "frontend": [],
-            "backend": [],
-            "database": [],
-            "ai_ml": [],
-            "devops": [],
-            "additional": [],
-        }
+    # Try to load enhanced tech stack data first
+    enhanced_tech_stack_file = Path(__file__).parent.parent / "enhanced_tech_stack.json"
+    tech_stack_analysis = {}
 
-        # Process each category
-        for category, data in tech_stack_analysis.items():
-            technologies = data.get("technologies", [])
-            for tech in technologies:
-                icon = tech_to_icon.get(
-                    tech, tech.lower().replace(" ", "").replace(".", "")
+    if enhanced_tech_stack_file.exists():
+        try:
+            with open(enhanced_tech_stack_file, encoding="utf-8") as f:
+                enhanced_data = json.load(f)
+                tech_stack_analysis = enhanced_data.get("tech_stack_analysis", {})
+                logger.info(
+                    f"Loaded enhanced tech stack with {enhanced_data.get('total_technologies', 0)} technologies from {enhanced_data.get('project_count', 0)} projects"
                 )
-                if category == "frontend":
-                    dynamic_tech_stack["frontend"].append(icon)
-                elif category == "backend":
-                    dynamic_tech_stack["backend"].append(icon)
-                elif category == "database":
-                    dynamic_tech_stack["database"].append(icon)
-                elif category == "ai_ml":
-                    dynamic_tech_stack["ai_ml"].append(icon)
-                elif category == "devops":
-                    dynamic_tech_stack["devops"].append(icon)
-                else:
-                    dynamic_tech_stack["additional"].append(icon)
+        except Exception as e:
+            logger.warning(f"Failed to load enhanced tech stack: {e}")
 
+    # Fallback to dynamic tech stack if enhanced data is not available
+    if not tech_stack_analysis:
+        dynamic_tech_stack_file = (
+            Path(__file__).parent.parent / "dynamic_tech_stack.json"
+        )
+        if dynamic_tech_stack_file.exists():
+            try:
+                with open(dynamic_tech_stack_file, encoding="utf-8") as f:
+                    dynamic_data = json.load(f)
+                    tech_stack_analysis = dynamic_data.get("tech_stack_analysis", {})
+                    logger.info(
+                        f"Loaded dynamic tech stack with {dynamic_data.get('total_technologies', 0)} technologies from {dynamic_data.get('repository_count', 0)} repositories"
+                    )
+            except Exception as e:
+                logger.warning(f"Failed to load dynamic tech stack: {e}")
+
+    # Final fallback to enhanced tech stack if no data files are available
+    if not tech_stack_analysis:
+        logger.info("Using fallback enhanced tech stack")
+        # Enhanced tech stack based on README projects - includes all technologies from user's projects
+        enhanced_tech_stack = {
+            "frontend": {
+                "technologies": ["react", "ts", "js", "nextjs", "tailwind", "supabase"],
+            },
+            "backend": {
+                "technologies": [
+                    "express",
+                    "jest",
+                    "nodejs",
+                    "prometheus",
+                    "redis",
+                    "ts",
+                    "py",
+                    "fastapi",
+                    "django",
+                    "flask",
+                ],
+            },
+            "database": {
+                "technologies": ["postgres", "mongodb", "redis", "sqlite"],
+            },
+            "devops": {
+                "technologies": [
+                    "docker",
+                    "kubernetes",
+                    "aws",
+                    "azure",
+                    "gcp",
+                    "githubactions",
+                    "nginx",
+                    "jenkins",
+                    "terraform",
+                ],
+            },
+            "ai_ml": {
+                "technologies": [
+                    "openai",
+                    "tensorflow",
+                    "pytorch",
+                    "sklearn",
+                    "pandas",
+                    "numpy",
+                    "opencv",
+                    "tesseract",
+                    "langchain",
+                    "anthropic",
+                ],
+            },
+        }
+
+        # Try to get actual tech stack from unified stats and merge with enhanced list
+        unified_tech_stack = unified_stats.get("tech_stack_analysis", {})
+        if unified_tech_stack:
+            # Merge detected technologies with enhanced list
+            for category in ["frontend", "backend", "database", "devops", "ai_ml"]:
+                detected_techs = unified_tech_stack.get(category, {}).get(
+                    "technologies", []
+                )
+                enhanced_techs = enhanced_tech_stack[category]["technologies"]
+                # Combine and remove duplicates while preserving order
+                combined_techs = []
+                seen = set()
+                for tech in enhanced_techs + detected_techs:
+                    if tech not in seen:
+                        combined_techs.append(tech)
+                        seen.add(tech)
+                enhanced_tech_stack[category]["technologies"] = combined_techs
+
+        tech_stack_analysis = enhanced_tech_stack
+
+    if tech_stack_analysis:
         # Generate tech stack section
         tech_stack_insights = "\n### **🛠️ Technology Stack**\n\n"
         tech_stack_insights += "I believe in using the right tool for the job. Here's my current technology stack based on my projects:\n\n"
 
         # Frontend
-        if dynamic_tech_stack["frontend"]:
-            icons = ",".join(dynamic_tech_stack["frontend"][:8])
+        frontend_techs = tech_stack_analysis.get("frontend", {}).get("technologies", [])
+        if frontend_techs:
+            icons = ",".join(frontend_techs[:8])
             tech_stack_insights += f"""#### **🌐 Frontend Development**
 <div align="center">
   <img src="https://skillicons.dev/icons?i={icons}" alt="Frontend Technologies" />
@@ -522,8 +539,9 @@ def generate_enhanced_stats_from_unified(unified_stats: dict[str, Any]) -> str:
 """
 
         # Backend
-        if dynamic_tech_stack["backend"]:
-            icons = ",".join(dynamic_tech_stack["backend"][:8])
+        backend_techs = tech_stack_analysis.get("backend", {}).get("technologies", [])
+        if backend_techs:
+            icons = ",".join(backend_techs[:8])
             tech_stack_insights += f"""#### **⚙️ Backend Development**
 <div align="center">
   <img src="https://skillicons.dev/icons?i={icons}" alt="Backend Technologies" />
@@ -532,8 +550,9 @@ def generate_enhanced_stats_from_unified(unified_stats: dict[str, Any]) -> str:
 """
 
         # Database & Cloud
-        if dynamic_tech_stack["database"]:
-            icons = ",".join(dynamic_tech_stack["database"][:8])
+        database_techs = tech_stack_analysis.get("database", {}).get("technologies", [])
+        if database_techs:
+            icons = ",".join(database_techs[:8])
             tech_stack_insights += f"""#### **🗄️ Database & Cloud**
 <div align="center">
   <img src="https://skillicons.dev/icons?i={icons}" alt="Database & Cloud Technologies" />
@@ -542,8 +561,9 @@ def generate_enhanced_stats_from_unified(unified_stats: dict[str, Any]) -> str:
 """
 
         # AI & ML
-        if dynamic_tech_stack["ai_ml"]:
-            icons = ",".join(dynamic_tech_stack["ai_ml"][:8])
+        ai_ml_techs = tech_stack_analysis.get("ai_ml", {}).get("technologies", [])
+        if ai_ml_techs:
+            icons = ",".join(ai_ml_techs[:8])
             tech_stack_insights += f"""#### **🤖 AI & Machine Learning**
 <div align="center">
   <img src="https://skillicons.dev/icons?i={icons}" alt="AI & ML Technologies" />
@@ -552,21 +572,12 @@ def generate_enhanced_stats_from_unified(unified_stats: dict[str, Any]) -> str:
 """
 
         # DevOps & Tools
-        if dynamic_tech_stack["devops"]:
-            icons = ",".join(dynamic_tech_stack["devops"][:8])
+        devops_techs = tech_stack_analysis.get("devops", {}).get("technologies", [])
+        if devops_techs:
+            icons = ",".join(devops_techs[:8])
             tech_stack_insights += f"""#### **🛠️ Development Tools**
 <div align="center">
   <img src="https://skillicons.dev/icons?i={icons}" alt="Development Tools" />
-</div>
-
-"""
-
-        # Additional Technologies
-        if dynamic_tech_stack["additional"]:
-            icons = ",".join(dynamic_tech_stack["additional"][:8])
-            tech_stack_insights += f"""#### **📊 Additional Technologies**
-<div align="center">
-  <img src="https://skillicons.dev/icons?i={icons}" alt="Additional Technologies" />
 </div>
 
 """

@@ -285,6 +285,7 @@ class SkilliconMapper:
             "next.js": "nextjs",
             "@next/font": "nextjs",
             "next-themes": "nextjs",
+            "nextjs": "nextjs",
             # Nuxt.js
             "nuxt": "nuxtjs",
             "nuxtjs": "nuxtjs",
@@ -325,6 +326,7 @@ class SkilliconMapper:
             "@types/node": "ts",
             "javascript": "js",
             "js": "js",
+            "ts": "ts",
             # Build tools
             "vite": "vite",
             "@vitejs/plugin-react-swc": "vite",
@@ -634,6 +636,10 @@ class SkilliconMapper:
             "ai": "ai",
             "aiscript": "aiscript",
             "processing": "processing",
+            "openai": "openai",
+            "tesseract": "tesseract",
+            "langchain": "langchain",
+            "anthropic": "anthropic",
         }
 
         # Development tools and IDEs

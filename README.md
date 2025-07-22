@@ -57,12 +57,27 @@ I believe in using the right tool for the job. Here's my current technology stac
 
 #### **🌐 Frontend Development**
 <div align="center">
-  <img src="https://skillicons.dev/icons?i=js,supabase,ts" alt="Frontend Technologies" />
+  <img src="https://skillicons.dev/icons?i=css,html,js,nextjs,react,supabase,tailwind,ts" alt="Frontend Technologies" />
 </div>
 
 #### **⚙️ Backend Development**
 <div align="center">
-  <img src="https://skillicons.dev/icons?i=express,jest,nodejs,prometheus,redis,ts" alt="Backend Technologies" />
+  <img src="https://skillicons.dev/icons?i=express,fastapi,jest,nodejs,prometheus,py,redis,ts" alt="Backend Technologies" />
+</div>
+
+#### **🗄️ Database & Cloud**
+<div align="center">
+  <img src="https://skillicons.dev/icons?i=mongodb,postgres,redis,sqlite" alt="Database & Cloud Technologies" />
+</div>
+
+#### **🤖 AI & Machine Learning**
+<div align="center">
+  <img src="https://skillicons.dev/icons?i=opencv,py,pytorch,sklearn,tensorflow" alt="AI & ML Technologies" />
+</div>
+
+#### **🛠️ Development Tools**
+<div align="center">
+  <img src="https://skillicons.dev/icons?i=aws,azure,docker,gcp,git,github,githubactions,jenkins" alt="Development Tools" />
 </div>
 
 
@@ -208,4 +223,4 @@ I'm always up for connecting with fellow developers, discussing interesting proj
 
 ---
 
-*Last updated: July 22, 2025 at 08:41 UTC*
+*Last updated: July 22, 2025 at 21:20 UTC*

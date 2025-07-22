@@ -1,0 +1,54 @@
+{
+  "timestamp": "2025-07-22T19:10:10.757905Z",
+  "metadata": {
+    "version": "3.0",
+    "generated_by": "Dynamic Tech Stack Analyzer",
+    "data_source": "Multi-Repository Dependency Analysis"
+  },
+  "tech_stack_analysis": {
+    "frontend": {
+      "technologies": [
+        "js",
+        "nextjs",
+        "react",
+        "tailwind",
+        "ts",
+        "vite"
+      ],
+      "count": 6
+    },
+    "backend": {
+      "technologies": [
+        "express",
+        "fastapi",
+        "jest",
+        "py",
+        "ts"
+      ],
+      "count": 5
+    },
+    "database": {
+      "technologies": [
+        "postgres",
+        "sequelize"
+      ],
+      "count": 2
+    },
+    "devops": {
+      "technologies": [
+        "docker",
+        "githubactions"
+      ],
+      "count": 2
+    },
+    "ai_ml": {
+      "technologies": [
+        "opencv",
+        "py"
+      ],
+      "count": 2
+    }
+  },
+  "repository_count": 5,
+  "total_technologies": 17
+}

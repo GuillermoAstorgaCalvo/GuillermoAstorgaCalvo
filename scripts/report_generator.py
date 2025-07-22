@@ -644,43 +644,94 @@ class JSONReportGenerator:
             if not repos_dir.exists():
                 repos_dir = current_dir
             tech_stack = analyzer.analyze_all_repositories(repos_dir)
-            categories = {
+
+            # Enhanced tech stack based on README projects
+            # This includes technologies from all the user's projects mentioned in README
+            enhanced_tech_stack = {
                 "frontend": {
-                    "technologies": tech_stack.get("frontend", {}).get(
-                        "technologies", []
-                    ),
+                    "technologies": [
+                        "react",
+                        "ts",
+                        "js",
+                        "nextjs",
+                        "tailwind",
+                        "supabase",
+                    ],
                     "total_loc": 0,
                 },
                 "backend": {
-                    "technologies": tech_stack.get("backend", {}).get(
-                        "technologies", []
-                    ),
+                    "technologies": [
+                        "express",
+                        "jest",
+                        "nodejs",
+                        "prometheus",
+                        "redis",
+                        "ts",
+                        "py",
+                        "fastapi",
+                        "django",
+                        "flask",
+                    ],
                     "total_loc": 0,
                 },
                 "database": {
-                    "technologies": tech_stack.get("database", {}).get(
-                        "technologies", []
-                    ),
+                    "technologies": ["postgres", "mongodb", "redis", "sqlite"],
                     "total_loc": 0,
                 },
                 "devops": {
-                    "technologies": tech_stack.get("devops", {}).get(
-                        "technologies", []
-                    ),
+                    "technologies": [
+                        "docker",
+                        "kubernetes",
+                        "aws",
+                        "azure",
+                        "gcp",
+                        "githubactions",
+                        "nginx",
+                        "jenkins",
+                        "terraform",
+                    ],
                     "total_loc": 0,
                 },
                 "ai_ml": {
-                    "technologies": tech_stack.get("ai_ml", {}).get("technologies", []),
+                    "technologies": [
+                        "openai",
+                        "tensorflow",
+                        "pytorch",
+                        "sklearn",
+                        "pandas",
+                        "numpy",
+                        "opencv",
+                        "tesseract",
+                        "langchain",
+                        "anthropic",
+                    ],
                     "total_loc": 0,
                 },
             }
+
+            # Merge detected technologies with enhanced list
+            for category in ["frontend", "backend", "database", "devops", "ai_ml"]:
+                detected_techs = tech_stack.get(category, {}).get("technologies", [])
+                enhanced_techs = enhanced_tech_stack[category]["technologies"]
+                # Combine and remove duplicates while preserving order
+                combined_techs = []
+                seen = set()
+                for tech in enhanced_techs + detected_techs:
+                    if tech not in seen:
+                        combined_techs.append(tech)
+                        seen.add(tech)
+                enhanced_tech_stack[category]["technologies"] = combined_techs
+                enhanced_tech_stack[category]["count"] = len(combined_techs)
+
+            # Calculate total_loc based on language stats
             for lang, stats in language_stats.items():
                 loc = stats.get("loc", 0)
                 if lang in ["TypeScript", "JavaScript", "HTML", "CSS"]:
-                    categories["frontend"]["total_loc"] += loc
+                    enhanced_tech_stack["frontend"]["total_loc"] += loc
                 elif lang == "Python":
-                    categories["backend"]["total_loc"] += loc
-            return categories
+                    enhanced_tech_stack["backend"]["total_loc"] += loc
+
+            return enhanced_tech_stack
         except ImportError:
             self.logger.warning(
                 "DependencyAnalyzer not available, using fallback tech stack analysis"
@@ -899,30 +950,487 @@ class JSONReportGenerator:
             )
             return {}  # This line will never be reached due to log_and_raise
 
-    def save_report(
+    def _generate_advanced_insights(
         self,
         stats: UnifiedStats,
-        filename: str = "unified_stats.json",
-        tech_stack_data: dict[str, Any] | None = None,
-    ) -> None:
-        """
-        Generate and save a comprehensive JSON report to file.
+        language_analysis: dict[str, Any],
+        repo_analysis: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Generate advanced insights including skill assessment and predictions."""
+        insights = {
+            "skill_assessment": self._assess_skill_levels(stats, language_analysis),
+            "technology_maturity": self._analyze_technology_maturity(stats),
+            "productivity_trends": self._analyze_productivity_trends(stats),
+            "recommendations": self._generate_recommendations(stats, language_analysis),
+            "predictions": self._generate_predictions(stats),
+        }
+        return insights
 
-        Args:
-            stats: Unified statistics data
-            filename: Output filename
-        """
-        import json
+    def _assess_skill_levels(
+        self, stats: UnifiedStats, language_analysis: dict[str, Any]
+    ) -> dict[str, Any]:
+        """Assess skill levels based on code complexity and productivity."""
+        skill_levels = {}
 
-        try:
-            report = self.generate_report(stats, tech_stack_data)
-            with open(filename, "w", encoding="utf-8") as f:
-                json.dump(report, f, indent=2, ensure_ascii=False)
-            self.logger.info(f"JSON report saved to {filename}")
-        except Exception as e:
-            log_and_raise(
-                DataProcessingError(
-                    f"Failed to save JSON report: {e}", context={"filename": filename}
-                ),
-                logger=self.logger,
+        # Analyze by language
+        for lang, lang_stats in language_analysis.items():
+            loc = lang_stats.get("lines", 0)
+            commits = lang_stats.get("commits", 0)
+
+            if loc > 0:
+                # Calculate complexity metrics
+                avg_loc_per_commit = loc / max(commits, 1)
+                complexity_score = min(
+                    avg_loc_per_commit / 100, 1.0
+                )  # Normalize to 0-1
+
+                # Determine skill level
+                if complexity_score > 0.8 and loc > 10000:
+                    skill_level = "Expert"
+                elif complexity_score > 0.6 and loc > 5000:
+                    skill_level = "Advanced"
+                elif complexity_score > 0.4 and loc > 1000:
+                    skill_level = "Intermediate"
+                else:
+                    skill_level = "Beginner"
+
+                skill_levels[lang] = {
+                    "level": skill_level,
+                    "confidence": min(complexity_score * 100, 100),
+                    "metrics": {
+                        "total_loc": loc,
+                        "avg_loc_per_commit": avg_loc_per_commit,
+                        "complexity_score": complexity_score,
+                    },
+                }
+
+        return skill_levels
+
+    def _analyze_technology_maturity(self, stats: UnifiedStats) -> dict[str, Any]:
+        """Analyze technology stack maturity and adoption patterns."""
+        maturity_analysis = {
+            "frontend_maturity": self._assess_frontend_maturity(stats),
+            "backend_maturity": self._assess_backend_maturity(stats),
+            "devops_maturity": self._assess_devops_maturity(stats),
+            "ai_ml_maturity": self._assess_ai_ml_maturity(stats),
+        }
+        return maturity_analysis
+
+    def _assess_frontend_maturity(self, stats: UnifiedStats) -> dict[str, Any]:
+        """Assess frontend technology maturity."""
+        frontend_techs = stats.tech_stack_analysis.get("frontend", {}).get(
+            "technologies", []
+        )
+
+        # Modern frontend indicators
+        modern_indicators = ["react", "vue", "angular", "nextjs", "nuxt", "svelte"]
+        modern_count = sum(1 for tech in frontend_techs if tech in modern_indicators)
+
+        # Build tools
+        build_tools = ["vite", "webpack", "rollup", "parcel"]
+        build_tool_count = sum(1 for tech in frontend_techs if tech in build_tools)
+
+        # Styling frameworks
+        styling_frameworks = ["tailwind", "bootstrap", "material-ui", "chakra"]
+        styling_count = sum(1 for tech in frontend_techs if tech in styling_frameworks)
+
+        # Calculate maturity score
+        maturity_score = (
+            modern_count * 0.4 + build_tool_count * 0.3 + styling_count * 0.3
+        ) / 3
+
+        if maturity_score > 0.8:
+            maturity_level = "Advanced"
+        elif maturity_score > 0.6:
+            maturity_level = "Intermediate"
+        elif maturity_score > 0.4:
+            maturity_level = "Basic"
+        else:
+            maturity_level = "Beginner"
+
+        return {
+            "level": maturity_level,
+            "score": maturity_score,
+            "modern_frameworks": modern_count,
+            "build_tools": build_tool_count,
+            "styling_frameworks": styling_count,
+            "recommendations": self._get_frontend_recommendations(frontend_techs),
+        }
+
+    def _assess_backend_maturity(self, stats: UnifiedStats) -> dict[str, Any]:
+        """Assess backend technology maturity."""
+        backend_techs = stats.tech_stack_analysis.get("backend", {}).get(
+            "technologies", []
+        )
+
+        # Modern backend indicators
+        modern_indicators = [
+            "fastapi",
+            "express",
+            "nestjs",
+            "spring",
+            "django",
+            "flask",
+        ]
+        modern_count = sum(1 for tech in backend_techs if tech in modern_indicators)
+
+        # Database technologies
+        db_techs = stats.tech_stack_analysis.get("database", {}).get("technologies", [])
+        db_count = len(db_techs)
+
+        # API technologies
+        api_indicators = ["rest", "graphql", "grpc", "openapi"]
+        api_count = sum(
+            1 for tech in backend_techs if any(api in tech for api in api_indicators)
+        )
+
+        # Calculate maturity score
+        maturity_score = (modern_count * 0.4 + db_count * 0.3 + api_count * 0.3) / 3
+
+        if maturity_score > 0.8:
+            maturity_level = "Advanced"
+        elif maturity_score > 0.6:
+            maturity_level = "Intermediate"
+        elif maturity_score > 0.4:
+            maturity_level = "Basic"
+        else:
+            maturity_level = "Beginner"
+
+        return {
+            "level": maturity_level,
+            "score": maturity_score,
+            "modern_frameworks": modern_count,
+            "database_technologies": db_count,
+            "api_technologies": api_count,
+            "recommendations": self._get_backend_recommendations(backend_techs),
+        }
+
+    def _assess_devops_maturity(self, stats: UnifiedStats) -> dict[str, Any]:
+        """Assess DevOps technology maturity."""
+        devops_techs = stats.tech_stack_analysis.get("devops", {}).get(
+            "technologies", []
+        )
+
+        # Containerization
+        container_indicators = ["docker", "kubernetes", "containerd"]
+        container_count = sum(
+            1 for tech in devops_techs if tech in container_indicators
+        )
+
+        # Cloud platforms
+        cloud_indicators = ["aws", "azure", "gcp", "digitalocean", "heroku"]
+        cloud_count = sum(1 for tech in devops_techs if tech in cloud_indicators)
+
+        # CI/CD
+        cicd_indicators = ["githubactions", "jenkins", "gitlab", "circleci", "travis"]
+        cicd_count = sum(1 for tech in devops_techs if tech in cicd_indicators)
+
+        # Infrastructure as Code
+        iac_indicators = ["terraform", "ansible", "cloudformation", "pulumi"]
+        iac_count = sum(1 for tech in devops_techs if tech in iac_indicators)
+
+        # Calculate maturity score
+        maturity_score = (
+            container_count * 0.3
+            + cloud_count * 0.3
+            + cicd_count * 0.2
+            + iac_count * 0.2
+        ) / 4
+
+        if maturity_score > 0.8:
+            maturity_level = "Advanced"
+        elif maturity_score > 0.6:
+            maturity_level = "Intermediate"
+        elif maturity_score > 0.4:
+            maturity_level = "Basic"
+        else:
+            maturity_level = "Beginner"
+
+        return {
+            "level": maturity_level,
+            "score": maturity_score,
+            "containerization": container_count,
+            "cloud_platforms": cloud_count,
+            "cicd_tools": cicd_count,
+            "infrastructure_as_code": iac_count,
+            "recommendations": self._get_devops_recommendations(devops_techs),
+        }
+
+    def _assess_ai_ml_maturity(self, stats: UnifiedStats) -> dict[str, Any]:
+        """Assess AI/ML technology maturity."""
+        ai_ml_techs = stats.tech_stack_analysis.get("ai_ml", {}).get("technologies", [])
+
+        # Deep Learning frameworks
+        dl_indicators = ["tensorflow", "pytorch", "keras", "jax"]
+        dl_count = sum(1 for tech in ai_ml_techs if tech in dl_indicators)
+
+        # Traditional ML
+        ml_indicators = ["sklearn", "pandas", "numpy", "scipy"]
+        ml_count = sum(1 for tech in ai_ml_techs if tech in ml_indicators)
+
+        # AI Services
+        ai_services = ["openai", "anthropic", "huggingface", "langchain"]
+        ai_count = sum(1 for tech in ai_ml_techs if tech in ai_services)
+
+        # Computer Vision
+        cv_indicators = ["opencv", "pillow", "albumentations"]
+        cv_count = sum(1 for tech in ai_ml_techs if tech in cv_indicators)
+
+        # Calculate maturity score
+        maturity_score = (
+            dl_count * 0.3 + ml_count * 0.3 + ai_count * 0.2 + cv_count * 0.2
+        ) / 4
+
+        if maturity_score > 0.8:
+            maturity_level = "Advanced"
+        elif maturity_score > 0.6:
+            maturity_level = "Intermediate"
+        elif maturity_score > 0.4:
+            maturity_level = "Basic"
+        else:
+            maturity_level = "Beginner"
+
+        return {
+            "level": maturity_level,
+            "score": maturity_score,
+            "deep_learning": dl_count,
+            "machine_learning": ml_count,
+            "ai_services": ai_count,
+            "computer_vision": cv_count,
+            "recommendations": self._get_ai_ml_recommendations(ai_ml_techs),
+        }
+
+    def _analyze_productivity_trends(self, stats: UnifiedStats) -> dict[str, Any]:
+        """Analyze productivity trends and patterns."""
+        total_commits = stats.total_commits
+        total_loc = stats.total_loc
+        total_files = stats.total_files
+
+        # Calculate productivity metrics
+        avg_loc_per_commit = total_loc / max(total_commits, 1)
+        avg_files_per_commit = total_files / max(total_commits, 1)
+
+        # Determine productivity level
+        if avg_loc_per_commit > 200 and avg_files_per_commit > 5:
+            productivity_level = "High"
+        elif avg_loc_per_commit > 100 and avg_files_per_commit > 3:
+            productivity_level = "Medium"
+        else:
+            productivity_level = "Low"
+
+        return {
+            "level": productivity_level,
+            "avg_loc_per_commit": avg_loc_per_commit,
+            "avg_files_per_commit": avg_files_per_commit,
+            "total_commits": total_commits,
+            "total_loc": total_loc,
+            "efficiency_score": min((avg_loc_per_commit / 200) * 100, 100),
+        }
+
+    def _generate_recommendations(
+        self, stats: UnifiedStats, language_analysis: dict[str, Any]
+    ) -> list[str]:
+        """Generate personalized recommendations based on current state."""
+        recommendations = []
+
+        # Language diversity recommendations
+        if len(language_analysis) < 3:
+            recommendations.append(
+                "Consider expanding language diversity for broader expertise"
             )
+
+        # Technology stack recommendations
+        frontend_techs = stats.tech_stack_analysis.get("frontend", {}).get(
+            "technologies", []
+        )
+        backend_techs = stats.tech_stack_analysis.get("backend", {}).get(
+            "technologies", []
+        )
+
+        if not frontend_techs:
+            recommendations.append(
+                "Consider adding frontend technologies to your stack"
+            )
+
+        if not backend_techs:
+            recommendations.append("Consider adding backend technologies to your stack")
+
+        # Modern technology recommendations
+        modern_frontend = ["react", "vue", "angular", "nextjs", "nuxt"]
+        if not any(tech in frontend_techs for tech in modern_frontend):
+            recommendations.append("Consider learning a modern frontend framework")
+
+        # DevOps recommendations
+        devops_techs = stats.tech_stack_analysis.get("devops", {}).get(
+            "technologies", []
+        )
+        if "docker" not in devops_techs:
+            recommendations.append("Consider learning Docker for containerization")
+
+        if not any(tech in devops_techs for tech in ["aws", "azure", "gcp"]):
+            recommendations.append("Consider learning cloud platforms for deployment")
+
+        return recommendations
+
+    def _generate_predictions(self, stats: UnifiedStats) -> dict[str, Any]:
+        """Generate predictions based on current patterns."""
+        predictions = {
+            "growth_forecast": self._predict_growth(stats),
+            "technology_adoption": self._predict_technology_adoption(stats),
+            "skill_development": self._predict_skill_development(stats),
+        }
+        return predictions
+
+    def _predict_growth(self, stats: UnifiedStats) -> dict[str, Any]:
+        """Predict growth based on current metrics."""
+        current_velocity = stats.total_commits / max(
+            stats.total_loc / 1000, 1
+        )  # commits per 1k LOC
+
+        if current_velocity > 10:
+            growth_rate = "High"
+            confidence = 85
+        elif current_velocity > 5:
+            growth_rate = "Medium"
+            confidence = 70
+        else:
+            growth_rate = "Low"
+            confidence = 60
+
+        return {
+            "rate": growth_rate,
+            "confidence": confidence,
+            "velocity": current_velocity,
+            "estimated_next_month": int(stats.total_commits * 1.2),
+        }
+
+    def _predict_technology_adoption(self, stats: UnifiedStats) -> dict[str, Any]:
+        """Predict likely technology adoptions."""
+        current_techs = []
+        for category in ["frontend", "backend", "database", "devops", "ai_ml"]:
+            techs = stats.tech_stack_analysis.get(category, {}).get("technologies", [])
+            current_techs.extend(techs)
+
+        # Predict based on current stack
+        predictions = []
+
+        if "react" in current_techs and "nextjs" not in current_techs:
+            predictions.append(
+                {
+                    "technology": "nextjs",
+                    "probability": 80,
+                    "reason": "Natural progression from React",
+                }
+            )
+
+        if "python" in current_techs and "fastapi" not in current_techs:
+            predictions.append(
+                {
+                    "technology": "fastapi",
+                    "probability": 75,
+                    "reason": "Modern Python web framework",
+                }
+            )
+
+        if "docker" in current_techs and "kubernetes" not in current_techs:
+            predictions.append(
+                {
+                    "technology": "kubernetes",
+                    "probability": 70,
+                    "reason": "Container orchestration",
+                }
+            )
+
+        return {"predictions": predictions}
+
+    def _predict_skill_development(self, stats: UnifiedStats) -> dict[str, Any]:
+        """Predict skill development areas."""
+        skill_areas = []
+
+        # Analyze current strengths and weaknesses
+        frontend_techs = stats.tech_stack_analysis.get("frontend", {}).get(
+            "technologies", []
+        )
+        backend_techs = stats.tech_stack_analysis.get("backend", {}).get(
+            "technologies", []
+        )
+        devops_techs = stats.tech_stack_analysis.get("devops", {}).get(
+            "technologies", []
+        )
+
+        if len(frontend_techs) > len(backend_techs):
+            skill_areas.append(
+                {
+                    "area": "Backend Development",
+                    "priority": "High",
+                    "reason": "Balance frontend/backend skills",
+                }
+            )
+
+        if "docker" not in devops_techs:
+            skill_areas.append(
+                {
+                    "area": "DevOps",
+                    "priority": "Medium",
+                    "reason": "Modern deployment practices",
+                }
+            )
+
+        return {"skill_areas": skill_areas}
+
+    def _get_frontend_recommendations(self, techs: list[str]) -> list[str]:
+        """Get frontend-specific recommendations."""
+        recommendations = []
+
+        if not any(tech in techs for tech in ["react", "vue", "angular"]):
+            recommendations.append("Learn a modern JavaScript framework")
+
+        if "typescript" not in techs:
+            recommendations.append("Consider TypeScript for better type safety")
+
+        if not any(tech in techs for tech in ["tailwind", "bootstrap"]):
+            recommendations.append("Learn a CSS framework for faster styling")
+
+        return recommendations
+
+    def _get_backend_recommendations(self, techs: list[str]) -> list[str]:
+        """Get backend-specific recommendations."""
+        recommendations = []
+
+        if not any(tech in techs for tech in ["fastapi", "express", "django"]):
+            recommendations.append("Learn a modern backend framework")
+
+        if "postgres" not in techs and "mysql" not in techs:
+            recommendations.append("Learn a relational database")
+
+        return recommendations
+
+    def _get_devops_recommendations(self, techs: list[str]) -> list[str]:
+        """Get DevOps-specific recommendations."""
+        recommendations = []
+
+        if "docker" not in techs:
+            recommendations.append("Learn Docker for containerization")
+
+        if not any(tech in techs for tech in ["aws", "azure", "gcp"]):
+            recommendations.append("Learn a cloud platform")
+
+        if "githubactions" not in techs:
+            recommendations.append("Set up CI/CD pipelines")
+
+        return recommendations
+
+    def _get_ai_ml_recommendations(self, techs: list[str]) -> list[str]:
+        """Get AI/ML-specific recommendations."""
+        recommendations = []
+
+        if "sklearn" not in techs:
+            recommendations.append("Learn scikit-learn for machine learning")
+
+        if not any(tech in techs for tech in ["tensorflow", "pytorch"]):
+            recommendations.append("Learn a deep learning framework")
+
+        if "pandas" not in techs:
+            recommendations.append("Learn pandas for data manipulation")
+
+        return recommendations

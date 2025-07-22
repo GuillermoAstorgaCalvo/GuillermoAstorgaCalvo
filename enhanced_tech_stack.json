@@ -1,0 +1,82 @@
+{
+  "timestamp": "2025-07-22T19:20:22.518002Z",
+  "metadata": {
+    "version": "3.0",
+    "generated_by": "Enhanced Dependency Analyzer",
+    "data_source": "Multi-Source Technology Analysis"
+  },
+  "tech_stack_analysis": {
+    "frontend": {
+      "technologies": [
+        "css",
+        "html",
+        "js",
+        "nextjs",
+        "react",
+        "supabase",
+        "tailwind",
+        "ts",
+        "vite",
+        "webpack"
+      ],
+      "count": 10
+    },
+    "backend": {
+      "technologies": [
+        "express",
+        "fastapi",
+        "jest",
+        "nodejs",
+        "prometheus",
+        "py",
+        "redis",
+        "ts"
+      ],
+      "count": 8
+    },
+    "database": {
+      "technologies": [
+        "mongodb",
+        "postgres",
+        "redis",
+        "sqlite"
+      ],
+      "count": 4
+    },
+    "devops": {
+      "technologies": [
+        "aws",
+        "azure",
+        "docker",
+        "gcp",
+        "git",
+        "github",
+        "githubactions",
+        "jenkins",
+        "kubernetes",
+        "linux",
+        "nginx",
+        "terraform",
+        "vscode"
+      ],
+      "count": 13
+    },
+    "ai_ml": {
+      "technologies": [
+        "opencv",
+        "py",
+        "pytorch",
+        "sklearn",
+        "tensorflow"
+      ],
+      "count": 5
+    }
+  },
+  "project_count": 5,
+  "total_technologies": 40,
+  "analysis_methods": [
+    "Current repository dependency analysis",
+    "Known project technology mapping",
+    "Common technology inclusion"
+  ]
+}

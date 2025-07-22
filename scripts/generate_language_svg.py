@@ -358,6 +358,240 @@ def generate_language_svg_bar_chart(language_stats: dict, output_path: str) -> N
         )
 
 
+def generate_language_svg_with_trends(
+    language_stats: dict, output_path: str, historical_data: dict | None = None
+) -> None:
+    """Generate SVG with trend analysis and historical comparison."""
+    logger = get_logger(__name__)
+
+    try:
+        import svgwrite
+
+        # Define categories to exclude (non-programming languages)
+        excluded_categories = {
+            # Configuration files
+            "Configuration",
+            "YAML",
+            "JSON",
+            "TOML",
+            "INI",
+            "Properties",
+            # Non-code categories
+            "Unknown",
+            "Assets",
+            "Documentation",
+            "Image",
+            "Font",
+            "Archive",
+            "Binary",
+            # Other non-programming languages
+            "Log",
+            "Markdown",
+            "reStructuredText",
+            "AsciiDoc",
+            "BibTeX",
+        }
+
+        # Filter out excluded categories and any with 0 lines
+        valid_langs = [
+            (lang, stats)
+            for lang, stats in language_stats.items()
+            if stats.get("lines", 0) > 0 and lang not in excluded_categories
+        ]
+        sorted_langs = sorted(valid_langs, key=lambda x: x[1]["lines"], reverse=True)
+
+        if not sorted_langs:
+            logger.warning("No valid languages found for SVG generation")
+            return
+
+        total_loc = sum(stats["lines"] for _, stats in sorted_langs)
+        logger.info(
+            f"Generating SVG with trends for {len(sorted_langs)} languages with {total_loc:,} total LOC"
+        )
+
+        # Calculate chart dimensions
+        width = 800  # Increased width for trend indicators
+        bar_height = 35
+        max_bar_width = width - 300  # Space for labels, values, and trends
+        height = (
+            bar_height * len(sorted_langs) + 120
+        )  # Extra space for trend indicators
+
+        dwg = svgwrite.Drawing(output_path, size=(width, height))
+
+        # Add gradients (same as before)
+        major_gradient = dwg.linearGradient(
+            id="major_gradient", x1="0%", y1="0%", x2="100%", y2="0%"
+        )
+        major_gradient.add_stop_color(offset="0%", color="#4F8EF7", opacity=1)
+        major_gradient.add_stop_color(offset="100%", color="#2E5BB8", opacity=1)
+        dwg.defs.add(major_gradient)
+
+        medium_gradient = dwg.linearGradient(
+            id="medium_gradient", x1="0%", y1="0%", x2="100%", y2="0%"
+        )
+        medium_gradient.add_stop_color(offset="0%", color="#6BB6FF", opacity=1)
+        medium_gradient.add_stop_color(offset="100%", color="#4F8EF7", opacity=1)
+        dwg.defs.add(medium_gradient)
+
+        minor_gradient = dwg.linearGradient(
+            id="minor_gradient", x1="0%", y1="0%", x2="100%", y2="0%"
+        )
+        minor_gradient.add_stop_color(offset="0%", color="#A8D8FF", opacity=1)
+        minor_gradient.add_stop_color(offset="100%", color="#6BB6FF", opacity=1)
+        dwg.defs.add(minor_gradient)
+
+        # Add background
+        bg_gradient = dwg.linearGradient(
+            id="bg_gradient", x1="0%", y1="0%", x2="0%", y2="100%"
+        )
+        bg_gradient.add_stop_color(offset="0%", color="#FAFBFC", opacity=1)
+        bg_gradient.add_stop_color(offset="100%", color="#F5F7FA", opacity=1)
+        dwg.defs.add(bg_gradient)
+
+        # Background rectangle
+        dwg.add(
+            dwg.rect(
+                insert=(0, 0),
+                size=(width, height),
+                fill="url(#bg_gradient)",
+                rx=8,
+                ry=8,
+            )
+        )
+
+        # Title
+        dwg.add(
+            dwg.text(
+                "Language Usage Trends",
+                insert=(width // 2, 25),
+                text_anchor="middle",
+                font_family="Arial, sans-serif",
+                font_size="16",
+                font_weight="bold",
+                fill="#2C3E50",
+            )
+        )
+
+        # Generate bars with trend indicators
+        for i, (lang, stats) in enumerate(sorted_langs):
+            y_pos = 50 + i * bar_height
+            loc = stats["lines"]
+            percentage = (loc / total_loc) * 100
+            bar_width = (percentage / 100) * max_bar_width
+
+            # Determine gradient based on percentage
+            if percentage > 50:
+                gradient_id = "major_gradient"
+            elif percentage > 10:
+                gradient_id = "medium_gradient"
+            else:
+                gradient_id = "minor_gradient"
+
+            # Language label
+            dwg.add(
+                dwg.text(
+                    lang,
+                    insert=(10, y_pos + 22),
+                    font_family="Arial, sans-serif",
+                    font_size="12",
+                    font_weight="bold",
+                    fill="#2C3E50",
+                )
+            )
+
+            # Bar
+            dwg.add(
+                dwg.rect(
+                    insert=(200, y_pos + 5),
+                    size=(bar_width, 25),
+                    fill=f"url(#{gradient_id})",
+                    rx=4,
+                    ry=4,
+                )
+            )
+
+            # Percentage and LOC
+            dwg.add(
+                dwg.text(
+                    f"{percentage:.1f}% ({loc:,} LOC)",
+                    insert=(210 + bar_width, y_pos + 22),
+                    font_family="Arial, sans-serif",
+                    font_size="11",
+                    fill="#34495E",
+                )
+            )
+
+            # Trend indicator (if historical data available)
+            if historical_data and lang in historical_data:
+                trend = historical_data[lang].get("trend", "stable")
+                trend_color = {
+                    "up": "#27AE60",
+                    "down": "#E74C3C",
+                    "stable": "#95A5A6",
+                }.get(trend, "#95A5A6")
+
+                trend_symbol = {"up": "↗", "down": "↘", "stable": "→"}.get(trend, "→")
+
+                dwg.add(
+                    dwg.text(
+                        trend_symbol,
+                        insert=(width - 30, y_pos + 22),
+                        font_family="Arial, sans-serif",
+                        font_size="14",
+                        fill=trend_color,
+                    )
+                )
+
+        # Legend
+        legend_y = height - 40
+        dwg.add(
+            dwg.text(
+                "Trends: ↗ Growing  ↘ Declining  → Stable",
+                insert=(width // 2, legend_y),
+                text_anchor="middle",
+                font_family="Arial, sans-serif",
+                font_size="10",
+                fill="#7F8C8D",
+            )
+        )
+
+        dwg.save()
+        logger.info(f"Language SVG with trends saved to {output_path}")
+
+    except ImportError:
+        logger.error("svgwrite not available, cannot generate SVG")
+    except Exception as e:
+        logger.error(f"Error generating language SVG with trends: {e}")
+
+
+def analyze_language_trends(current_stats: dict, historical_data: list[dict]) -> dict:
+    """Analyze language usage trends over time."""
+    trends = {}
+
+    if not historical_data or len(historical_data) < 2:
+        return trends
+
+    # Get the most recent and previous data points
+    recent = historical_data[-1].get("unified_language_stats", {})
+    previous = historical_data[-2].get("unified_language_stats", {})
+
+    for lang in current_stats:
+        current_loc = current_stats[lang].get("lines", 0)
+        recent_loc = recent.get(lang, {}).get("loc", 0)
+        previous_loc = previous.get(lang, {}).get("loc", 0)
+
+        # Calculate trend
+        if current_loc > recent_loc and recent_loc > previous_loc:
+            trends[lang] = {"trend": "up", "growth": current_loc - recent_loc}
+        elif current_loc < recent_loc and recent_loc < previous_loc:
+            trends[lang] = {"trend": "down", "decline": recent_loc - current_loc}
+        else:
+            trends[lang] = {"trend": "stable", "change": abs(current_loc - recent_loc)}
+
+    return trends
+
+
 def load_unified_stats(
     unified_stats_path: str = "unified_stats.json",
 ) -> dict[str, Any]:
