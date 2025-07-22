@@ -633,6 +633,46 @@ class JSONReportGenerator:
             )
             return {}  # This line will never be reached due to log_and_raise
 
+    def save_report(
+        self,
+        stats: UnifiedStats,
+        filename: str = "unified_stats_detailed.json",
+        tech_stack_data: dict[str, Any] | None = None,
+    ) -> None:
+        """
+        Generate and save a comprehensive JSON report to file.
+
+        Args:
+            stats: Unified statistics data
+            filename: Output filename
+            tech_stack_data: Optional tech stack data to include
+        """
+        try:
+            import json
+            from pathlib import Path
+
+            # Generate the report
+            report = self.generate_report(stats, tech_stack_data)
+
+            # Ensure the directory exists
+            output_path = Path(filename)
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+
+            # Save to file
+            with open(output_path, "w", encoding="utf-8") as f:
+                json.dump(report, f, indent=2, ensure_ascii=False)
+
+            self.logger.info(f"JSON report saved to {output_path}")
+
+        except Exception as e:
+            log_and_raise(
+                DataProcessingError(
+                    f"Failed to save JSON report: {e}",
+                    context={"filename": filename},
+                ),
+                logger=self.logger,
+            )
+
     def _analyze_tech_stack(self, language_stats: dict[str, Any]) -> dict[str, Any]:
         """Analyze technology stack from actual dependencies in package.json and requirements.txt files."""
         try:
