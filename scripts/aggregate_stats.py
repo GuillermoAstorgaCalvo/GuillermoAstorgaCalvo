@@ -320,7 +320,7 @@ def main() -> None:
         json_generator = JSONReportGenerator()
         json_filename = "unified_stats_detailed.json"
         json_path = script_dir / json_filename
-        json_generator.save_report(unified_stats, str(json_path))
+        json_generator.save_report(unified_stats, str(json_path), merged_stack_final)
         guillermo = unified_stats.guillermo_unified
         global_totals = AuthorStats(
             loc=unified_stats.total_loc,

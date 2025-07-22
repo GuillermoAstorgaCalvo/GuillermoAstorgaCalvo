@@ -445,7 +445,9 @@ class JSONReportGenerator:
         """Initialize the JSON report generator."""
         self.logger = get_logger(__name__)
 
-    def generate_report(self, stats: UnifiedStats) -> dict[str, Any]:
+    def generate_report(
+        self, stats: UnifiedStats, tech_stack_data: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Generate a comprehensive JSON report from unified statistics.
 
@@ -554,9 +556,9 @@ class JSONReportGenerator:
                     },
                 }
 
-            # Use tech stack data if already available in stats, otherwise analyze
-            if hasattr(stats, "tech_stack_analysis") and stats.tech_stack_analysis:
-                tech_stack = stats.tech_stack_analysis
+            # Use provided tech stack data or fallback to analysis
+            if tech_stack_data:
+                tech_stack = tech_stack_data
             else:
                 tech_stack = self._analyze_tech_stack(stats.unified_language_stats)
 
@@ -898,7 +900,10 @@ class JSONReportGenerator:
             return {}  # This line will never be reached due to log_and_raise
 
     def save_report(
-        self, stats: UnifiedStats, filename: str = "unified_stats.json"
+        self,
+        stats: UnifiedStats,
+        filename: str = "unified_stats.json",
+        tech_stack_data: dict[str, Any] | None = None,
     ) -> None:
         """
         Generate and save a comprehensive JSON report to file.
@@ -910,7 +915,7 @@ class JSONReportGenerator:
         import json
 
         try:
-            report = self.generate_report(stats)
+            report = self.generate_report(stats, tech_stack_data)
             with open(filename, "w", encoding="utf-8") as f:
                 json.dump(report, f, indent=2, ensure_ascii=False)
             self.logger.info(f"JSON report saved to {filename}")
