@@ -229,12 +229,12 @@ class EnhancedDependencyAnalyzer:
 
             if response.status_code == 200:
                 data = response.json()
-                description = data.get("description", "")
+                description = data.get("description", "") or ""
                 # Also check topics for additional technology hints
                 topics = data.get("topics", [])
                 if topics:
                     description += " " + " ".join(topics)
-                return description
+                return description if description.strip() else None
             else:
                 logger.warning(
                     f"Failed to get description for {organization}/{repo_name}: {response.status_code}"
@@ -283,44 +283,21 @@ class EnhancedDependencyAnalyzer:
         # 2. Add technologies from known projects (dynamic detection)
         logger.info("Adding technologies from known projects...")
         dynamic_mappings = self._load_dynamic_project_mappings()
-        for _project_name, project_tech in dynamic_mappings.items():
+        for project_name, project_tech in dynamic_mappings.items():
+            logger.info(f"Processing project: {project_name}")
             for category, techs in project_tech.items():
-                all_technologies[category].update(techs)
+                # Convert list to set for proper update
+                if isinstance(techs, list):
+                    all_technologies[category].update(techs)
+                elif isinstance(techs, set):
+                    all_technologies[category].update(techs)
+                else:
+                    logger.warning(f"Unexpected tech format for {project_name}: {type(techs)}")
 
-        # 3. Add common technologies that are likely used
-        logger.info("Adding common technologies...")
-        common_techs = {
-            "frontend": {"html", "css", "vite", "webpack"},
-            "backend": {"python", "nodejs", "typescript"},
-            "database": {"sqlite", "redis"},
-            "devops": {
-                "git",
-                "github",
-                "vscode",
-                "linux",
-                "aws",
-                "azure",
-                "gcp",
-                "docker",
-                "kubernetes",
-                "nginx",
-                "jenkins",
-                "terraform",
-            },
-            "ai_ml": {
-                "tensorflow",
-                "pytorch",
-                "sklearn",
-                "pandas",
-                "numpy",
-                "opencv",
-                "tesseract",
-                "openai",
-                "anthropic",
-            },
-        }
-
-        for category, techs in common_techs.items():
+        # 3. Add dynamically detected common technologies
+        logger.info("Adding dynamically detected common technologies...")
+        dynamic_common_techs = self._detect_common_technologies_dynamically()
+        for category, techs in dynamic_common_techs.items():
             all_technologies[category].update(techs)
 
         # Convert sets to sorted lists and map to skillicons
@@ -337,6 +314,80 @@ class EnhancedDependencyAnalyzer:
         )
 
         return mapped_tech_stack
+
+    def _detect_common_technologies_dynamically(self) -> dict[str, set[str]]:
+        """Dynamically detect common technologies based on analysis patterns."""
+        common_techs = {
+            "frontend": set(),
+            "backend": set(),
+            "database": set(),
+            "devops": set(),
+            "ai_ml": set(),
+        }
+
+        try:
+            # Analyze current repository structure for common patterns
+            current_dir = Path.cwd()
+            
+            # Check for common development tools and patterns
+            if (current_dir / "package.json").exists():
+                common_techs["frontend"].add("html")
+                common_techs["frontend"].add("css")
+                common_techs["devops"].add("git")
+                common_techs["devops"].add("github")
+            
+            if (current_dir / "requirements.txt").exists() or (current_dir / "pyproject.toml").exists():
+                common_techs["backend"].add("python")
+                common_techs["devops"].add("git")
+                common_techs["devops"].add("github")
+            
+            if (current_dir / "Dockerfile").exists():
+                common_techs["devops"].add("docker")
+            
+            if (current_dir / ".github").exists():
+                common_techs["devops"].add("github")
+                common_techs["devops"].add("githubactions")
+            
+            if (current_dir / "terraform").exists() or list(current_dir.glob("*.tf")):
+                common_techs["devops"].add("terraform")
+            
+            # Check for common file patterns
+            if list(current_dir.rglob("*.js")) or list(current_dir.rglob("*.ts")):
+                common_techs["frontend"].add("javascript")
+                common_techs["backend"].add("nodejs")
+            
+            if list(current_dir.rglob("*.py")):
+                common_techs["backend"].add("python")
+            
+            if list(current_dir.rglob("*.ipynb")):
+                common_techs["ai_ml"].add("jupyter")
+                common_techs["ai_ml"].add("pandas")
+                common_techs["ai_ml"].add("numpy")
+            
+            # Check for database files
+            if list(current_dir.rglob("*.sql")) or list(current_dir.rglob("*.db")):
+                common_techs["database"].add("sqlite")
+            
+            # Check for cloud configuration
+            if list(current_dir.glob("*.yml")) or list(current_dir.glob("*.yaml")):
+                yaml_files = list(current_dir.glob("*.yml")) + list(current_dir.glob("*.yaml"))
+                for yaml_file in yaml_files:
+                    try:
+                        with open(yaml_file, 'r') as f:
+                            content = f.read().lower()
+                            if "aws" in content or "amazon" in content:
+                                common_techs["devops"].add("aws")
+                            if "azure" in content:
+                                common_techs["devops"].add("azure")
+                            if "gcp" in content or "google" in content:
+                                common_techs["devops"].add("gcp")
+                    except:
+                        continue
+
+        except Exception as e:
+            logger.warning(f"Error in dynamic common technology detection: {e}")
+
+        return common_techs
 
     @with_error_context({"component": "enhanced_dependency_analyzer"})
     def generate_enhanced_tech_stack(self) -> dict[str, Any]:

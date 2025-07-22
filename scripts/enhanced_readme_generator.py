@@ -432,7 +432,21 @@ def generate_enhanced_stats_from_unified(unified_stats: dict[str, Any]) -> str:
         except Exception as e:
             logger.warning(f"Failed to load enhanced tech stack: {e}")
 
-    # Fallback to dynamic tech stack if enhanced data is not available
+    # Fallback to API-based tech stack if enhanced data is not available
+    if not tech_stack_analysis:
+        api_tech_stack_file = Path(__file__).parent.parent / "api_based_tech_stack.json"
+        if api_tech_stack_file.exists():
+            try:
+                with open(api_tech_stack_file, encoding="utf-8") as f:
+                    api_data = json.load(f)
+                    tech_stack_analysis = api_data.get("tech_stack_analysis", {})
+                    logger.info(
+                        f"Loaded API-based tech stack with {api_data.get('total_technologies', 0)} technologies from {api_data.get('repository_count', 0)} repositories"
+                    )
+            except Exception as e:
+                logger.warning(f"Failed to load API-based tech stack: {e}")
+
+    # Fallback to dynamic tech stack if API-based data is not available
     if not tech_stack_analysis:
         dynamic_tech_stack_file = (
             Path(__file__).parent.parent / "dynamic_tech_stack.json"
@@ -448,79 +462,43 @@ def generate_enhanced_stats_from_unified(unified_stats: dict[str, Any]) -> str:
             except Exception as e:
                 logger.warning(f"Failed to load dynamic tech stack: {e}")
 
-    # Final fallback to enhanced tech stack if no data files are available
+    # Final fallback: Generate tech stack dynamically from current repository
     if not tech_stack_analysis:
-        logger.info("Using fallback enhanced tech stack")
-        # Enhanced tech stack based on README projects - includes all technologies from user's projects
-        enhanced_tech_stack = {
-            "frontend": {
-                "technologies": ["react", "ts", "js", "nextjs", "tailwind", "supabase"],
-            },
-            "backend": {
-                "technologies": [
-                    "express",
-                    "jest",
-                    "nodejs",
-                    "prometheus",
-                    "redis",
-                    "ts",
-                    "py",
-                    "fastapi",
-                    "django",
-                    "flask",
-                ],
-            },
-            "database": {
-                "technologies": ["postgres", "mongodb", "redis", "sqlite"],
-            },
-            "devops": {
-                "technologies": [
-                    "docker",
-                    "kubernetes",
-                    "aws",
-                    "azure",
-                    "gcp",
-                    "githubactions",
-                    "nginx",
-                    "jenkins",
-                    "terraform",
-                ],
-            },
-            "ai_ml": {
-                "technologies": [
-                    "openai",
-                    "tensorflow",
-                    "pytorch",
-                    "sklearn",
-                    "pandas",
-                    "numpy",
-                    "opencv",
-                    "tesseract",
-                    "langchain",
-                    "anthropic",
-                ],
-            },
-        }
+        logger.info("No tech stack files found, generating from current repository...")
+        try:
+            from enhanced_dependency_analyzer import EnhancedDependencyAnalyzer
+            analyzer = EnhancedDependencyAnalyzer()
+            tech_stack_analysis = analyzer.get_comprehensive_tech_stack()
+            logger.info("Generated tech stack from current repository analysis")
+        except Exception as e:
+            logger.warning(f"Failed to generate tech stack from current repository: {e}")
+            # Minimal fallback with only detected technologies from unified stats
+            tech_stack_analysis = {}
 
-        # Try to get actual tech stack from unified stats and merge with enhanced list
-        unified_tech_stack = unified_stats.get("tech_stack_analysis", {})
-        if unified_tech_stack:
-            # Merge detected technologies with enhanced list
-            for category in ["frontend", "backend", "database", "devops", "ai_ml"]:
-                detected_techs = unified_tech_stack.get(category, {}).get(
-                    "technologies", []
-                )
-                enhanced_techs = enhanced_tech_stack[category]["technologies"]
-                # Combine and remove duplicates while preserving order
-                combined_techs = []
-                seen = set()
-                for tech in enhanced_techs + detected_techs:
-                    if tech not in seen:
-                        combined_techs.append(tech)
-                        seen.add(tech)
-                enhanced_tech_stack[category]["technologies"] = combined_techs
-
-        tech_stack_analysis = enhanced_tech_stack
+    # Try to get actual tech stack from unified stats and merge with detected list
+    unified_tech_stack = unified_stats.get("tech_stack_analysis", {})
+    if unified_tech_stack and tech_stack_analysis:
+        # Merge detected technologies with current analysis
+        for category in ["frontend", "backend", "database", "devops", "ai_ml"]:
+            detected_techs = unified_tech_stack.get(category, {}).get(
+                "technologies", []
+            )
+            current_techs = tech_stack_analysis.get(category, {}).get(
+                "technologies", []
+            )
+            # Combine and remove duplicates while preserving order
+            combined_techs = []
+            seen = set()
+            for tech in current_techs + detected_techs:
+                if tech not in seen:
+                    combined_techs.append(tech)
+                    seen.add(tech)
+            
+            if combined_techs:
+                tech_stack_analysis[category] = {
+                    "technologies": combined_techs,
+                    "count": len(combined_techs),
+                }
 
     if tech_stack_analysis:
         # Generate tech stack section
