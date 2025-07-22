@@ -73,28 +73,28 @@ These numbers tell the real story - late nights debugging, moments of breakthrou
 I believe in using the right tool for the job. Here's my current technology stack based on my projects:
 
 ### **🌐 Frontend Development**
-<div align="center">
+<div align="left">
   <img src="https://skillicons.dev/icons?i=js,nextjs,react,supabase,tailwind,ts" alt="Frontend Development Technologies" />
 </div>
 
 **Technologies:** `js`, `nextjs`, `react`, `supabase`, `tailwind`, `ts`
 
 ### **⚙️ Backend Development**
-<div align="center">
+<div align="left">
   <img src="https://skillicons.dev/icons?i=express,fastapi,jest,nodejs,prometheus,py,redis,ts" alt="Backend Development Technologies" />
 </div>
 
 **Technologies:** `express`, `fastapi`, `jest`, `nodejs`, `prometheus`, `py`, `redis`, `ts`
 
 ### **🗄️ Database & Cloud**
-<div align="center">
+<div align="left">
   <img src="https://skillicons.dev/icons?i=postgres" alt="Database & Cloud Technologies" />
 </div>
 
 **Technologies:** `postgres`
 
 ### **🤖 AI & Machine Learning**
-<div align="center">
+<div align="left">
   <img src="https://skillicons.dev/icons?i=opencv,py" alt="AI & Machine Learning Technologies" />
 </div>
 
@@ -103,7 +103,7 @@ I believe in using the right tool for the job. Here's my current technology stac
 **Additional:** `langchain`, `tesseract`, `openai`
 
 ### **🛠️ Development Tools**
-<div align="center">
+<div align="left">
   <img src="https://skillicons.dev/icons?i=docker" alt="Development Tools Technologies" />
 </div>
 
@@ -244,4 +244,4 @@ I'm always up for connecting with fellow developers, discussing interesting proj
 
 ---
 
-*Last updated: July 22, 2025 at 23:06 UTC*
+*Last updated: July 22, 2025 at 23:13 UTC*

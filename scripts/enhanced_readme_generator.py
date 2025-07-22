@@ -792,35 +792,35 @@ I believe in using the right tool for the job. Here's my current technology stac
 
     # Helper function to generate category section
     def generate_category_section(
-        category_name: str,
-        display_name: str,
-        emoji: str,
+        category_name: str, 
+        display_name: str, 
+        emoji: str, 
         tech_list: list[str],
         max_icons: int = 8,
     ) -> str:
         """Generate a technology category section."""
         if not tech_list:
             return ""
-
+        
         # Get skillicon badges
         icons = ",".join(tech_list[:max_icons])
-
+        
         # Get additional dependencies
         additional_deps = get_additional_dependencies(category_name)
-
+        
         section = f"""### **{emoji} {display_name}**
-<div align="center">
+<div align="left">
   <img src="https://skillicons.dev/icons?i={icons}" alt="{display_name} Technologies" />
 </div>
 
 **Technologies:** {format_tech_list(tech_list)}
 
 """
-
+        
         # Add additional dependencies if any
         if additional_deps:
             section += f"**Additional:** {format_tech_list(additional_deps)}\n\n"
-
+        
         return section
 
     # Generate each category section
@@ -844,7 +844,7 @@ I believe in using the right tool for the job. Here's my current technology stac
     if tech_stack["additional"]:
         icons = ",".join(tech_stack["additional"][:8])
         content += f"""### **📊 Additional Technologies**
-<div align="center">
+<div align="left">
   <img src="https://skillicons.dev/icons?i={icons}" alt="Additional Technologies" />
 </div>
 
