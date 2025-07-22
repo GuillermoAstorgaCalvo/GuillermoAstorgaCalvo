@@ -5,7 +5,6 @@ Analyzes package.json and requirements.txt files to extract actual technologies 
 """
 
 import json
-import os
 from pathlib import Path
 from typing import Any
 
@@ -817,7 +816,9 @@ def main() -> None:
 
     from pathlib import Path
 
-    repos_dir = Path(os.environ.get("REPOS_DIR", "repo-stats"))
+    from env_manager import env_manager
+
+    repos_dir = Path(env_manager.get_repos_dir())
     if not repos_dir.exists():
         repos_dir = Path.cwd()
 

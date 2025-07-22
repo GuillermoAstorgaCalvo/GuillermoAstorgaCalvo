@@ -6,13 +6,13 @@ Analyzes repositories using GitHub API instead of cloning them.
 
 import base64
 import json
-import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 import requests
 import yaml
 from dependency_analyzer import DependencyAnalyzer
+from env_manager import env_manager
 from error_handling import get_logger, with_error_context
 from skillicon_mapper import SkilliconMapper
 
@@ -38,27 +38,23 @@ class APIBasedRepositoryAnalyzer:
             logger.error(f"Failed to load config: {e}")
             return {"repositories": []}
 
-    def _get_github_token(self, token_type: str) -> Optional[str]:
+    def _get_github_token(self, token_type: str) -> str | None:
         """Get appropriate GitHub token based on token type."""
-        if token_type == "private":
-            return os.environ.get("GITHUB_TOKEN")
-        elif token_type == "personal":
-            return os.environ.get("PERSONAL_GITHUB_TOKEN")
-        return None
+        return env_manager.get_token_by_type(token_type)
 
-    def _make_github_request(self, url: str, token: Optional[str] = None) -> Optional[dict]:
+    def _make_github_request(self, url: str, token: str | None = None) -> dict | None:
         """Make a GitHub API request with proper headers."""
         try:
             headers = {
                 "Accept": "application/vnd.github.v3+json",
-                "User-Agent": "GuillermoAstorgaCalvo-TechStackAnalyzer"
+                "User-Agent": "GuillermoAstorgaCalvo-TechStackAnalyzer",
             }
-            
+
             if token:
                 headers["Authorization"] = f"token {token}"
 
             response = requests.get(url, headers=headers, timeout=30)
-            
+
             if response.status_code == 200:
                 return response.json()
             elif response.status_code == 404:
@@ -75,24 +71,28 @@ class APIBasedRepositoryAnalyzer:
             logger.error(f"Error making GitHub request to {url}: {e}")
             return None
 
-    def _get_repository_content(self, org: str, repo: str, path: str, token: Optional[str] = None) -> Optional[str]:
+    def _get_repository_content(
+        self, org: str, repo: str, path: str, token: str | None = None
+    ) -> str | None:
         """Get file content from GitHub repository."""
         try:
             url = f"https://api.github.com/repos/{org}/{repo}/contents/{path}"
             content_data = self._make_github_request(url, token)
-            
+
             if content_data and "content" in content_data:
                 # Decode base64 content
                 content = base64.b64decode(content_data["content"]).decode("utf-8")
                 return content
-            
+
             return None
 
         except Exception as e:
             logger.error(f"Error getting content for {org}/{repo}/{path}: {e}")
             return None
 
-    def _analyze_dependency_file_content(self, content: str, file_type: str) -> Dict[str, Set[str]]:
+    def _analyze_dependency_file_content(
+        self, content: str, file_type: str
+    ) -> dict[str, set[str]]:
         """Analyze dependency file content and extract technologies."""
         categories = {
             "frontend": set(),
@@ -108,20 +108,30 @@ class APIBasedRepositoryAnalyzer:
                 deps = data.get("dependencies", {})
                 dev_deps = data.get("devDependencies", {})
                 all_deps = {**deps, **dev_deps}
-                
+
                 for dep_name in all_deps.keys():
                     dep_lower = dep_name.lower()
                     # Use the existing technology mappings from DependencyAnalyzer
                     if dep_lower in self.dependency_analyzer.frontend_tech:
-                        categories["frontend"].add(self.dependency_analyzer.frontend_tech[dep_lower])
+                        categories["frontend"].add(
+                            self.dependency_analyzer.frontend_tech[dep_lower]
+                        )
                     elif dep_lower in self.dependency_analyzer.backend_tech:
-                        categories["backend"].add(self.dependency_analyzer.backend_tech[dep_lower])
+                        categories["backend"].add(
+                            self.dependency_analyzer.backend_tech[dep_lower]
+                        )
                     elif dep_lower in self.dependency_analyzer.database_tech:
-                        categories["database"].add(self.dependency_analyzer.database_tech[dep_lower])
+                        categories["database"].add(
+                            self.dependency_analyzer.database_tech[dep_lower]
+                        )
                     elif dep_lower in self.dependency_analyzer.devops_tech:
-                        categories["devops"].add(self.dependency_analyzer.devops_tech[dep_lower])
+                        categories["devops"].add(
+                            self.dependency_analyzer.devops_tech[dep_lower]
+                        )
                     elif dep_lower in self.dependency_analyzer.ai_ml_tech:
-                        categories["ai_ml"].add(self.dependency_analyzer.ai_ml_tech[dep_lower])
+                        categories["ai_ml"].add(
+                            self.dependency_analyzer.ai_ml_tech[dep_lower]
+                        )
 
             elif file_type == "requirements.txt":
                 for line in content.split("\n"):
@@ -136,19 +146,28 @@ class APIBasedRepositoryAnalyzer:
                             .strip()
                         )
                         package_lower = package_name.lower()
-                        
+
                         if package_lower in self.dependency_analyzer.backend_tech:
-                            categories["backend"].add(self.dependency_analyzer.backend_tech[package_lower])
+                            categories["backend"].add(
+                                self.dependency_analyzer.backend_tech[package_lower]
+                            )
                         elif package_lower in self.dependency_analyzer.database_tech:
-                            categories["database"].add(self.dependency_analyzer.database_tech[package_lower])
+                            categories["database"].add(
+                                self.dependency_analyzer.database_tech[package_lower]
+                            )
                         elif package_lower in self.dependency_analyzer.devops_tech:
-                            categories["devops"].add(self.dependency_analyzer.devops_tech[package_lower])
+                            categories["devops"].add(
+                                self.dependency_analyzer.devops_tech[package_lower]
+                            )
                         elif package_lower in self.dependency_analyzer.ai_ml_tech:
-                            categories["ai_ml"].add(self.dependency_analyzer.ai_ml_tech[package_lower])
+                            categories["ai_ml"].add(
+                                self.dependency_analyzer.ai_ml_tech[package_lower]
+                            )
 
             elif file_type == "pyproject.toml":
                 # Simple pattern matching for pyproject.toml
                 import re
+
                 deps_pattern = r"\[tool\.poetry\.dependencies\]\s*\n(.*?)(?=\n\[|\Z)"
                 matches = re.findall(deps_pattern, content, re.DOTALL)
                 for match in matches:
@@ -156,24 +175,40 @@ class APIBasedRepositoryAnalyzer:
                     for line in lines:
                         line = line.strip()
                         if "=" in line and not line.startswith("#"):
-                            package_name = line.split("=")[0].strip().strip('"').strip("'")
+                            package_name = (
+                                line.split("=")[0].strip().strip('"').strip("'")
+                            )
                             package_lower = package_name.lower()
-                            
+
                             if package_lower in self.dependency_analyzer.backend_tech:
-                                categories["backend"].add(self.dependency_analyzer.backend_tech[package_lower])
-                            elif package_lower in self.dependency_analyzer.database_tech:
-                                categories["database"].add(self.dependency_analyzer.database_tech[package_lower])
+                                categories["backend"].add(
+                                    self.dependency_analyzer.backend_tech[package_lower]
+                                )
+                            elif (
+                                package_lower in self.dependency_analyzer.database_tech
+                            ):
+                                categories["database"].add(
+                                    self.dependency_analyzer.database_tech[
+                                        package_lower
+                                    ]
+                                )
                             elif package_lower in self.dependency_analyzer.devops_tech:
-                                categories["devops"].add(self.dependency_analyzer.devops_tech[package_lower])
+                                categories["devops"].add(
+                                    self.dependency_analyzer.devops_tech[package_lower]
+                                )
                             elif package_lower in self.dependency_analyzer.ai_ml_tech:
-                                categories["ai_ml"].add(self.dependency_analyzer.ai_ml_tech[package_lower])
+                                categories["ai_ml"].add(
+                                    self.dependency_analyzer.ai_ml_tech[package_lower]
+                                )
 
         except Exception as e:
             logger.error(f"Error analyzing {file_type} content: {e}")
 
         return categories
 
-    def _detect_technologies_from_repository_structure(self, org: str, repo: str, token: Optional[str] = None) -> Dict[str, Set[str]]:
+    def _detect_technologies_from_repository_structure(
+        self, org: str, repo: str, token: str | None = None
+    ) -> dict[str, set[str]]:
         """Detect technologies from repository structure using GitHub API."""
         categories = {
             "frontend": set(),
@@ -187,7 +222,7 @@ class APIBasedRepositoryAnalyzer:
             # Get repository contents
             url = f"https://api.github.com/repos/{org}/{repo}/contents"
             contents = self._make_github_request(url, token)
-            
+
             if not contents:
                 return categories
 
@@ -249,7 +284,9 @@ class APIBasedRepositoryAnalyzer:
         return categories
 
     @with_error_context({"component": "api_based_repository_analyzer"})
-    def analyze_repository_via_api(self, org: str, repo: str, token_type: str = "public") -> Dict[str, Set[str]]:
+    def analyze_repository_via_api(
+        self, org: str, repo: str, token_type: str = "public"
+    ) -> dict[str, set[str]]:
         """Analyze a single repository using GitHub API."""
         all_technologies = {
             "frontend": set(),
@@ -277,32 +314,45 @@ class APIBasedRepositoryAnalyzer:
                 content = self._get_repository_content(org, repo, file_path, token)
                 if content:
                     logger.info(f"Found {file_type} in {org}/{repo}")
-                    file_techs = self._analyze_dependency_file_content(content, file_type)
+                    file_techs = self._analyze_dependency_file_content(
+                        content, file_type
+                    )
                     for category, techs in file_techs.items():
                         all_technologies[category].update(techs)
 
             # 2. Detect technologies from repository structure
-            structure_techs = self._detect_technologies_from_repository_structure(org, repo, token)
+            structure_techs = self._detect_technologies_from_repository_structure(
+                org, repo, token
+            )
             for category, techs in structure_techs.items():
                 all_technologies[category].update(techs)
 
             # 3. Get repository description and topics for additional hints
-            repo_info = self._make_github_request(f"https://api.github.com/repos/{org}/{repo}", token)
+            repo_info = self._make_github_request(
+                f"https://api.github.com/repos/{org}/{repo}", token
+            )
             if repo_info:
                 description = repo_info.get("description", "")
                 topics = repo_info.get("topics", [])
-                
+
                 if description or topics:
                     full_description = f"{description} {' '.join(topics)}"
                     # Use pattern matching to extract technologies from description
                     from enhanced_dependency_analyzer import EnhancedDependencyAnalyzer
+
                     enhanced_analyzer = EnhancedDependencyAnalyzer()
-                    desc_techs = enhanced_analyzer._detect_technologies_from_description(full_description)
-                    
+                    desc_techs = (
+                        enhanced_analyzer._detect_technologies_from_description(
+                            full_description
+                        )
+                    )
+
                     for category, techs in desc_techs.items():
                         all_technologies[category].update(techs)
 
-            logger.info(f"Found {sum(len(techs) for techs in all_technologies.values())} technologies in {org}/{repo}")
+            logger.info(
+                f"Found {sum(len(techs) for techs in all_technologies.values())} technologies in {org}/{repo}"
+            )
 
         except Exception as e:
             logger.error(f"Error analyzing repository {org}/{repo}: {e}")
@@ -310,7 +360,7 @@ class APIBasedRepositoryAnalyzer:
         return all_technologies
 
     @with_error_context({"component": "api_based_repository_analyzer"})
-    def analyze_all_repositories(self) -> Dict[str, Any]:
+    def analyze_all_repositories(self) -> dict[str, Any]:
         """Analyze all configured repositories using GitHub API."""
         all_technologies = {
             "frontend": set(),
@@ -329,13 +379,17 @@ class APIBasedRepositoryAnalyzer:
             token_type = repo_config.get("token_type", "public")
 
             if not repo_name or not organization:
-                logger.warning(f"Skipping repository with missing name or organization: {repo_config}")
+                logger.warning(
+                    f"Skipping repository with missing name or organization: {repo_config}"
+                )
                 continue
 
             logger.info(f"Processing repository: {organization}/{repo_name}")
 
             # Analyze repository via API
-            repo_tech = self.analyze_repository_via_api(organization, repo_name, token_type)
+            repo_tech = self.analyze_repository_via_api(
+                organization, repo_name, token_type
+            )
 
             # Merge technologies
             for category, techs in repo_tech.items():
@@ -357,7 +411,7 @@ class APIBasedRepositoryAnalyzer:
         return mapped_tech_stack
 
     @with_error_context({"component": "api_based_repository_analyzer"})
-    def generate_api_based_tech_stack(self) -> Dict[str, Any]:
+    def generate_api_based_tech_stack(self) -> dict[str, Any]:
         """Generate API-based tech stack and save to file."""
         try:
             # Analyze all repositories
@@ -393,6 +447,7 @@ class APIBasedRepositoryAnalyzer:
     def _get_timestamp(self) -> str:
         """Get current timestamp in ISO format."""
         from datetime import datetime
+
         return datetime.utcnow().isoformat() + "Z"
 
 
@@ -411,11 +466,13 @@ def main() -> None:
         for category, data in tech_stack.items():
             techs = data.get("technologies", [])
             if techs:
-                print(f"🔧 {category.title()}: {', '.join(techs[:5])}{'...' if len(techs) > 5 else ''}")
+                print(
+                    f"🔧 {category.title()}: {', '.join(techs[:5])}{'...' if len(techs) > 5 else ''}"
+                )
 
     else:
         print("❌ Failed to generate API-based tech stack")
 
 
 if __name__ == "__main__":
-    main() 
+    main()

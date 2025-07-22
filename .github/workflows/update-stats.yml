@@ -220,7 +220,7 @@ jobs:
       - name: Clone repository
         env:
           PERSONAL_TOKEN: ${{ secrets.PERSONAL_REPOS_TOKEN }}
-          PRIVATE_TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
+          PRIVATE_TOKEN: ${{ secrets.PRIVATE_REPOS_TOKEN }}
           REPO_NAME: ${{ matrix.repository.name }}
           BRANCH_NAME: ${{ matrix.repository.branch }}
           ORG: ${{ steps.repo-config.outputs.org }}
@@ -235,7 +235,7 @@ jobs:
           fi
 
           if [[ -z "${PRIVATE_TOKEN}" && "${TOKEN_TYPE}" == "private" ]]; then
-            echo "❌ PRIVATE_REPO_TOKEN secret is not set"
+            echo "❌ PRIVATE_REPOS_TOKEN secret is not set"
             exit 1
           fi
 

@@ -46,19 +46,19 @@ github:
   tokens:
     # For private repositories (guillermo-affiliaction organization)
     # Required permissions: repo:read, contents:read, metadata:read
-    private_token_env: "GITHUB_TOKEN"
+    private_token_env: "PRIVATE_REPOS_TOKEN"
 
     # For personal repositories (GuillermoAstorgaCalvo user)
     # Required permissions: repo:read, contents:read, metadata:read
-    personal_token_env: "PERSONAL_GITHUB_TOKEN"
+    personal_token_env: "PERSONAL_REPOS_TOKEN"
 
     # Token setup instructions:
     # 1. Create Personal Access Token at: https://github.com/settings/tokens
     # 2. For private repos: Use fine-grained token with repo access
     # 3. For personal repos: Use classic token with 'repo' scope
     # 4. Set environment variables:
-    #    export GITHUB_TOKEN="ghp_your_token_here"
-    #    export PERSONAL_GITHUB_TOKEN="ghp_your_personal_token_here"
+    #    export PRIVATE_REPOS_TOKEN="ghp_your_private_token_here"
+    #    export PERSONAL_REPOS_TOKEN="ghp_your_personal_token_here"
 
 # External services and URLs
 external_services:

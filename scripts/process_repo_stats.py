@@ -5,7 +5,6 @@ Processes git fame statistics for a single repository and saves results.
 """
 
 import json
-import os
 import subprocess
 import sys
 from pathlib import Path
@@ -169,8 +168,11 @@ def main() -> None:
         if config_errors:
             logger.error(f"Configuration validation errors: {config_errors}")
             sys.exit(1)
-        repo_name = os.environ.get("REPO_NAME")
-        display_name = os.environ.get("DISPLAY_NAME")
+        # Get repository information from environment variables
+        from env_manager import env_manager
+
+        repo_name = env_manager.get_repo_name()
+        display_name = env_manager.get_display_name()
         if not repo_name:
             logger.error("REPO_NAME environment variable not set")
             sys.exit(1)
@@ -273,7 +275,7 @@ def main() -> None:
                 error_code=ErrorCodes.DATA_PROCESSING_FAILED,
                 context={
                     "script": "process_repo_stats",
-                    "repo_name": os.environ.get("REPO_NAME"),
+                    "repo_name": env_manager.get_repo_name(),
                 },
             ),
             logger=logger,

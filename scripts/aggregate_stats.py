@@ -67,7 +67,9 @@ def load_all_repository_stats() -> list[dict[str, Any]]:
         stats_files = []
 
         # Use REPOS_DIR environment variable if available, otherwise use current directory
-        repos_dir = Path(os.environ.get("REPOS_DIR", "."))
+        from env_manager import env_manager
+
+        repos_dir = Path(env_manager.get_repos_dir())
         if not repos_dir.exists():
             logger.warning(f"Repository directory does not exist: {repos_dir}")
             repos_dir = Path.cwd()
@@ -247,7 +249,9 @@ def main() -> None:
             logger.error(f"Unified stats validation errors: {validation_errors}")
             sys.exit(1)
         all_tech_stacks = []
-        repos_dir = Path(os.environ.get("REPOS_DIR", "repo-stats"))
+        from env_manager import env_manager
+
+        repos_dir = Path(env_manager.get_repos_dir())
         if not repos_dir.exists():
             repos_dir = Path.cwd()
 
@@ -323,12 +327,14 @@ def main() -> None:
         }
 
         # Save the dictionary version for direct JSON serialization
-        save_unified_stats(unified_stats_dict, str(script_dir / "unified_stats.json"))
+        save_unified_stats(
+            unified_stats_dict, str(script_dir.parent / "unified_stats.json")
+        )
 
         # Generate comprehensive report using the UnifiedStats object
         json_generator = JSONReportGenerator()
         json_filename = "unified_stats_detailed.json"
-        json_path = script_dir / json_filename
+        json_path = script_dir.parent / json_filename
         json_generator.save_report(unified_stats, str(json_path), mapped_stack_final)
         guillermo = unified_stats.guillermo_unified
         global_totals = AuthorStats(

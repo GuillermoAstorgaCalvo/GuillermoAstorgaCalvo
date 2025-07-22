@@ -27,19 +27,22 @@ logger = get_logger(__name__)
 def load_unified_stats() -> dict[str, Any]:
     """Load unified statistics from JSON file."""
     try:
-        # Try current directory first, then parent directory
-        config_paths = ["unified_stats.json", "../unified_stats.json"]
-        for path in config_paths:
-            if os.path.exists(path):
-                with open(path, encoding="utf-8") as f:
-                    data = json.load(f)
-                if isinstance(data, dict):
-                    return data
-                else:
-                    logger.error("Unified stats data is not a dictionary")
-                    return {}
+        # Always look in the project root directory (parent of scripts)
+        script_dir = Path(__file__).parent
+        root_dir = script_dir.parent
+        stats_path = root_dir / "unified_stats.json"
+
+        if stats_path.exists():
+            with open(stats_path, encoding="utf-8") as f:
+                data = json.load(f)
+            if isinstance(data, dict):
+                return data
+            else:
+                logger.error("Unified stats data is not a dictionary")
+                return {}
+
         logger.debug(
-            "unified_stats.json not found in current or parent directory (this is normal for first run)"
+            f"unified_stats.json not found at {stats_path} (this is normal for first run)"
         )
         return {}
     except (FileNotFoundError, PermissionError) as e:
@@ -56,19 +59,22 @@ def load_unified_stats() -> dict[str, Any]:
 def load_analytics_history() -> list[dict[str, Any]]:
     """Load analytics history from JSON file."""
     try:
-        # Try current directory first, then parent directory
-        config_paths = ["analytics_history.json", "../analytics_history.json"]
-        for path in config_paths:
-            if os.path.exists(path):
-                with open(path, encoding="utf-8") as f:
-                    data = json.load(f)
-                if isinstance(data, list):
-                    return data
-                else:
-                    logger.warning("analytics_history.json does not contain a list")
-                    return []
+        # Always look in the project root directory (parent of scripts)
+        script_dir = Path(__file__).parent
+        root_dir = script_dir.parent
+        history_path = root_dir / "analytics_history.json"
+
+        if history_path.exists():
+            with open(history_path, encoding="utf-8") as f:
+                data = json.load(f)
+            if isinstance(data, list):
+                return data
+            else:
+                logger.warning("analytics_history.json does not contain a list")
+                return []
+
         logger.debug(
-            "analytics_history.json not found in current or parent directory (this is normal for first run)"
+            f"analytics_history.json not found at {history_path} (this is normal for first run)"
         )
         return []
 
@@ -106,11 +112,18 @@ def load_analytics_data() -> dict[str, Any]:
         return {"unified_stats": {}, "analytics_history": []}
 
 
-def save_readme(content: str, output_path: str = "../README.md") -> bool:
+def save_readme(content: str, output_path: str | None = None) -> bool:
     """Save README content to file."""
     try:
+        # Always save to the project root directory
+        if output_path is None:
+            script_dir = Path(__file__).parent
+            root_dir = script_dir.parent
+            output_path = str(root_dir / "README.md")
+
         # Ensure directory exists
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        output_path_obj = Path(output_path)
+        output_path_obj.parent.mkdir(parents=True, exist_ok=True)
 
         with open(output_path, "w", encoding="utf-8") as f:
             f.write(content)
@@ -467,11 +480,14 @@ def generate_enhanced_stats_from_unified(unified_stats: dict[str, Any]) -> str:
         logger.info("No tech stack files found, generating from current repository...")
         try:
             from enhanced_dependency_analyzer import EnhancedDependencyAnalyzer
+
             analyzer = EnhancedDependencyAnalyzer()
             tech_stack_analysis = analyzer.get_comprehensive_tech_stack()
             logger.info("Generated tech stack from current repository analysis")
         except Exception as e:
-            logger.warning(f"Failed to generate tech stack from current repository: {e}")
+            logger.warning(
+                f"Failed to generate tech stack from current repository: {e}"
+            )
             # Minimal fallback with only detected technologies from unified stats
             tech_stack_analysis = {}
 
@@ -493,7 +509,7 @@ def generate_enhanced_stats_from_unified(unified_stats: dict[str, Any]) -> str:
                 if tech not in seen:
                     combined_techs.append(tech)
                     seen.add(tech)
-            
+
             if combined_techs:
                 tech_stack_analysis[category] = {
                     "technologies": combined_techs,

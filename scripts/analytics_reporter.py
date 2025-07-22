@@ -464,9 +464,21 @@ def load_analytics_data() -> dict[str, Any]:
 
         # Load unified stats
         try:
-            with open("unified_stats.json", encoding="utf-8") as f:
-                analytics_data["unified_stats"] = json.load(f)
-        except (FileNotFoundError, PermissionError) as e:
+            # Always look in the project root directory (parent of scripts)
+            from pathlib import Path
+
+            script_dir = Path(__file__).parent
+            root_dir = script_dir.parent
+            stats_path = root_dir / "unified_stats.json"
+
+            if stats_path.exists():
+                with open(stats_path, encoding="utf-8") as f:
+                    analytics_data["unified_stats"] = json.load(f)
+            else:
+                logger.warning(f"Could not find unified_stats.json at {stats_path}")
+                analytics_data["unified_stats"] = {}
+
+        except PermissionError as e:
             logger.warning(f"Could not read unified_stats.json: {e}")
             analytics_data["unified_stats"] = {}
         except (json.JSONDecodeError, TypeError) as e:

@@ -5,7 +5,6 @@ Provides comprehensive tech stack analysis based on project descriptions and exi
 """
 
 import json
-import os
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -13,6 +12,7 @@ from typing import Any
 import requests
 import yaml
 from dependency_analyzer import DependencyAnalyzer
+from env_manager import env_manager
 from error_handling import get_logger, with_error_context
 from skillicon_mapper import SkilliconMapper
 
@@ -216,9 +216,7 @@ class EnhancedDependencyAnalyzer:
             # Try to use GitHub API to get repository information
 
             # Use environment token if available
-            token = os.environ.get("GITHUB_TOKEN") or os.environ.get(
-                "PERSONAL_GITHUB_TOKEN"
-            )
+            token = env_manager.get_private_token() or env_manager.get_personal_token()
 
             headers = {}
             if token:
@@ -292,7 +290,9 @@ class EnhancedDependencyAnalyzer:
                 elif isinstance(techs, set):
                     all_technologies[category].update(techs)
                 else:
-                    logger.warning(f"Unexpected tech format for {project_name}: {type(techs)}")
+                    logger.warning(
+                        f"Unexpected tech format for {project_name}: {type(techs)}"
+                    )
 
         # 3. Add dynamically detected common technologies
         logger.info("Adding dynamically detected common technologies...")
@@ -328,52 +328,56 @@ class EnhancedDependencyAnalyzer:
         try:
             # Analyze current repository structure for common patterns
             current_dir = Path.cwd()
-            
+
             # Check for common development tools and patterns
             if (current_dir / "package.json").exists():
                 common_techs["frontend"].add("html")
                 common_techs["frontend"].add("css")
                 common_techs["devops"].add("git")
                 common_techs["devops"].add("github")
-            
-            if (current_dir / "requirements.txt").exists() or (current_dir / "pyproject.toml").exists():
+
+            if (current_dir / "requirements.txt").exists() or (
+                current_dir / "pyproject.toml"
+            ).exists():
                 common_techs["backend"].add("python")
                 common_techs["devops"].add("git")
                 common_techs["devops"].add("github")
-            
+
             if (current_dir / "Dockerfile").exists():
                 common_techs["devops"].add("docker")
-            
+
             if (current_dir / ".github").exists():
                 common_techs["devops"].add("github")
                 common_techs["devops"].add("githubactions")
-            
+
             if (current_dir / "terraform").exists() or list(current_dir.glob("*.tf")):
                 common_techs["devops"].add("terraform")
-            
+
             # Check for common file patterns
             if list(current_dir.rglob("*.js")) or list(current_dir.rglob("*.ts")):
                 common_techs["frontend"].add("javascript")
                 common_techs["backend"].add("nodejs")
-            
+
             if list(current_dir.rglob("*.py")):
                 common_techs["backend"].add("python")
-            
+
             if list(current_dir.rglob("*.ipynb")):
                 common_techs["ai_ml"].add("jupyter")
                 common_techs["ai_ml"].add("pandas")
                 common_techs["ai_ml"].add("numpy")
-            
+
             # Check for database files
             if list(current_dir.rglob("*.sql")) or list(current_dir.rglob("*.db")):
                 common_techs["database"].add("sqlite")
-            
+
             # Check for cloud configuration
             if list(current_dir.glob("*.yml")) or list(current_dir.glob("*.yaml")):
-                yaml_files = list(current_dir.glob("*.yml")) + list(current_dir.glob("*.yaml"))
+                yaml_files = list(current_dir.glob("*.yml")) + list(
+                    current_dir.glob("*.yaml")
+                )
                 for yaml_file in yaml_files:
                     try:
-                        with open(yaml_file, 'r') as f:
+                        with open(yaml_file) as f:
                             content = f.read().lower()
                             if "aws" in content or "amazon" in content:
                                 common_techs["devops"].add("aws")
@@ -381,7 +385,7 @@ class EnhancedDependencyAnalyzer:
                                 common_techs["devops"].add("azure")
                             if "gcp" in content or "google" in content:
                                 common_techs["devops"].add("gcp")
-                    except:
+                    except Exception:
                         continue
 
         except Exception as e:

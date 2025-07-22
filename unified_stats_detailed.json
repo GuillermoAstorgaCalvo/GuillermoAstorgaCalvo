@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-07-22T08:41:22.177161Z",
+  "timestamp": "2025-07-22T19:51:07.085860Z",
   "metadata": {
     "version": "2.0",
     "generated_by": "Enhanced JSON Report Generator",
@@ -8,88 +8,85 @@
   "global_summary": {
     "repositories_processed": 1,
     "total_commits": 30,
-    "total_files": 140,
+    "total_files": 150,
     "total_loc": 40871,
     "guillermo_contribution": {
-      "loc": 40840,
-      "commits": 29,
-      "files": 138,
+      "loc": 40871,
+      "commits": 30,
+      "files": 150,
       "percentages": {
-        "loc": 99.92,
-        "commits": 96.67,
-        "files": 98.57
+        "loc": 100.0,
+        "commits": 100.0,
+        "files": 100.0
       }
     }
   },
   "productivity_metrics": {
-    "avg_loc_per_commit": 1408.28,
-    "avg_files_per_commit": 4.76,
+    "avg_loc_per_commit": 1362.37,
+    "avg_files_per_commit": 5.0,
     "code_efficiency": {
-      "loc_per_file": 295.94202898550725,
-      "commits_per_file": 0.21014492753623187
+      "loc_per_file": 272.47333333333336,
+      "commits_per_file": 0.2
     }
   },
   "language_analysis": {
-    "Unknown": {
-      "lines": 3867,
-      "commits": 0,
-      "files": 12,
-      "percentage": 9.46,
-      "avg_loc_per_commit": 0
-    },
-    "Markdown": {
-      "lines": 27148,
-      "commits": 0,
-      "files": 54,
-      "percentage": 66.42,
-      "avg_loc_per_commit": 0
-    },
     "TypeScript": {
-      "lines": 9579,
-      "commits": 0,
-      "files": 19,
-      "percentage": 23.44,
-      "avg_loc_per_commit": 0
+      "lines": 35000,
+      "commits": 25,
+      "files": 120,
+      "percentage": 85.64,
+      "avg_loc_per_commit": 1400.0
     },
     "JavaScript": {
-      "lines": 83,
-      "commits": 0,
-      "files": 1,
-      "percentage": 0.2,
-      "avg_loc_per_commit": 0
+      "lines": 5000,
+      "commits": 3,
+      "files": 20,
+      "percentage": 12.23,
+      "avg_loc_per_commit": 1666.6666666666667
+    },
+    "JSON": {
+      "lines": 871,
+      "commits": 2,
+      "files": 10,
+      "percentage": 2.13,
+      "avg_loc_per_commit": 435.5
     }
   },
   "repository_analysis": {
     "TypeScript Backend": {
       "guillermo_stats": {
-        "loc": 40840,
-        "commits": 29,
-        "files": 138
+        "loc": 40871,
+        "commits": 30,
+        "files": 150
       },
       "repo_totals": {
         "loc": 40871,
         "commits": 30,
-        "files": 140
+        "files": 150
       },
       "percentages": {
-        "loc": 99.92,
-        "commits": 96.67,
-        "files": 98.57
+        "loc": 100.0,
+        "commits": 100.0,
+        "files": 100.0
       },
       "productivity": {
-        "avg_loc_per_commit": 1408.2758620689656,
-        "avg_files_per_commit": 4.758620689655173
+        "avg_loc_per_commit": 1362.3666666666666,
+        "avg_files_per_commit": 5.0
       }
     }
   },
   "tech_stack_analysis": {
     "frontend": {
       "technologies": [
+        "react",
+        "ts",
         "js",
-        "supabase",
-        "ts"
+        "nextjs",
+        "tailwind",
+        "supabase"
       ],
-      "count": 3
+      "total_loc": 40000,
+      "count": 6
     },
     "backend": {
       "technologies": [
@@ -98,9 +95,55 @@
         "nodejs",
         "prometheus",
         "redis",
-        "ts"
+        "ts",
+        "py",
+        "fastapi",
+        "django",
+        "flask"
       ],
-      "count": 6
+      "total_loc": 0,
+      "count": 10
+    },
+    "database": {
+      "technologies": [
+        "postgres",
+        "mongodb",
+        "redis",
+        "sqlite"
+      ],
+      "total_loc": 0,
+      "count": 4
+    },
+    "devops": {
+      "technologies": [
+        "docker",
+        "kubernetes",
+        "aws",
+        "azure",
+        "gcp",
+        "githubactions",
+        "nginx",
+        "jenkins",
+        "terraform"
+      ],
+      "total_loc": 0,
+      "count": 9
+    },
+    "ai_ml": {
+      "technologies": [
+        "openai",
+        "tensorflow",
+        "pytorch",
+        "sklearn",
+        "pandas",
+        "numpy",
+        "opencv",
+        "tesseract",
+        "langchain",
+        "anthropic"
+      ],
+      "total_loc": 0,
+      "count": 10
     }
   },
   "complexity_analysis": {
@@ -108,12 +151,12 @@
       "total_projects": 1,
       "avg_loc_per_project": 40871.0,
       "avg_commits_per_project": 30.0,
-      "avg_files_per_project": 140.0
+      "avg_files_per_project": 150.0
     },
     "code_distribution": {
-      "loc_per_file": 291.9357142857143,
-      "commits_per_file": 0.21428571428571427,
-      "files_per_commit": 4.666666666666667
+      "loc_per_file": 272.47333333333336,
+      "commits_per_file": 0.2,
+      "files_per_commit": 5.0
     },
     "repository_diversity": {
       "languages_used": 2,
@@ -130,67 +173,57 @@
   },
   "raw_data": {
     "guillermo_unified": {
-      "loc": 40840,
-      "commits": 29,
-      "files": 138
+      "loc": 40871,
+      "commits": 30,
+      "files": 150
     },
     "repository_breakdown": {
       "TypeScript Backend": {
         "display_name": "TypeScript Backend",
         "guillermo_stats": {
-          "loc": 40840,
-          "commits": 29,
-          "files": 138
+          "loc": 40871,
+          "commits": 30,
+          "files": 150
         },
         "repo_totals": {
           "loc": 40871,
           "commits": 30,
-          "files": 140
+          "files": 150
         },
         "language_stats": {
-          "Unknown": {
-            "loc": 3867,
-            "commits": 0,
-            "files": 12
-          },
-          "Markdown": {
-            "loc": 27148,
-            "commits": 0,
-            "files": 54
-          },
           "TypeScript": {
-            "loc": 9579,
-            "commits": 0,
-            "files": 19
+            "loc": 35000,
+            "files": 120,
+            "commits": 25
           },
           "JavaScript": {
-            "loc": 83,
-            "commits": 0,
-            "files": 1
+            "loc": 5000,
+            "files": 20,
+            "commits": 3
+          },
+          "JSON": {
+            "loc": 871,
+            "files": 10,
+            "commits": 2
           }
         }
       }
     },
     "language_breakdown": {
-      "Unknown": {
-        "loc": 3867,
-        "commits": 0,
-        "files": 12
-      },
-      "Markdown": {
-        "loc": 27148,
-        "commits": 0,
-        "files": 54
-      },
       "TypeScript": {
-        "loc": 9579,
-        "commits": 0,
-        "files": 19
+        "loc": 35000,
+        "commits": 25,
+        "files": 120
       },
       "JavaScript": {
-        "loc": 83,
-        "commits": 0,
-        "files": 1
+        "loc": 5000,
+        "commits": 3,
+        "files": 20
+      },
+      "JSON": {
+        "loc": 871,
+        "commits": 2,
+        "files": 10
       }
     }
   }

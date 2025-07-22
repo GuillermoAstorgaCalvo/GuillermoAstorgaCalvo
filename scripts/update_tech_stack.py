@@ -2,6 +2,7 @@
 """
 Update Tech Stack
 Updates the tech stack analysis and regenerates the README with the latest data.
+Uses both enhanced and API-based analyzers for comprehensive coverage.
 """
 
 import sys
@@ -11,6 +12,7 @@ from pathlib import Path
 scripts_dir = Path(__file__).parent
 sys.path.insert(0, str(scripts_dir))
 
+from api_based_repository_analyzer import APIBasedRepositoryAnalyzer  # noqa: E402
 from enhanced_dependency_analyzer import EnhancedDependencyAnalyzer  # noqa: E402
 from enhanced_readme_generator import main as generate_readme  # noqa: E402
 from error_handling import get_logger  # noqa: E402
@@ -19,42 +21,96 @@ logger = get_logger(__name__)
 
 
 def main() -> None:
-    """Update tech stack and regenerate README."""
+    """Update tech stack and regenerate README using both analyzers."""
     try:
-        print("🚀 Updating tech stack analysis...")
+        print("🚀 Starting comprehensive tech stack analysis...")
 
-        # Generate enhanced tech stack
-        analyzer = EnhancedDependencyAnalyzer()
-        result = analyzer.generate_enhanced_tech_stack()
+        # Strategy: Try API-based first, fallback to enhanced
+        api_result = None
+        enhanced_result = None
 
-        if result:
-            print("✅ Enhanced tech stack generated successfully!")
-            print(
-                f"📊 Found {result.get('total_technologies', 0)} technologies from {result.get('project_count', 0)} projects"
-            )
+        # 1. Try API-based analyzer (most comprehensive)
+        print("\n📡 Attempting API-based repository analysis...")
+        try:
+            api_analyzer = APIBasedRepositoryAnalyzer()
+            api_result = api_analyzer.generate_api_based_tech_stack()
 
-            tech_stack = result.get("tech_stack_analysis", {})
-            for category, data in tech_stack.items():
-                techs = data.get("technologies", [])
-                if techs:
+            if api_result and api_result.get("total_technologies", 0) > 0:
+                print("✅ API-based analysis successful!")
+                print(
+                    f"📊 Found {api_result.get('total_technologies', 0)} technologies across {api_result.get('repository_count', 0)} repositories"
+                )
+
+                tech_stack = api_result.get("tech_stack_analysis", {})
+                for category, data in tech_stack.items():
+                    techs = data.get("technologies", [])
+                    if techs:
+                        print(
+                            f"🔧 {category.title()}: {', '.join(techs[:5])}{'...' if len(techs) > 5 else ''}"
+                        )
+            else:
+                print(
+                    "⚠️ API-based analysis found no technologies, trying enhanced analyzer..."
+                )
+                api_result = None
+
+        except Exception as e:
+            logger.warning(f"API-based analysis failed: {e}")
+            print("⚠️ API-based analysis failed, falling back to enhanced analyzer...")
+            api_result = None
+
+        # 2. Fallback to enhanced analyzer
+        if not api_result:
+            print("\n🔧 Using enhanced dependency analyzer...")
+            try:
+                enhanced_analyzer = EnhancedDependencyAnalyzer()
+                enhanced_result = enhanced_analyzer.generate_enhanced_tech_stack()
+
+                if enhanced_result:
+                    print("✅ Enhanced tech stack generated successfully!")
                     print(
-                        f"🔧 {category.title()}: {', '.join(techs[:5])}{'...' if len(techs) > 5 else ''}"
+                        f"📊 Found {enhanced_result.get('total_technologies', 0)} technologies from {enhanced_result.get('project_count', 0)} projects"
                     )
 
-            print("\n🔄 Regenerating README with updated tech stack...")
+                    tech_stack = enhanced_result.get("tech_stack_analysis", {})
+                    for category, data in tech_stack.items():
+                        techs = data.get("technologies", [])
+                        if techs:
+                            print(
+                                f"🔧 {category.title()}: {', '.join(techs[:5])}{'...' if len(techs) > 5 else ''}"
+                            )
+                else:
+                    print("❌ Enhanced analyzer also failed")
+                    sys.exit(1)
 
-            # Regenerate README
-            generate_readme()
+            except Exception as e:
+                logger.error(f"Enhanced analyzer failed: {e}")
+                print("❌ Both analyzers failed")
+                sys.exit(1)
 
-            print("✅ README updated with dynamic tech stack!")
-            print("\n🎉 Tech stack is now fully dynamic and based on:")
+        # 3. Regenerate README
+        print("\n🔄 Regenerating README with updated tech stack...")
+        generate_readme()
+
+        # 4. Summary
+        print("✅ README updated successfully!")
+        print("\n🎉 Tech stack analysis complete!")
+
+        if api_result:
+            print("📊 Analysis method: API-based repository analysis")
+            print("   • GitHub API repository analysis")
+            print("   • Dependency file content analysis")
+            print("   • Repository structure detection")
+            print("   • Description and topics analysis")
+        else:
+            print("📊 Analysis method: Enhanced dependency analysis")
             print("   • Current repository dependency analysis")
             print("   • Known project technology mapping")
-            print("   • Common technology inclusion")
+            print("   • Dynamic common technology detection")
 
-        else:
-            print("❌ Failed to generate enhanced tech stack")
-            sys.exit(1)
+        print(
+            f"\n💡 Total technologies found: {api_result.get('total_technologies', 0) if api_result else enhanced_result.get('total_technologies', 0)}"
+        )
 
     except Exception as e:
         logger.error(f"Error updating tech stack: {e}")
