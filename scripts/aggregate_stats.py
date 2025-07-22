@@ -65,15 +65,22 @@ def load_all_repository_stats() -> list[dict[str, Any]]:
     """Load statistics from all available repository files."""
     try:
         stats_files = []
-        current_dir = Path.cwd()
+        
+        # Use REPOS_DIR environment variable if available, otherwise use current directory
+        repos_dir = Path(os.environ.get("REPOS_DIR", "."))
+        if not repos_dir.exists():
+            logger.warning(f"Repository directory does not exist: {repos_dir}")
+            repos_dir = Path.cwd()
+        
+        logger.info(f"Looking for stats files in: {repos_dir}")
 
-        # Look for *_stats.json files in current directory
-        for file_path in current_dir.glob("*_stats.json"):
+        # Look for *_stats.json files in the repository directory
+        for file_path in repos_dir.glob("*_stats.json"):
             if file_path.name != "unified_stats.json":
                 stats_files.append(file_path)
 
         if not stats_files:
-            logger.warning("No repository stats files found")
+            logger.warning(f"No repository stats files found in {repos_dir}")
             return []
 
         repository_stats = []
@@ -238,19 +245,21 @@ def main() -> None:
         repos_dir = Path(os.environ.get("REPOS_DIR", "repo-stats"))
         if not repos_dir.exists():
             repos_dir = Path.cwd()
-        for subdir in repos_dir.iterdir():
-            if subdir.is_dir():
-                tech_stack_file = subdir / "tech_stack_analysis.json"
-                if tech_stack_file.exists():
-                    try:
-                        with open(tech_stack_file, encoding="utf-8") as f:
-                            stack = json.load(f)
-                            all_tech_stacks.append(stack)
-                    except Exception as e:
-                        logger.warning(
-                            f"Failed to load tech stack file {tech_stack_file}: {e}",
-                            extra={"file": str(tech_stack_file)},
-                        )
+        
+        # Look for tech_stack_analysis.json files in the repository directory
+        tech_stack_files = list(repos_dir.glob("tech_stack_analysis.json"))
+        
+        for tech_stack_file in tech_stack_files:
+            try:
+                with open(tech_stack_file, encoding="utf-8") as f:
+                    stack = json.load(f)
+                    all_tech_stacks.append(stack)
+                    logger.info(f"Loaded tech stack from {tech_stack_file.name}")
+            except Exception as e:
+                logger.warning(
+                    f"Failed to load tech stack file {tech_stack_file}: {e}",
+                    extra={"file": str(tech_stack_file)},
+                )
         merged_stack: dict[str, set[str]] = {
             "frontend": set(),
             "backend": set(),

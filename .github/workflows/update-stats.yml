@@ -392,6 +392,23 @@ jobs:
         with:
           path: repo-stats
 
+      - name: Flatten artifact structure
+        run: |
+          if [[ ! -d "repo-stats" ]]; then
+            echo "❌ No artifacts directory found"
+            exit 1
+          fi
+
+          echo "📁 Flattening artifact structure..."
+
+          # Move all JSON files from subdirectories to the main repo-stats directory
+          find repo-stats -name "*.json" -exec mv {} repo-stats/ \;
+
+          # Remove empty subdirectories
+          find repo-stats -type d -empty -delete
+
+          echo "✅ Artifact structure flattened"
+
       - name: Validate downloaded artifacts
         run: |
           if [[ ! -d "repo-stats" ]]; then
@@ -407,6 +424,10 @@ jobs:
             echo "❌ No artifact files found"
             exit 1
           fi
+
+          # List the files for debugging
+          echo "📋 Artifact files:"
+          find repo-stats -name "*.json" -exec basename {} \;
 
           echo "✅ Artifacts validation passed"
 
