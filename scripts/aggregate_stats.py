@@ -313,11 +313,14 @@ def main() -> None:
             "last_updated": datetime.now().isoformat(),
         }
 
-        # report_config = config.get_report_config()  # Not used
+        # Save the dictionary version for direct JSON serialization
+        save_unified_stats(unified_stats_dict, str(script_dir / "unified_stats.json"))
+
+        # Generate comprehensive report using the UnifiedStats object
         json_generator = JSONReportGenerator()
-        json_filename = "unified_stats.json"
+        json_filename = "unified_stats_detailed.json"
         json_path = script_dir / json_filename
-        json_generator.save_report(unified_stats_dict, str(json_path))
+        json_generator.save_report(unified_stats, str(json_path))
         guillermo = unified_stats.guillermo_unified
         global_totals = AuthorStats(
             loc=unified_stats.total_loc,
