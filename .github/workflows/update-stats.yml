@@ -120,15 +120,7 @@ jobs:
           python3 -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Cache cloc
-        id: cache-cloc
-        uses: actions/cache@v3
-        with:
-          path: /usr/bin/cloc
-          key: cloc-${{ runner.os }}-v1
-
-      - name: Install cloc if not cached
-        if: steps.cache-cloc.outputs.cache-hit != 'true'
+      - name: Install cloc
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y cloc
