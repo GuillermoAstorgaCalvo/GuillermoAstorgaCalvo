@@ -434,6 +434,7 @@ jobs:
       - name: Move generated data to root
         run: |
           mv scripts/unified_stats.json ./ 2>/dev/null || true
+          mv scripts/unified_stats_detailed.json ./ 2>/dev/null || true
           if [[ -f "scripts/analytics_history.json" ]]; then
             cp scripts/analytics_history.json ./analytics_history.json
           fi
@@ -483,6 +484,16 @@ jobs:
             files_generated=true
           fi
 
+          if [[ -f "unified_stats_detailed.json" ]]; then
+            echo "✅ unified_stats_detailed.json generated"
+            # Validate JSON structure
+            if ! python3 -c "import json; json.load(open('unified_stats_detailed.json'))"; then
+              echo "❌ unified_stats_detailed.json is not valid JSON"
+              exit 1
+            fi
+            files_generated=true
+          fi
+
           if [[ -f "assets/language_stats.svg" ]]; then
             echo "✅ language_stats.svg generated"
             # Validate SVG structure
@@ -500,7 +511,7 @@ jobs:
 
           # Generate checksums for security audit trail
           echo "🔒 File integrity checksums:"
-          for file in "README.md" "unified_stats.json" "analytics_history.json" "assets/language_stats.svg"; do
+          for file in "README.md" "unified_stats.json" "unified_stats_detailed.json" "analytics_history.json" "assets/language_stats.svg"; do
             if [[ -f "$file" ]]; then
               checksum=$(sha256sum "$file" | awk '{print $1}')
               echo "  $file: $checksum"
@@ -510,7 +521,7 @@ jobs:
       - name: Validate file integrity before commit
         run: |
           # Define allowed files for security
-          ALLOWED_FILES=("README.md" "unified_stats.json" "analytics_history.json" "assets/language_stats.svg")
+          ALLOWED_FILES=("README.md" "unified_stats.json" "unified_stats_detailed.json" "analytics_history.json" "assets/language_stats.svg")
 
           # Clean up temporary artifacts directory
           if [[ -d "repo-stats" ]]; then
@@ -559,7 +570,7 @@ jobs:
 
           # Add only specific files that should be updated (whitelist approach)
           files_added=false
-          ALLOWED_FILES=("README.md" "unified_stats.json" "analytics_history.json" "assets/language_stats.svg")
+          ALLOWED_FILES=("README.md" "unified_stats.json" "unified_stats_detailed.json" "analytics_history.json" "assets/language_stats.svg")
 
           for file in "${ALLOWED_FILES[@]}"; do
             if [[ -f "$file" ]]; then
@@ -576,6 +587,11 @@ jobs:
               
               if [[ "$file" == "analytics_history.json" ]] && ! python3 -m json.tool "$file" >/dev/null 2>&1; then
                 echo "❌ Security violation: analytics_history.json is not valid JSON"
+                exit 1
+              fi
+              
+              if [[ "$file" == "unified_stats_detailed.json" ]] && ! python3 -m json.tool "$file" >/dev/null 2>&1; then
+                echo "❌ Security violation: unified_stats_detailed.json is not valid JSON"
                 exit 1
               fi
               
