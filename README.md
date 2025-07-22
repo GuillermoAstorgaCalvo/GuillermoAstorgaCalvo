@@ -51,36 +51,6 @@ I started coding because I wanted to build things that could actually help peopl
 
 
 
-### **🛠️ Technology Stack**
-
-I believe in using the right tool for the job. Here's my current technology stack based on my projects:
-
-#### **🌐 Frontend Development**
-<div align="center">
-  <img src="https://skillicons.dev/icons?i=js,nextjs,react,supabase,tailwind,ts" alt="Frontend Technologies" />
-</div>
-
-#### **⚙️ Backend Development**
-<div align="center">
-  <img src="https://skillicons.dev/icons?i=express,fastapi,jest,nodejs,prometheus,py,redis,ts" alt="Backend Technologies" />
-</div>
-
-#### **🗄️ Database & Cloud**
-<div align="center">
-  <img src="https://skillicons.dev/icons?i=postgres" alt="Database & Cloud Technologies" />
-</div>
-
-#### **🤖 AI & Machine Learning**
-<div align="center">
-  <img src="https://skillicons.dev/icons?i=opencv,py" alt="AI & ML Technologies" />
-</div>
-
-#### **🛠️ Development Tools**
-<div align="center">
-  <img src="https://skillicons.dev/icons?i=docker,github" alt="Development Tools" />
-</div>
-
-
 
 
 
@@ -94,6 +64,57 @@ These numbers tell the real story - late nights debugging, moments of breakthrou
 
 ---
 
+## 🛠️ **Technology Stack**
+
+<div align="center">
+  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=500&size=18&pause=1000&color=58A6FF&center=true&vCenter=true&width=400&height=40&lines=Modern+Technologies;Best+Practices;Clean+Code" alt="Tech Stack Typing" />
+</div>
+
+I believe in using the right tool for the job. Here's my current technology stack based on my projects:
+
+### **🌐 Frontend Development**
+<div align="center">
+  <img src="https://skillicons.dev/icons?i=js,nextjs,react,supabase,tailwind,ts" alt="Frontend Development Technologies" />
+</div>
+
+**Technologies:** `js`, `nextjs`, `react`, `supabase`, `tailwind`, `ts`
+
+### **⚙️ Backend Development**
+<div align="center">
+  <img src="https://skillicons.dev/icons?i=express,fastapi,jest,nodejs,prometheus,py,redis,ts" alt="Backend Development Technologies" />
+</div>
+
+**Technologies:** `express`, `fastapi`, `jest`, `nodejs`, `prometheus`, `py`, `redis`, `ts`
+
+### **🗄️ Database & Cloud**
+<div align="center">
+  <img src="https://skillicons.dev/icons?i=postgres" alt="Database & Cloud Technologies" />
+</div>
+
+**Technologies:** `postgres`
+
+### **🤖 AI & Machine Learning**
+<div align="center">
+  <img src="https://skillicons.dev/icons?i=opencv,py" alt="AI & Machine Learning Technologies" />
+</div>
+
+**Technologies:** `opencv`, `py`
+
+**Additional:** `langchain`, `tesseract`, `openai`
+
+### **🛠️ Development Tools**
+<div align="center">
+  <img src="https://skillicons.dev/icons?i=docker" alt="Development Tools Technologies" />
+</div>
+
+**Technologies:** `docker`
+
+### **📈 Technology Summary**
+- **Total Technologies with Icons:** 18
+- **Total Original Dependencies:** 25
+- **Categories Analyzed:** 5
+
+---
 ## 🚀 **Stuff I've Built**
 
 <div align="center">
@@ -223,4 +244,4 @@ I'm always up for connecting with fellow developers, discussing interesting proj
 
 ---
 
-*Last updated: July 22, 2025 at 20:50 UTC*
+*Last updated: July 22, 2025 at 23:06 UTC*

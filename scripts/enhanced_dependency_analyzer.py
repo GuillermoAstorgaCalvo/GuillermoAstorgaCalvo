@@ -272,6 +272,15 @@ class EnhancedDependencyAnalyzer:
             "ai_ml": set(),
         }
 
+        # Track original dependency names for each category
+        original_dependencies: dict[str, dict[str, list[str]]] = {
+            "frontend": {"skillicon": [], "no_skillicon": []},
+            "backend": {"skillicon": [], "no_skillicon": []},
+            "database": {"skillicon": [], "no_skillicon": []},
+            "devops": {"skillicon": [], "no_skillicon": []},
+            "ai_ml": {"skillicon": [], "no_skillicon": []},
+        }
+
         # 1. Analyze current repository
         logger.info("Analyzing current repository...")
         current_tech = self.analyze_current_repository()
@@ -281,39 +290,64 @@ class EnhancedDependencyAnalyzer:
         # 2. Add technologies from known projects (dynamic detection)
         logger.info("Adding technologies from known projects...")
         dynamic_mappings = self._load_dynamic_project_mappings()
-        for project_name, project_tech in dynamic_mappings.items():
-            logger.info(f"Processing project: {project_name}")
+        for _project_name, project_tech in dynamic_mappings.items():
             for category, techs in project_tech.items():
-                # Convert list to set for proper update
-                if isinstance(techs, list):
+                if category in all_technologies:
                     all_technologies[category].update(techs)
-                elif isinstance(techs, set):
-                    all_technologies[category].update(techs)
+
+        # 3. Add common technologies dynamically
+        logger.info("Adding common technologies...")
+        common_techs = self._detect_common_technologies_dynamically()
+        for category, techs in common_techs.items():
+            if category in all_technologies:
+                all_technologies[category].update(techs)
+
+        # 4. Map to skillicons and track original names
+        logger.info("Mapping technologies to skillicons...")
+        skillicon_mapper = SkilliconMapper()
+
+        # Create tech stack structure for mapping
+        tech_stack_for_mapping = {}
+        for category, techs in all_technologies.items():
+            tech_stack_for_mapping[category] = {
+                "technologies": list(techs),
+                "count": len(techs),
+            }
+
+        # Get mapped skillicons
+        mapped_stack = skillicon_mapper.map_technologies(tech_stack_for_mapping)
+
+        # Track original dependencies vs skillicon mappings
+        for category, techs in all_technologies.items():
+            original_techs = list(techs)
+            mapped_techs = mapped_stack.get(category, {}).get("technologies", [])
+
+            # Use the skillicon mapper to get original names
+            for orig_tech in original_techs:
+                # Check if this original tech has a skillicon mapping
+                skillicon_id = skillicon_mapper.get_skillicon_id(orig_tech)
+                if skillicon_id and skillicon_id in mapped_techs:
+                    original_dependencies[category]["skillicon"].append(orig_tech)
                 else:
-                    logger.warning(
-                        f"Unexpected tech format for {project_name}: {type(techs)}"
-                    )
+                    original_dependencies[category]["no_skillicon"].append(orig_tech)
 
-        # 3. Add dynamically detected common technologies
-        logger.info("Adding dynamically detected common technologies...")
-        dynamic_common_techs = self._detect_common_technologies_dynamically()
-        for category, techs in dynamic_common_techs.items():
-            all_technologies[category].update(techs)
+        # 5. Create enhanced result structure
+        result = {}
+        for category, data in mapped_stack.items():
+            result[category] = {
+                "technologies": data.get("technologies", []),
+                "count": data.get("count", 0),
+                "original_dependencies": {
+                    "with_skillicon": original_dependencies[category]["skillicon"],
+                    "without_skillicon": original_dependencies[category][
+                        "no_skillicon"
+                    ],
+                    "total_original": len(original_dependencies[category]["skillicon"])
+                    + len(original_dependencies[category]["no_skillicon"]),
+                },
+            }
 
-        # Convert sets to sorted lists and map to skillicons
-        basic_tech_stack = {
-            cat: {"technologies": sorted(techs), "count": len(techs)}
-            for cat, techs in all_technologies.items()
-        }
-
-        # Map to valid skillicon IDs
-        mapped_tech_stack = self.skillicon_mapper.map_technologies(basic_tech_stack)
-
-        logger.info(
-            f"Total technologies found: {sum(len(data.get('technologies', [])) for data in mapped_tech_stack.values())}"
-        )
-
-        return mapped_tech_stack
+        return result
 
     def _detect_common_technologies_dynamically(self) -> dict[str, set[str]]:
         """Dynamically detect common technologies based on analysis patterns."""

@@ -5,6 +5,7 @@ Maps dependency names to valid skillicon IDs for the skillicons.dev service.
 Only includes technologies that have corresponding icons in the service.
 """
 
+from typing import Any
 
 # Valid skillicon IDs from the service (comprehensive list)
 VALID_SKILLICONS = {
@@ -814,3 +815,103 @@ class SkilliconMapper:
                     mapped_techs.add(tech)
 
         return sorted(mapped_techs)
+
+    def get_original_dependency_name(self, skillicon_id: str) -> str | None:
+        """
+        Get the original dependency name for a skillicon ID.
+
+        Args:
+            skillicon_id: The skillicon ID
+
+        Returns:
+            The original dependency name or None if not found
+        """
+        # Check all mappings for the skillicon ID
+        all_mappings = {
+            **self.frontend_mappings,
+            **self.backend_mappings,
+            **self.database_mappings,
+            **self.devops_mappings,
+            **self.ai_ml_mappings,
+            **self.tools_mappings,
+            **self.package_mappings,
+            **self.social_mappings,
+        }
+
+        # Find the original dependency name
+        for orig_name, mapped_id in all_mappings.items():
+            if mapped_id == skillicon_id:
+                return orig_name
+
+        return None
+
+    def get_skillicon_id(self, dependency_name: str) -> str | None:
+        """
+        Get the skillicon ID for a dependency name.
+
+        Args:
+            dependency_name: The original dependency name
+
+        Returns:
+            The skillicon ID or None if not found
+        """
+        # Check all mappings for the dependency name
+        all_mappings = {
+            **self.frontend_mappings,
+            **self.backend_mappings,
+            **self.database_mappings,
+            **self.devops_mappings,
+            **self.ai_ml_mappings,
+            **self.tools_mappings,
+            **self.package_mappings,
+            **self.social_mappings,
+        }
+
+        # Try exact match first
+        if dependency_name in all_mappings:
+            skillicon_id = all_mappings[dependency_name]
+            if skillicon_id in VALID_SKILLICONS:
+                return skillicon_id
+
+        # Try case-insensitive match
+        dependency_lower = dependency_name.lower()
+        for key, value in all_mappings.items():
+            if key.lower() == dependency_lower:
+                if value in VALID_SKILLICONS:
+                    return value
+
+        return None
+
+    def get_mapping_summary(
+        self, tech_stack: dict[str, dict[str, list[str]]]
+    ) -> dict[str, dict[str, Any]]:
+        """
+        Get a detailed mapping summary showing original names and skillicon IDs.
+
+        Args:
+            tech_stack: Dictionary with categories and their technologies
+
+        Returns:
+            Dictionary with detailed mapping information
+        """
+        summary = {}
+
+        for category, data in tech_stack.items():
+            technologies = data.get("technologies", [])
+            mapping_info = {
+                "skillicon_ids": technologies,
+                "original_names": [],
+                "unmapped": [],
+                "total_original": 0,
+                "total_mapped": len(technologies),
+            }
+
+            # Get original names for mapped skillicons
+            for skillicon_id in technologies:
+                original_name = self.get_original_dependency_name(skillicon_id)
+                if original_name:
+                    mapping_info["original_names"].append(original_name)
+
+            summary[category] = mapping_info
+
+        return summary

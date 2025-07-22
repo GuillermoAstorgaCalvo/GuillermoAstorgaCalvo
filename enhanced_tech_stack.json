@@ -1,0 +1,116 @@
+{
+  "timestamp": "2025-07-22T20:58:34.989207Z",
+  "metadata": {
+    "version": "3.0",
+    "generated_by": "Enhanced Dependency Analyzer",
+    "data_source": "Multi-Source Technology Analysis"
+  },
+  "tech_stack_analysis": {
+    "frontend": {
+      "technologies": [
+        "js",
+        "nextjs",
+        "react",
+        "supabase",
+        "tailwind",
+        "ts"
+      ],
+      "count": 6,
+      "original_dependencies": {
+        "with_skillicon": [
+          "react",
+          "nextjs",
+          "js",
+          "tailwind",
+          "javascript",
+          "supabase",
+          "ts",
+          "typescript"
+        ],
+        "without_skillicon": [],
+        "total_original": 8
+      }
+    },
+    "backend": {
+      "technologies": [
+        "express",
+        "fastapi",
+        "jest",
+        "nodejs",
+        "prometheus",
+        "py",
+        "redis",
+        "ts"
+      ],
+      "count": 8,
+      "original_dependencies": {
+        "with_skillicon": [
+          "express",
+          "redis",
+          "jest",
+          "fastapi",
+          "prometheus",
+          "py",
+          "nodejs",
+          "python",
+          "ts"
+        ],
+        "without_skillicon": [],
+        "total_original": 9
+      }
+    },
+    "database": {
+      "technologies": [
+        "postgres"
+      ],
+      "count": 1,
+      "original_dependencies": {
+        "with_skillicon": [
+          "postgres"
+        ],
+        "without_skillicon": [],
+        "total_original": 1
+      }
+    },
+    "devops": {
+      "technologies": [
+        "docker"
+      ],
+      "count": 1,
+      "original_dependencies": {
+        "with_skillicon": [
+          "docker"
+        ],
+        "without_skillicon": [],
+        "total_original": 1
+      }
+    },
+    "ai_ml": {
+      "technologies": [
+        "opencv",
+        "py"
+      ],
+      "count": 2,
+      "original_dependencies": {
+        "with_skillicon": [
+          "numpy",
+          "opencv",
+          "pandas"
+        ],
+        "without_skillicon": [
+          "langchain",
+          "tesseract",
+          "openai"
+        ],
+        "total_original": 6
+      }
+    }
+  },
+  "project_count": 5,
+  "total_technologies": 18,
+  "analysis_methods": [
+    "Current repository dependency analysis",
+    "Known project technology mapping",
+    "Common technology inclusion"
+  ]
+}

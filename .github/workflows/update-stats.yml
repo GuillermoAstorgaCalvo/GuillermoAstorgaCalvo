@@ -120,10 +120,12 @@ jobs:
           python3 -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Install cloc
+      - name: Install cloc and git-fame
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y cloc
+          # Install git-fame for repository statistics
+          pip install git-fame
 
       - name: Verify tools installation
         run: |
@@ -255,11 +257,27 @@ jobs:
           echo "🔐 Cloning ${ORG}/${REPO_NAME} (${TOKEN_TYPE}) from branch ${BRANCH_NAME}"
 
           # Use full clone to get complete history for accurate git fame analysis
-          git clone --branch "${BRANCH_NAME}" --single-branch \
-            "https://x-access-token:${TOKEN}@github.com/${ORG}/${REPO_NAME}.git" \
-            repo
+          # Add retry logic for potential rate limiting
+          max_retries=3
+          retry_count=0
 
-          echo "✅ Repository cloned successfully"
+          while [ $retry_count -lt $max_retries ]; do
+            if git clone --branch "${BRANCH_NAME}" --single-branch \
+              "https://x-access-token:${TOKEN}@github.com/${ORG}/${REPO_NAME}.git" \
+              repo; then
+              echo "✅ Repository cloned successfully"
+              break
+            else
+              retry_count=$((retry_count + 1))
+              if [ $retry_count -lt $max_retries ]; then
+                echo "⚠️ Clone attempt $retry_count failed, retrying in 10 seconds..."
+                sleep 10
+              else
+                echo "❌ Failed to clone repository after $max_retries attempts"
+                exit 1
+              fi
+            fi
+          done
 
       - name: Check repo directory exists
         run: |
@@ -280,6 +298,18 @@ jobs:
           cd scripts
 
           echo "📊 Processing statistics for ${REPO_NAME} (${DISPLAY_NAME})"
+
+          # Verify environment variables are accessible
+          echo "🔍 Environment verification:"
+          echo "  REPO_NAME: ${REPO_NAME}"
+          echo "  DISPLAY_NAME: ${DISPLAY_NAME}"
+
+          # Test env_manager access
+          python3 -c "
+          from env_manager import env_manager
+          print(f'  Token status: {env_manager.get_token_status()}')
+          print(f'  Repos dir: {env_manager.get_repos_dir()}')
+          "
 
           # Run the statistics processing script
           if python3 process_repo_stats.py; then
@@ -428,15 +458,45 @@ jobs:
           REPOS_DIR: ${{ github.workspace }}/repo-stats
         run: |
           cd scripts
+
+          # Verify environment setup
+          echo "🔍 Environment verification for aggregation:"
+          echo "  REPOS_DIR: ${REPOS_DIR}"
+          python3 -c "
+          from env_manager import env_manager
+          print(f'  Token status: {env_manager.get_token_status()}')
+          print(f'  Repos dir: {env_manager.get_repos_dir()}')
+          "
+
+          # Generate unified statistics
+          echo "📊 Generating unified statistics..."
           python3 aggregate_stats.py
+
+          # Generate README
+          echo "📝 Generating README..."
           python3 enhanced_readme_generator.py
 
-      - name: Move generated data to root
+      - name: Verify generated data location
         run: |
-          mv scripts/unified_stats.json ./ 2>/dev/null || true
-          mv scripts/unified_stats_detailed.json ./ 2>/dev/null || true
-          if [[ -f "scripts/analytics_history.json" ]]; then
-            cp scripts/analytics_history.json ./analytics_history.json
+          # Check if files were generated in the correct location (root directory)
+          if [[ -f "unified_stats.json" ]]; then
+            echo "✅ unified_stats.json found in root directory"
+          else
+            echo "❌ unified_stats.json not found in root directory"
+            exit 1
+          fi
+
+          if [[ -f "unified_stats_detailed.json" ]]; then
+            echo "✅ unified_stats_detailed.json found in root directory"
+          else
+            echo "❌ unified_stats_detailed.json not found in root directory"
+            exit 1
+          fi
+
+          if [[ -f "analytics_history.json" ]]; then
+            echo "✅ analytics_history.json found in root directory"
+          else
+            echo "ℹ️ analytics_history.json not found (this is normal for first run)"
           fi
 
       - name: Create assets directory and generate SVG

@@ -98,18 +98,37 @@ def load_analytics_data() -> dict[str, Any]:
         # Load analytics history
         analytics_history = load_analytics_history()
 
-        # Combine the data
-        data = {"unified_stats": unified_stats, "analytics_history": analytics_history}
+        # Load enhanced tech stack data if available
+        enhanced_tech_stack = {}
+        try:
+            script_dir = Path(__file__).parent
+            root_dir = script_dir.parent
+            enhanced_tech_stack_path = root_dir / "enhanced_tech_stack.json"
 
-        logger.info(
-            f"Loaded analytics data: {len(unified_stats)} unified stats, {len(analytics_history)} history entries"
-        )
-        return data
+            if enhanced_tech_stack_path.exists():
+                with open(enhanced_tech_stack_path, encoding="utf-8") as f:
+                    enhanced_tech_stack = json.load(f)
+                logger.info("Enhanced tech stack data loaded successfully")
+            else:
+                logger.debug(
+                    "Enhanced tech stack file not found, using unified stats only"
+                )
+        except Exception as e:
+            logger.warning(f"Could not load enhanced tech stack data: {e}")
+
+        return {
+            "unified_stats": unified_stats,
+            "analytics_history": analytics_history,
+            "enhanced_tech_stack": enhanced_tech_stack,
+        }
 
     except Exception as e:
         logger.error(f"Error loading analytics data: {e}")
-        # Return empty data structure to prevent crashes
-        return {"unified_stats": {}, "analytics_history": []}
+        return {
+            "unified_stats": {},
+            "analytics_history": [],
+            "enhanced_tech_stack": {},
+        }
 
 
 def save_readme(content: str, output_path: str | None = None) -> bool:
@@ -430,151 +449,8 @@ def generate_enhanced_stats_from_unified(unified_stats: dict[str, Any]) -> str:
     # Tech stack analysis with skillicons.dev
     tech_stack_insights = ""
 
-    # Try to load enhanced tech stack data first
-    enhanced_tech_stack_file = Path(__file__).parent.parent / "enhanced_tech_stack.json"
-    tech_stack_analysis = {}
-
-    if enhanced_tech_stack_file.exists():
-        try:
-            with open(enhanced_tech_stack_file, encoding="utf-8") as f:
-                enhanced_data = json.load(f)
-                tech_stack_analysis = enhanced_data.get("tech_stack_analysis", {})
-                logger.info(
-                    f"Loaded enhanced tech stack with {enhanced_data.get('total_technologies', 0)} technologies from {enhanced_data.get('project_count', 0)} projects"
-                )
-        except Exception as e:
-            logger.warning(f"Failed to load enhanced tech stack: {e}")
-
-    # Fallback to API-based tech stack if enhanced data is not available
-    if not tech_stack_analysis:
-        api_tech_stack_file = Path(__file__).parent.parent / "api_based_tech_stack.json"
-        if api_tech_stack_file.exists():
-            try:
-                with open(api_tech_stack_file, encoding="utf-8") as f:
-                    api_data = json.load(f)
-                    tech_stack_analysis = api_data.get("tech_stack_analysis", {})
-                    logger.info(
-                        f"Loaded API-based tech stack with {api_data.get('total_technologies', 0)} technologies from {api_data.get('repository_count', 0)} repositories"
-                    )
-            except Exception as e:
-                logger.warning(f"Failed to load API-based tech stack: {e}")
-
-    # Fallback to dynamic tech stack if API-based data is not available
-    if not tech_stack_analysis:
-        dynamic_tech_stack_file = (
-            Path(__file__).parent.parent / "dynamic_tech_stack.json"
-        )
-        if dynamic_tech_stack_file.exists():
-            try:
-                with open(dynamic_tech_stack_file, encoding="utf-8") as f:
-                    dynamic_data = json.load(f)
-                    tech_stack_analysis = dynamic_data.get("tech_stack_analysis", {})
-                    logger.info(
-                        f"Loaded dynamic tech stack with {dynamic_data.get('total_technologies', 0)} technologies from {dynamic_data.get('repository_count', 0)} repositories"
-                    )
-            except Exception as e:
-                logger.warning(f"Failed to load dynamic tech stack: {e}")
-
-    # Final fallback: Generate tech stack dynamically from current repository
-    if not tech_stack_analysis:
-        logger.info("No tech stack files found, generating from current repository...")
-        try:
-            from enhanced_dependency_analyzer import EnhancedDependencyAnalyzer
-
-            analyzer = EnhancedDependencyAnalyzer()
-            tech_stack_analysis = analyzer.get_comprehensive_tech_stack()
-            logger.info("Generated tech stack from current repository analysis")
-        except Exception as e:
-            logger.warning(
-                f"Failed to generate tech stack from current repository: {e}"
-            )
-            # Minimal fallback with only detected technologies from unified stats
-            tech_stack_analysis = {}
-
-    # Try to get actual tech stack from unified stats and merge with detected list
-    unified_tech_stack = unified_stats.get("tech_stack_analysis", {})
-    if unified_tech_stack and tech_stack_analysis:
-        # Merge detected technologies with current analysis
-        for category in ["frontend", "backend", "database", "devops", "ai_ml"]:
-            detected_techs = unified_tech_stack.get(category, {}).get(
-                "technologies", []
-            )
-            current_techs = tech_stack_analysis.get(category, {}).get(
-                "technologies", []
-            )
-            # Combine and remove duplicates while preserving order
-            combined_techs = []
-            seen = set()
-            for tech in current_techs + detected_techs:
-                if tech not in seen:
-                    combined_techs.append(tech)
-                    seen.add(tech)
-
-            if combined_techs:
-                tech_stack_analysis[category] = {
-                    "technologies": combined_techs,
-                    "count": len(combined_techs),
-                }
-
-    if tech_stack_analysis:
-        # Generate tech stack section
-        tech_stack_insights = "\n### **🛠️ Technology Stack**\n\n"
-        tech_stack_insights += "I believe in using the right tool for the job. Here's my current technology stack based on my projects:\n\n"
-
-        # Frontend
-        frontend_techs = tech_stack_analysis.get("frontend", {}).get("technologies", [])
-        if frontend_techs:
-            icons = ",".join(frontend_techs[:8])
-            tech_stack_insights += f"""#### **🌐 Frontend Development**
-<div align="center">
-  <img src="https://skillicons.dev/icons?i={icons}" alt="Frontend Technologies" />
-</div>
-
-"""
-
-        # Backend
-        backend_techs = tech_stack_analysis.get("backend", {}).get("technologies", [])
-        if backend_techs:
-            icons = ",".join(backend_techs[:8])
-            tech_stack_insights += f"""#### **⚙️ Backend Development**
-<div align="center">
-  <img src="https://skillicons.dev/icons?i={icons}" alt="Backend Technologies" />
-</div>
-
-"""
-
-        # Database & Cloud
-        database_techs = tech_stack_analysis.get("database", {}).get("technologies", [])
-        if database_techs:
-            icons = ",".join(database_techs[:8])
-            tech_stack_insights += f"""#### **🗄️ Database & Cloud**
-<div align="center">
-  <img src="https://skillicons.dev/icons?i={icons}" alt="Database & Cloud Technologies" />
-</div>
-
-"""
-
-        # AI & ML
-        ai_ml_techs = tech_stack_analysis.get("ai_ml", {}).get("technologies", [])
-        if ai_ml_techs:
-            icons = ",".join(ai_ml_techs[:8])
-            tech_stack_insights += f"""#### **🤖 AI & Machine Learning**
-<div align="center">
-  <img src="https://skillicons.dev/icons?i={icons}" alt="AI & ML Technologies" />
-</div>
-
-"""
-
-        # DevOps & Tools
-        devops_techs = tech_stack_analysis.get("devops", {}).get("technologies", [])
-        if devops_techs:
-            icons = ",".join(devops_techs[:8])
-            tech_stack_insights += f"""#### **🛠️ Development Tools**
-<div align="center">
-  <img src="https://skillicons.dev/icons?i={icons}" alt="Development Tools" />
-</div>
-
-"""
+    # Note: Technology stack is now handled by the dedicated generate_dynamic_tech_stack_section function
+    # This ensures better structure, additional dependencies display, and comprehensive analysis
 
     # Repository insights
     repo_insights = ""
@@ -826,6 +702,19 @@ def generate_dynamic_tech_stack_section(data: dict[str, Any]) -> str:
     unified_stats = data.get("unified_stats", {})
     tech_stack_analysis = unified_stats.get("tech_stack_analysis", {})
 
+    # Also try to get enhanced tech stack data
+    enhanced_tech_stack = data.get("enhanced_tech_stack", {})
+    enhanced_analysis = enhanced_tech_stack.get("tech_stack_analysis", {})
+
+    # Use enhanced data if available, otherwise fall back to unified stats
+    if enhanced_analysis:
+        tech_stack_analysis = enhanced_analysis
+        logger.info("Using enhanced tech stack analysis")
+    elif tech_stack_analysis:
+        logger.info("Using unified stats tech stack analysis")
+    else:
+        logger.info("No tech stack data available, using defaults")
+
     if tech_stack_analysis:
         # Use the mapped skillicon IDs directly from the tech stack analysis
         # These are already mapped to valid skillicon IDs by the SkilliconMapper
@@ -839,8 +728,8 @@ def generate_dynamic_tech_stack_section(data: dict[str, Any]) -> str:
         }
 
         # Process each category - technologies are already mapped to valid skillicon IDs
-        for category, data in tech_stack_analysis.items():
-            technologies = data.get("technologies", [])
+        for category, category_data in tech_stack_analysis.items():
+            technologies = category_data.get("technologies", [])
             if category == "frontend":
                 dynamic_tech_stack["frontend"].extend(technologies)
             elif category == "backend":
@@ -875,63 +764,121 @@ I believe in using the right tool for the job. Here's my current technology stac
 
 """
 
-    # Frontend
-    if tech_stack["frontend"]:
-        icons = ",".join(tech_stack["frontend"][:8])  # Limit to 8 icons
-        content += f"""### **🌐 Frontend Development**
+    # Helper function to format technology lists
+    def format_tech_list(techs: list[str], max_display: int = 8) -> str:
+        """Format a list of technologies with proper formatting."""
+        if not techs:
+            return ""
+
+        # Limit the number of displayed technologies
+        display_techs = techs[:max_display]
+        formatted_techs = [f"`{tech}`" for tech in display_techs]
+
+        if len(techs) > max_display:
+            remaining = len(techs) - max_display
+            formatted_techs.append(f"*+{remaining} more*")
+
+        return ", ".join(formatted_techs)
+
+    # Helper function to get additional dependencies for a category
+    def get_additional_dependencies(category: str) -> list[str]:
+        """Get additional dependencies without skillicons for a specific category."""
+        if not tech_stack_analysis or category not in tech_stack_analysis:
+            return []
+
+        category_data = tech_stack_analysis[category]
+        original_deps = category_data.get("original_dependencies", {})
+        return original_deps.get("without_skillicon", [])
+
+    # Helper function to generate category section
+    def generate_category_section(
+        category_name: str,
+        display_name: str,
+        emoji: str,
+        tech_list: list[str],
+        max_icons: int = 8,
+    ) -> str:
+        """Generate a technology category section."""
+        if not tech_list:
+            return ""
+
+        # Get skillicon badges
+        icons = ",".join(tech_list[:max_icons])
+
+        # Get additional dependencies
+        additional_deps = get_additional_dependencies(category_name)
+
+        section = f"""### **{emoji} {display_name}**
 <div align="center">
-  <img src="https://skillicons.dev/icons?i={icons}" alt="Frontend Technologies" />
+  <img src="https://skillicons.dev/icons?i={icons}" alt="{display_name} Technologies" />
 </div>
+
+**Technologies:** {format_tech_list(tech_list)}
 
 """
 
-    # Backend
-    if tech_stack["backend"]:
-        icons = ",".join(tech_stack["backend"][:8])
-        content += f"""### **⚙️ Backend Development**
-<div align="center">
-  <img src="https://skillicons.dev/icons?i={icons}" alt="Backend Technologies" />
-</div>
+        # Add additional dependencies if any
+        if additional_deps:
+            section += f"**Additional:** {format_tech_list(additional_deps)}\n\n"
 
-"""
+        return section
 
-    # Database & Cloud
-    if tech_stack["database"]:
-        icons = ",".join(tech_stack["database"][:8])
-        content += f"""### **🗄️ Database & Cloud**
-<div align="center">
-  <img src="https://skillicons.dev/icons?i={icons}" alt="Database & Cloud Technologies" />
-</div>
+    # Generate each category section
+    sections = [
+        ("frontend", "Frontend Development", "🌐", tech_stack["frontend"]),
+        ("backend", "Backend Development", "⚙️", tech_stack["backend"]),
+        ("database", "Database & Cloud", "🗄️", tech_stack["database"]),
+        ("ai_ml", "AI & Machine Learning", "🤖", tech_stack["ai_ml"]),
+        ("devops", "Development Tools", "🛠️", tech_stack["devops"]),
+    ]
 
-"""
+    # Add category sections
+    for category, display_name, emoji, tech_list in sections:
+        section_content = generate_category_section(
+            category, display_name, emoji, tech_list
+        )
+        if section_content:
+            content += section_content
 
-    # AI & ML
-    if tech_stack["ai_ml"]:
-        icons = ",".join(tech_stack["ai_ml"][:8])
-        content += f"""### **🤖 AI & Machine Learning**
-<div align="center">
-  <img src="https://skillicons.dev/icons?i={icons}" alt="AI & ML Technologies" />
-</div>
-
-"""
-
-    # DevOps & Tools
-    if tech_stack["devops"]:
-        icons = ",".join(tech_stack["devops"][:8])
-        content += f"""### **🛠️ Development Tools**
-<div align="center">
-  <img src="https://skillicons.dev/icons?i={icons}" alt="Development Tools" />
-</div>
-
-"""
-
-    # Additional Technologies
+    # Handle additional technologies (if any)
     if tech_stack["additional"]:
         icons = ",".join(tech_stack["additional"][:8])
         content += f"""### **📊 Additional Technologies**
 <div align="center">
   <img src="https://skillicons.dev/icons?i={icons}" alt="Additional Technologies" />
 </div>
+
+**Technologies:** {format_tech_list(tech_stack["additional"])}
+
+"""
+
+        # Collect all additional dependencies from all categories
+        if tech_stack_analysis:
+            all_additional_deps = []
+            for category in ["frontend", "backend", "database", "ai_ml", "devops"]:
+                additional_deps = get_additional_dependencies(category)
+                all_additional_deps.extend(additional_deps)
+
+            if all_additional_deps:
+                # Remove duplicates and sort
+                unique_additional = sorted(set(all_additional_deps))
+                content += f"**Additional Dependencies:** {format_tech_list(unique_additional, max_display=12)}\n\n"
+
+    # Add summary section if we have comprehensive data
+    if tech_stack_analysis:
+        total_technologies = sum(
+            len(data.get("technologies", [])) for data in tech_stack_analysis.values()
+        )
+        total_original = sum(
+            data.get("original_dependencies", {}).get("total_original", 0)
+            for data in tech_stack_analysis.values()
+        )
+
+        if total_technologies > 0:
+            content += f"""### **📈 Technology Summary**
+- **Total Technologies with Icons:** {total_technologies}
+- **Total Original Dependencies:** {total_original}
+- **Categories Analyzed:** {len([cat for cat, data in tech_stack_analysis.items() if data.get("technologies")])}
 
 """
 
@@ -1045,6 +992,9 @@ def generate_enhanced_readme(data: dict[str, Any]) -> str:
 
     # Dynamic Stats Section
     content += generate_dynamic_stats_section(data)
+
+    # Technology Stack Section
+    content += generate_dynamic_tech_stack_section(data)
 
     # Projects Section
     content += generate_projects_section()
