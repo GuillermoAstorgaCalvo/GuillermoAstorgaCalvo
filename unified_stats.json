@@ -1,64 +1,100 @@
 {
   "total_loc": 40871,
   "total_commits": 30,
-  "total_files": 150,
+  "total_files": 140,
   "repos_processed": 1,
   "guillermo_unified": {
-    "loc": 40871,
-    "commits": 30,
-    "files": 150
+    "loc": 40840,
+    "commits": 29,
+    "files": 138
   },
   "repo_breakdown": {
     "TypeScript Backend": {
       "display_name": "TypeScript Backend",
       "guillermo_stats": {
-        "loc": 40871,
-        "commits": 30,
-        "files": 150
+        "loc": 40840,
+        "commits": 29,
+        "files": 138
       },
       "repo_totals": {
         "loc": 40871,
         "commits": 30,
-        "files": 150
+        "files": 140
       },
       "language_stats": {
+        "Unknown": {
+          "loc": 3867,
+          "commits": 0,
+          "files": 12
+        },
+        "Markdown": {
+          "loc": 27148,
+          "commits": 0,
+          "files": 54
+        },
         "TypeScript": {
-          "loc": 35000,
-          "files": 120,
-          "commits": 25
+          "loc": 9579,
+          "commits": 0,
+          "files": 19
         },
         "JavaScript": {
-          "loc": 5000,
-          "files": 20,
-          "commits": 3
-        },
-        "JSON": {
-          "loc": 871,
-          "files": 10,
-          "commits": 2
+          "loc": 83,
+          "commits": 0,
+          "files": 1
         }
       }
     }
   },
   "unified_language_stats": {
+    "Unknown": {
+      "loc": 3867,
+      "commits": 0,
+      "files": 12
+    },
+    "Markdown": {
+      "loc": 27148,
+      "commits": 0,
+      "files": 54
+    },
     "TypeScript": {
-      "loc": 35000,
-      "commits": 25,
-      "files": 120
+      "loc": 9579,
+      "commits": 0,
+      "files": 19
     },
     "JavaScript": {
-      "loc": 5000,
-      "commits": 3,
-      "files": 20
-    },
-    "JSON": {
-      "loc": 871,
-      "commits": 2,
-      "files": 10
+      "loc": 83,
+      "commits": 0,
+      "files": 1
     }
   },
   "other_unknown_breakdown": {},
   "validation_results": {},
-  "tech_stack_analysis": {},
-  "last_updated": "2025-07-22T21:51:07.070360"
+  "tech_stack_analysis": {
+    "frontend": {
+      "technologies": [
+        "js",
+        "supabase",
+        "ts"
+      ],
+      "count": 3
+    },
+    "backend": {
+      "technologies": [
+        "express",
+        "jest",
+        "nodejs",
+        "prometheus",
+        "redis",
+        "ts"
+      ],
+      "count": 6
+    },
+    "devops": {
+      "technologies": [
+        "github"
+      ],
+      "count": 1
+    }
+  },
+  "last_updated": "2025-07-22T20:50:15.764008"
 }

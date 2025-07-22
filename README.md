@@ -67,7 +67,7 @@ I believe in using the right tool for the job. Here's my current technology stac
 
 #### **🗄️ Database & Cloud**
 <div align="center">
-  <img src="https://skillicons.dev/icons?i=mongodb,postgres" alt="Database & Cloud Technologies" />
+  <img src="https://skillicons.dev/icons?i=postgres" alt="Database & Cloud Technologies" />
 </div>
 
 #### **🤖 AI & Machine Learning**
@@ -77,7 +77,7 @@ I believe in using the right tool for the job. Here's my current technology stac
 
 #### **🛠️ Development Tools**
 <div align="center">
-  <img src="https://skillicons.dev/icons?i=docker" alt="Development Tools" />
+  <img src="https://skillicons.dev/icons?i=docker,github" alt="Development Tools" />
 </div>
 
 
@@ -223,4 +223,4 @@ I'm always up for connecting with fellow developers, discussing interesting proj
 
 ---
 
-*Last updated: July 22, 2025 at 22:28 UTC*
+*Last updated: July 22, 2025 at 20:50 UTC*
