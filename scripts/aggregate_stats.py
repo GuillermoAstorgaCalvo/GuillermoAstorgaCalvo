@@ -204,11 +204,14 @@ def main() -> None:
             logger.error("No repository statistics found.")
             sys.exit(1)
 
+        logger.info(f"Processing {len(repository_stats_data)} repository data entries")
+
         # Convert dictionary data to RepositoryStats objects
         from stats_processor import RepositoryStats
 
         repository_stats_list = []
         for repo_data in repository_stats_data:
+            logger.info(f"Processing repository data: {repo_data.get('display_name', 'Unknown')}")
             try:
                 display_name = repo_data.get("display_name", "Unknown")
                 guillermo_stats = AuthorStats(

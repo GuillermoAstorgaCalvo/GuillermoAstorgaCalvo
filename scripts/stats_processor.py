@@ -299,8 +299,10 @@ class StatsProcessor:
         """
         try:
             unified_stats = UnifiedStats()
+            self.logger.info(f"Aggregating stats from {len(repository_stats_list)} repositories")
 
             for repo_stats in repository_stats_list:
+                self.logger.info(f"Processing repository: {repo_stats.display_name}")
                 try:
                     # Add to unified totals
                     unified_stats.total_loc += repo_stats.repo_totals.loc
@@ -308,20 +310,13 @@ class StatsProcessor:
                     unified_stats.total_files += repo_stats.repo_totals.files
 
                     # Add to Guillermo's unified stats
-                    if unified_stats.guillermo_unified:
-                        unified_stats.guillermo_unified.add(repo_stats.guillermo_stats)
+                    unified_stats.guillermo_unified.add(repo_stats.guillermo_stats)
 
                     # Add to repo breakdown
-                    if unified_stats.repo_breakdown:
-                        unified_stats.repo_breakdown[repo_stats.display_name] = (
-                            repo_stats
-                        )
+                    unified_stats.repo_breakdown[repo_stats.display_name] = repo_stats
 
                     # Aggregate language stats
-                    if (
-                        repo_stats.language_stats
-                        and unified_stats.unified_language_stats
-                    ):
+                    if repo_stats.language_stats:
                         for lang, stats in repo_stats.language_stats.items():
                             if lang not in unified_stats.unified_language_stats:
                                 unified_stats.unified_language_stats[lang] = {
@@ -340,6 +335,7 @@ class StatsProcessor:
                             ] += stats.get("files", 0)
 
                     unified_stats.repos_processed += 1
+                    self.logger.info(f"Successfully processed {repo_stats.display_name}")
 
                 except (TypeError, AttributeError, KeyError) as e:
                     self.logger.warning(
@@ -347,6 +343,10 @@ class StatsProcessor:
                     )
                     continue
 
+            self.logger.info(f"Aggregation complete. Processed {unified_stats.repos_processed} repositories")
+            self.logger.info(f"Total LOC: {unified_stats.total_loc}, Total commits: {unified_stats.total_commits}")
+            self.logger.info(f"Repo breakdown contains {len(unified_stats.repo_breakdown)} repositories")
+            
             return unified_stats
 
         except (TypeError, AttributeError, ValueError) as e:
