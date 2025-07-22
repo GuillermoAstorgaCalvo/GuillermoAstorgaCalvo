@@ -57,17 +57,12 @@ I believe in using the right tool for the job. Here's my current technology stac
 
 #### **🌐 Frontend Development**
 <div align="center">
-  <img src="https://skillicons.dev/icons?i=eslint,eslintprettier,eslintsecurity,eslintsonarjs,lodash,proj4js,supabase,ts" alt="Frontend Technologies" />
+  <img src="https://skillicons.dev/icons?i=js,supabase,ts" alt="Frontend Technologies" />
 </div>
 
 #### **⚙️ Backend Development**
 <div align="center">
-  <img src="https://skillicons.dev/icons?i=artillery,cors,compression,cronjobs,express,helmet,lrucache,nodecache" alt="Backend Technologies" />
-</div>
-
-#### **🛠️ Development Tools**
-<div align="center">
-  <img src="https://skillicons.dev/icons?i=awsses" alt="Development Tools" />
+  <img src="https://skillicons.dev/icons?i=express,jest,nodejs,prometheus,redis,ts" alt="Backend Technologies" />
 </div>
 
 
@@ -213,4 +208,4 @@ I'm always up for connecting with fellow developers, discussing interesting proj
 
 ---
 
-*Last updated: July 22, 2025 at 07:44 UTC*
+*Last updated: July 22, 2025 at 08:17 UTC*
