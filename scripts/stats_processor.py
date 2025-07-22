@@ -346,7 +346,7 @@ class StatsProcessor:
             self.logger.info(f"Aggregation complete. Processed {unified_stats.repos_processed} repositories")
             self.logger.info(f"Total LOC: {unified_stats.total_loc}, Total commits: {unified_stats.total_commits}")
             self.logger.info(f"Repo breakdown contains {len(unified_stats.repo_breakdown)} repositories")
-            
+
             return unified_stats
 
         except (TypeError, AttributeError, ValueError) as e:
