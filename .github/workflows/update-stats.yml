@@ -320,8 +320,8 @@ jobs:
           fi
 
           # Verify output files were created
-          if [[ ! -f "repo_stats.json" ]]; then
-            echo "❌ repo_stats.json was not generated"
+          if [[ ! -f "${REPO_NAME}_stats.json" ]]; then
+            echo "❌ ${REPO_NAME}_stats.json was not generated"
             exit 1
           fi
 
@@ -337,7 +337,7 @@ jobs:
         with:
           name: ${{ matrix.repository.artifact_name }}
           path: |
-            scripts/repo_stats.json
+            scripts/${{ matrix.repository.name }}_stats.json
             scripts/tech_stack_analysis.json
           retention-days: 1
 

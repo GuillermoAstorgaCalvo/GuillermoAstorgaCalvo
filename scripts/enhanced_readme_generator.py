@@ -30,29 +30,44 @@ def load_unified_stats() -> dict[str, Any]:
         # Always look in the project root directory (parent of scripts)
         script_dir = Path(__file__).parent
         root_dir = script_dir.parent
-        stats_path = root_dir / "unified_stats.json"
-
-        if stats_path.exists():
-            with open(stats_path, encoding="utf-8") as f:
+        
+        # Try to load detailed stats first, fall back to basic stats
+        detailed_stats_path = root_dir / "unified_stats_detailed.json"
+        basic_stats_path = root_dir / "unified_stats.json"
+        
+        # Prefer detailed stats if available
+        if detailed_stats_path.exists():
+            with open(detailed_stats_path, encoding="utf-8") as f:
                 data = json.load(f)
             if isinstance(data, dict):
+                logger.info("Loaded detailed unified stats")
                 return data
             else:
-                logger.error("Unified stats data is not a dictionary")
+                logger.error("Detailed unified stats data is not a dictionary")
+        
+        # Fall back to basic stats
+        if basic_stats_path.exists():
+            with open(basic_stats_path, encoding="utf-8") as f:
+                data = json.load(f)
+            if isinstance(data, dict):
+                logger.info("Loaded basic unified stats (fallback)")
+                return data
+            else:
+                logger.error("Basic unified stats data is not a dictionary")
                 return {}
 
         logger.debug(
-            f"unified_stats.json not found at {stats_path} (this is normal for first run)"
+            f"No unified stats files found at {root_dir} (this is normal for first run)"
         )
         return {}
     except (FileNotFoundError, PermissionError) as e:
-        logger.warning(f"Could not read unified_stats.json: {e}")
+        logger.warning(f"Could not read unified stats files: {e}")
         return {}
     except (json.JSONDecodeError, TypeError) as e:
-        logger.error(f"Invalid JSON in unified_stats.json: {e}")
+        logger.error(f"Invalid JSON in unified stats files: {e}")
         return {}
     except OSError as e:
-        logger.error(f"IO error reading unified_stats.json: {e}")
+        logger.error(f"IO error reading unified stats files: {e}")
         return {}
 
 
@@ -658,9 +673,22 @@ def generate_enhanced_stats_from_unified(unified_stats: dict[str, Any]) -> str:
             "purple": "9C27B0",
         }
 
-    # Basic stats badges
+    # Basic stats badges - handle both detailed and basic stats structures
     global_summary = unified_stats.get("global_summary", {})
+    if not global_summary:
+        # Fall back to basic stats structure where data is at root level
+        global_summary = {
+            "total_loc": unified_stats.get("total_loc", 0),
+            "total_commits": unified_stats.get("total_commits", 0),
+            "total_files": unified_stats.get("total_files", 0),
+            "repositories_processed": unified_stats.get("repos_processed", 0),
+        }
+    
     guillermo_contribution = global_summary.get("guillermo_contribution", {})
+    if not guillermo_contribution:
+        # Fall back to basic stats structure
+        guillermo_contribution = unified_stats.get("guillermo_unified", {})
+    
     productivity_metrics = unified_stats.get("productivity_metrics", {})
 
     stats_badges = []
@@ -708,7 +736,12 @@ def generate_enhanced_stats_from_unified(unified_stats: dict[str, Any]) -> str:
 
     # Language breakdown with SVG chart
     language_stats = ""
+    # Try detailed stats structure first, then fall back to basic stats structure
     language_analysis = unified_stats.get("language_analysis", {})
+    if not language_analysis:
+        # Fall back to basic stats structure
+        language_analysis = unified_stats.get("unified_language_stats", {})
+    
     if language_analysis:
         # Sort languages by lines of code (not used but kept for potential future use)
         # sorted_languages = sorted(
@@ -728,11 +761,15 @@ def generate_enhanced_stats_from_unified(unified_stats: dict[str, Any]) -> str:
     # Repository insights
     repo_insights = ""
     repo_analysis = unified_stats.get("repository_analysis", {})
+    if not repo_analysis:
+        # Fall back to basic stats structure
+        repo_analysis = unified_stats.get("repo_breakdown", {})
+    
     if repo_analysis:
         # Sort repositories by Guillermo's contribution
         sorted_repos = sorted(
             repo_analysis.items(),
-            key=lambda x: x[1]["guillermo_stats"].get("loc", 0),
+            key=lambda x: x[1].get("guillermo_stats", {}).get("loc", 0),
             reverse=True,
         )[:3]
 

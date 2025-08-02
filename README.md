@@ -41,19 +41,40 @@ I started coding because I wanted to build things that could actually help peopl
 
 <!-- Dynamic Stats Overview -->
 <div align="center">
-  
+  <img src="https://img.shields.io/badge/📈_Lines_of_Code-41,286-58A6FF?style=for-the-badge&logo=github&logoColor=white" alt="Lines of Code" />  <img src="https://img.shields.io/badge/📝_Commits-41-4ECDC4?style=for-the-badge&logo=github&logoColor=white" alt="Total Commits" />  <img src="https://img.shields.io/badge/📁_Files-142-FF6B6B?style=for-the-badge&logo=github&logoColor=white" alt="Total Files" />  <img src="https://img.shields.io/badge/🏢_Repositories-1-9C27B0?style=for-the-badge&logo=github&logoColor=white" alt="Repositories" />
 </div>
 
 
+### **👨‍💻 My Contributions**
+🎯 **99.9% of all code** (41,255 lines)
+📝 **40 commits** across all projects
+📁 **140 files** created or modified
+
+
+
+### **⚡ Productivity Metrics**
+🚀 **1031 lines per commit**
+📊 **3.5 files per commit**
+💡 **295 lines per file**
+
+
+
+### **💻 Top Languages**
+
+<p align="center">
+  <img src="assets/language_stats.svg" alt="Languages by Lines of Code" width="500" />
+</p>
 
 
 
 
 
+### **🏢 Top Projects**
+• **TypeScript Backend** - 41,255 lines (99.9% contribution)
 
 
 
-
+### **💡 Key Insights**
 
 
 
@@ -244,4 +265,4 @@ I'm always up for connecting with fellow developers, discussing interesting proj
 
 ---
 
-*Last updated: August 02, 2025 at 06:29 UTC*
+*Last updated: August 02, 2025 at 08:43 UTC*

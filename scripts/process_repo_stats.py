@@ -247,7 +247,9 @@ def main() -> None:
         repo_stats = stats_processor.process_repository_data(authors, display_name)
         repo_stats.language_stats = language_stats
         stats_dict = repo_stats.to_dict()
-        output_filename = config.get_stats_filename()
+        # Use repository name to create unique filename
+        repo_name = env_manager.get_repo_name()
+        output_filename = f"{repo_name}_stats.json"
         output_path = Path(__file__).parent / output_filename
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump(stats_dict, f, indent=2, ensure_ascii=False)
