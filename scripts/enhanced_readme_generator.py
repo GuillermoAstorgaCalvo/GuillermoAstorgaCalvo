@@ -163,8 +163,162 @@ def format_number(num: int) -> str:
     return f"{num:,}"
 
 
-def get_project_descriptions() -> dict[str, dict[str, Any]]:
-    """Get comprehensive project descriptions with authentic narratives"""
+def get_dynamic_project_descriptions() -> dict[str, dict[str, Any]]:
+    """Get project descriptions with dynamic tech stack detection from repositories."""
+    try:
+        from api_based_repository_analyzer import APIBasedRepositoryAnalyzer
+        from enhanced_dependency_analyzer import EnhancedDependencyAnalyzer
+
+        logger.info("Attempting to get dynamic project tech stacks...")
+
+        # Try API-based analysis first (more comprehensive)
+        try:
+            api_analyzer = APIBasedRepositoryAnalyzer()
+            api_result = api_analyzer.analyze_all_repositories()
+
+            if api_result and isinstance(api_result, dict) and len(api_result) > 0:
+                logger.info(
+                    "Using API-based repository analysis for project tech stacks"
+                )
+                return _merge_api_analysis_with_projects(api_result)
+        except Exception as e:
+            logger.warning(f"API-based analysis failed: {e}")
+
+        # Fallback to enhanced dependency analyzer
+        try:
+            enhanced_analyzer = EnhancedDependencyAnalyzer()
+            enhanced_result = enhanced_analyzer.get_comprehensive_tech_stack()
+
+            if enhanced_result:
+                logger.info(
+                    "Using enhanced dependency analysis for project tech stacks"
+                )
+                return _merge_enhanced_analysis_with_projects(enhanced_result)
+        except Exception as e:
+            logger.warning(f"Enhanced dependency analysis failed: {e}")
+
+        logger.info(
+            "Dynamic analysis failed, falling back to static project descriptions"
+        )
+        return {}
+
+    except Exception as e:
+        logger.error(f"Error in dynamic project analysis: {e}")
+        return {}
+
+
+def _merge_api_analysis_with_projects(
+    api_result: dict[str, Any],
+) -> dict[str, dict[str, Any]]:
+    """Merge API analysis results with project descriptions."""
+    # Load base project descriptions
+    base_projects = _get_base_project_descriptions()
+
+    # The API analyzer returns tech stack data directly, not nested under "tech_stack_analysis"
+    tech_stack_analysis = api_result if isinstance(api_result, dict) else {}
+
+    logger.info(f"API Analysis result keys: {list(tech_stack_analysis.keys())}")
+    logger.info(f"API Analysis result: {tech_stack_analysis}")
+
+    # Map project names to their expected tech stack categories
+    project_tech_mapping = {
+        "InmoIA Frontend": ["frontend"],  # Frontend-only project
+        "TypeScript Backend": [
+            "backend",
+            "database",
+            "devops",
+        ],  # Backend with database and DevOps
+        "Python AI MCP Backend": ["backend", "ai_ml"],  # AI/ML backend
+        "FacturaIA": ["frontend", "backend", "ai_ml"],  # Full-stack with AI
+        "Restaurant App": ["frontend", "backend", "database"],  # Full-stack app
+    }
+
+    # Update projects with dynamic tech stacks
+    for project_name, project_info in base_projects.items():
+        if project_name in project_tech_mapping:
+            dynamic_tech_stack = []
+
+            # Collect technologies from relevant categories
+            for category in project_tech_mapping[project_name]:
+                if category in tech_stack_analysis:
+                    category_techs = tech_stack_analysis[category].get(
+                        "technologies", []
+                    )
+                    logger.info(
+                        f"Found {len(category_techs)} technologies for {project_name} in {category}: {category_techs}"
+                    )
+                    # Convert skillicon IDs back to readable names
+                    readable_techs = _convert_skillicon_to_readable(category_techs)
+                    dynamic_tech_stack.extend(readable_techs)
+
+            # Update project with dynamic tech stack if found
+            if dynamic_tech_stack:
+                # Remove duplicates and limit to top technologies
+                unique_techs = list(dict.fromkeys(dynamic_tech_stack))[
+                    :6
+                ]  # Limit to 6 most important
+                project_info["tech_stack"] = unique_techs
+                logger.info(
+                    f"Updated {project_name} with dynamic tech stack: {unique_techs}"
+                )
+            else:
+                logger.info(
+                    f"No dynamic tech stack found for {project_name}, keeping static values"
+                )
+
+    return base_projects
+
+
+def _merge_enhanced_analysis_with_projects(
+    enhanced_result: dict[str, Any],
+) -> dict[str, dict[str, Any]]:
+    """Merge enhanced analysis results with project descriptions."""
+    # Load base project descriptions
+    base_projects = _get_base_project_descriptions()
+
+    # Get tech stack analysis from enhanced results
+    tech_stack_analysis = enhanced_result.get("tech_stack_analysis", {})
+
+    # Map project names to their expected tech stack categories
+    project_tech_mapping = {
+        "InmoIA Frontend": ["frontend"],
+        "TypeScript Backend": ["backend", "database", "devops"],
+        "Python AI MCP Backend": ["backend", "database", "ai_ml"],
+        "FacturaIA": ["frontend", "backend", "database", "ai_ml"],
+        "Restaurant App": ["frontend", "backend", "database"],
+    }
+
+    # Update projects with dynamic tech stacks
+    for project_name, project_info in base_projects.items():
+        if project_name in project_tech_mapping:
+            dynamic_tech_stack = []
+
+            # Collect technologies from relevant categories
+            for category in project_tech_mapping[project_name]:
+                if category in tech_stack_analysis:
+                    category_techs = tech_stack_analysis[category].get(
+                        "technologies", []
+                    )
+                    # Convert skillicon IDs back to readable names
+                    readable_techs = _convert_skillicon_to_readable(category_techs)
+                    dynamic_tech_stack.extend(readable_techs)
+
+            # Update project with dynamic tech stack if found
+            if dynamic_tech_stack:
+                # Remove duplicates and limit to top technologies
+                unique_techs = list(dict.fromkeys(dynamic_tech_stack))[
+                    :6
+                ]  # Limit to 6 most important
+                project_info["tech_stack"] = unique_techs
+                logger.info(
+                    f"Updated {project_name} with dynamic tech stack: {unique_techs}"
+                )
+
+    return base_projects
+
+
+def _get_base_project_descriptions() -> dict[str, dict[str, Any]]:
+    """Get base project descriptions without tech stacks (to be filled dynamically)."""
     # Load configuration to get project URLs
     try:
         from config_manager import create_config_manager
@@ -178,7 +332,12 @@ def get_project_descriptions() -> dict[str, dict[str, Any]]:
     return {
         "InmoIA Frontend": {
             "description": "A real estate platform that actually helps people find their perfect home. Started as a simple listing site and grew into something much bigger.",
-            "tech_stack": ["React", "TypeScript", "TailwindCSS", "Next.js"],
+            "tech_stack": [
+                "React",
+                "TypeScript",
+                "TailwindCSS",
+                "Next.js",
+            ],  # Default fallback
             "features": [
                 "AI Property Matching",
                 "Virtual Tours",
@@ -193,7 +352,12 @@ def get_project_descriptions() -> dict[str, dict[str, Any]]:
         },
         "TypeScript Backend": {
             "description": "The engine that powers everything. Built this microservices architecture to handle the heavy lifting - authentication, data processing, you name it.",
-            "tech_stack": ["Node.js", "TypeScript", "PostgreSQL", "Docker"],
+            "tech_stack": [
+                "Node.js",
+                "TypeScript",
+                "PostgreSQL",
+                "Docker",
+            ],  # Default fallback
             "features": ["REST APIs", "Authentication", "Database Management"],
             "status": "🟢 Active Development",
             "url": project_urls.get(
@@ -204,7 +368,12 @@ def get_project_descriptions() -> dict[str, dict[str, Any]]:
         },
         "Python AI MCP Backend": {
             "description": "This is where things get interesting. Built an AI backend that can understand what you're asking and actually do something about it.",
-            "tech_stack": ["Python", "FastAPI", "OpenAI", "PostgreSQL"],
+            "tech_stack": [
+                "Python",
+                "FastAPI",
+                "OpenAI",
+                "PostgreSQL",
+            ],  # Default fallback
             "features": [
                 "AI Task Completion",
                 "Natural Language Processing",
@@ -219,7 +388,12 @@ def get_project_descriptions() -> dict[str, dict[str, Any]]:
         },
         "FacturaIA": {
             "description": "Got tired of manually processing invoices, so I built something to do it for me. Sometimes the best projects come from solving your own problems.",
-            "tech_stack": ["Python", "React", "TypeScript", "PostgreSQL"],
+            "tech_stack": [
+                "Python",
+                "React",
+                "TypeScript",
+                "PostgreSQL",
+            ],  # Default fallback
             "features": ["OCR Processing", "Data Extraction", "Invoice Management"],
             "status": "🟡 In Development",
             "url": project_urls.get(
@@ -229,7 +403,12 @@ def get_project_descriptions() -> dict[str, dict[str, Any]]:
         },
         "Restaurant App": {
             "description": "My first full-stack project that actually went live. Built it for a friend's restaurant and it's still running today.",
-            "tech_stack": ["React", "Node.js", "MongoDB", "Express.js"],
+            "tech_stack": [
+                "React",
+                "Node.js",
+                "MongoDB",
+                "Express.js",
+            ],  # Default fallback
             "features": ["Order Management", "Menu System", "Admin Dashboard"],
             "status": "🟢 Live",
             "url": project_urls.get(
@@ -238,6 +417,100 @@ def get_project_descriptions() -> dict[str, dict[str, Any]]:
             "story": "This was the project that made me realize I could actually build things people would use. Seeing real customers place orders through something I built was incredibly satisfying.",
         },
     }
+
+
+def _convert_skillicon_to_readable(skillicon_ids: list[str]) -> list[str]:
+    """Convert skillicon IDs back to readable technology names."""
+    # Mapping from skillicon IDs to readable names
+    skillicon_to_readable = {
+        # Frontend
+        "react": "React",
+        "ts": "TypeScript",
+        "js": "JavaScript",
+        "nextjs": "Next.js",
+        "tailwind": "TailwindCSS",
+        "html": "HTML5",
+        "css": "CSS3",
+        "vue": "Vue.js",
+        "angular": "Angular",
+        "svelte": "Svelte",
+        "supabase": "Supabase",
+        # Backend
+        "nodejs": "Node.js",
+        "py": "Python",
+        "express": "Express.js",
+        "fastapi": "FastAPI",
+        "django": "Django",
+        "flask": "Flask",
+        "java": "Java",
+        "spring": "Spring Boot",
+        "csharp": "C#",
+        "go": "Go",
+        "rust": "Rust",
+        "php": "PHP",
+        "ruby": "Ruby",
+        # Database
+        "postgres": "PostgreSQL",
+        "mysql": "MySQL",
+        "mongodb": "MongoDB",
+        "redis": "Redis",
+        "sqlite": "SQLite",
+        "elasticsearch": "Elasticsearch",
+        "dynamodb": "DynamoDB",
+        # DevOps
+        "docker": "Docker",
+        "kubernetes": "Kubernetes",
+        "aws": "AWS",
+        "azure": "Azure",
+        "gcp": "Google Cloud",
+        "terraform": "Terraform",
+        "ansible": "Ansible",
+        "jenkins": "Jenkins",
+        "github": "GitHub",
+        "gitlab": "GitLab",
+        "git": "Git",
+        "linux": "Linux",
+        "vscode": "VS Code",
+        # AI/ML
+        "tensorflow": "TensorFlow",
+        "pytorch": "PyTorch",
+        "sklearn": "Scikit-learn",
+        "opencv": "OpenCV",
+        "pandas": "Pandas",
+        "numpy": "NumPy",
+        "openai": "OpenAI",
+        "anthropic": "Anthropic",
+        "langchain": "LangChain",
+        "transformers": "Transformers",
+        "tesseract": "Tesseract",
+        # Additional
+        "stripe": "Stripe",
+        "vite": "Vite",
+        "webpack": "Webpack",
+        "jest": "Jest",
+        "prometheus": "Prometheus",
+    }
+
+    readable_names = []
+    for skillicon_id in skillicon_ids:
+        readable_name = skillicon_to_readable.get(skillicon_id, skillicon_id.title())
+        readable_names.append(readable_name)
+
+    return readable_names
+
+
+def get_project_descriptions() -> dict[str, dict[str, Any]]:
+    """Get comprehensive project descriptions with dynamic tech stack detection"""
+    # Try to get dynamic project descriptions first
+    dynamic_projects = get_dynamic_project_descriptions()
+
+    if dynamic_projects:
+        logger.info("Using dynamic project descriptions with real tech stacks")
+        return dynamic_projects
+
+    # Fallback to static descriptions
+    logger.info("Using static project descriptions (fallback)")
+    return _get_base_project_descriptions()
 
 
 def generate_hero_section() -> str:
@@ -792,22 +1065,22 @@ I believe in using the right tool for the job. Here's my current technology stac
 
     # Helper function to generate category section
     def generate_category_section(
-        category_name: str, 
-        display_name: str, 
-        emoji: str, 
+        category_name: str,
+        display_name: str,
+        emoji: str,
         tech_list: list[str],
         max_icons: int = 8,
     ) -> str:
         """Generate a technology category section."""
         if not tech_list:
             return ""
-        
+
         # Get skillicon badges
         icons = ",".join(tech_list[:max_icons])
-        
+
         # Get additional dependencies
         additional_deps = get_additional_dependencies(category_name)
-        
+
         section = f"""### **{emoji} {display_name}**
 <div align="left">
   <img src="https://skillicons.dev/icons?i={icons}" alt="{display_name} Technologies" />
@@ -816,11 +1089,11 @@ I believe in using the right tool for the job. Here's my current technology stac
 **Technologies:** {format_tech_list(tech_list)}
 
 """
-        
+
         # Add additional dependencies if any
         if additional_deps:
             section += f"**Additional:** {format_tech_list(additional_deps)}\n\n"
-        
+
         return section
 
     # Generate each category section
