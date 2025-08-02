@@ -30,11 +30,11 @@ def load_unified_stats() -> dict[str, Any]:
         # Always look in the project root directory (parent of scripts)
         script_dir = Path(__file__).parent
         root_dir = script_dir.parent
-        
+
         # Try to load detailed stats first, fall back to basic stats
         detailed_stats_path = root_dir / "unified_stats_detailed.json"
         basic_stats_path = root_dir / "unified_stats.json"
-        
+
         # Prefer detailed stats if available
         if detailed_stats_path.exists():
             with open(detailed_stats_path, encoding="utf-8") as f:
@@ -44,7 +44,7 @@ def load_unified_stats() -> dict[str, Any]:
                 return data
             else:
                 logger.error("Detailed unified stats data is not a dictionary")
-        
+
         # Fall back to basic stats
         if basic_stats_path.exists():
             with open(basic_stats_path, encoding="utf-8") as f:
@@ -683,12 +683,12 @@ def generate_enhanced_stats_from_unified(unified_stats: dict[str, Any]) -> str:
             "total_files": unified_stats.get("total_files", 0),
             "repositories_processed": unified_stats.get("repos_processed", 0),
         }
-    
+
     guillermo_contribution = global_summary.get("guillermo_contribution", {})
     if not guillermo_contribution:
         # Fall back to basic stats structure
         guillermo_contribution = unified_stats.get("guillermo_unified", {})
-    
+
     productivity_metrics = unified_stats.get("productivity_metrics", {})
 
     stats_badges = []
@@ -741,7 +741,7 @@ def generate_enhanced_stats_from_unified(unified_stats: dict[str, Any]) -> str:
     if not language_analysis:
         # Fall back to basic stats structure
         language_analysis = unified_stats.get("unified_language_stats", {})
-    
+
     if language_analysis:
         # Sort languages by lines of code (not used but kept for potential future use)
         # sorted_languages = sorted(
@@ -764,7 +764,7 @@ def generate_enhanced_stats_from_unified(unified_stats: dict[str, Any]) -> str:
     if not repo_analysis:
         # Fall back to basic stats structure
         repo_analysis = unified_stats.get("repo_breakdown", {})
-    
+
     if repo_analysis:
         # Sort repositories by Guillermo's contribution
         sorted_repos = sorted(
