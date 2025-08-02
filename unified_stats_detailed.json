@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-07-22T21:12:54.928338Z",
+  "timestamp": "2025-08-02T06:29:07.671001Z",
   "metadata": {
     "version": "2.0",
     "generated_by": "Enhanced JSON Report Generator",
@@ -7,48 +7,48 @@
   },
   "global_summary": {
     "repositories_processed": 1,
-    "total_commits": 30,
-    "total_files": 140,
-    "total_loc": 40871,
+    "total_commits": 41,
+    "total_files": 142,
+    "total_loc": 41286,
     "guillermo_contribution": {
-      "loc": 40840,
-      "commits": 29,
-      "files": 138,
+      "loc": 41255,
+      "commits": 40,
+      "files": 140,
       "percentages": {
         "loc": 99.92,
-        "commits": 96.67,
-        "files": 98.57
+        "commits": 97.56,
+        "files": 98.59
       }
     }
   },
   "productivity_metrics": {
-    "avg_loc_per_commit": 1408.28,
-    "avg_files_per_commit": 4.76,
+    "avg_loc_per_commit": 1031.38,
+    "avg_files_per_commit": 3.5,
     "code_efficiency": {
-      "loc_per_file": 295.94202898550725,
-      "commits_per_file": 0.21014492753623187
+      "loc_per_file": 294.67857142857144,
+      "commits_per_file": 0.2857142857142857
     }
   },
   "language_analysis": {
     "Unknown": {
-      "lines": 3867,
+      "lines": 3870,
       "commits": 0,
       "files": 12,
-      "percentage": 9.46,
+      "percentage": 9.37,
       "avg_loc_per_commit": 0
     },
     "Markdown": {
       "lines": 27148,
       "commits": 0,
       "files": 54,
-      "percentage": 66.42,
+      "percentage": 65.76,
       "avg_loc_per_commit": 0
     },
     "TypeScript": {
-      "lines": 9579,
+      "lines": 9991,
       "commits": 0,
       "files": 19,
-      "percentage": 23.44,
+      "percentage": 24.2,
       "avg_loc_per_commit": 0
     },
     "JavaScript": {
@@ -62,23 +62,23 @@
   "repository_analysis": {
     "TypeScript Backend": {
       "guillermo_stats": {
-        "loc": 40840,
-        "commits": 29,
-        "files": 138
+        "loc": 41255,
+        "commits": 40,
+        "files": 140
       },
       "repo_totals": {
-        "loc": 40871,
-        "commits": 30,
-        "files": 140
+        "loc": 41286,
+        "commits": 41,
+        "files": 142
       },
       "percentages": {
         "loc": 99.92,
-        "commits": 96.67,
-        "files": 98.57
+        "commits": 97.56,
+        "files": 98.59
       },
       "productivity": {
-        "avg_loc_per_commit": 1408.2758620689656,
-        "avg_files_per_commit": 4.758620689655173
+        "avg_loc_per_commit": 1031.375,
+        "avg_files_per_commit": 3.5
       }
     }
   },
@@ -112,14 +112,14 @@
   "complexity_analysis": {
     "project_scale": {
       "total_projects": 1,
-      "avg_loc_per_project": 40871.0,
-      "avg_commits_per_project": 30.0,
-      "avg_files_per_project": 140.0
+      "avg_loc_per_project": 41286.0,
+      "avg_commits_per_project": 41.0,
+      "avg_files_per_project": 142.0
     },
     "code_distribution": {
-      "loc_per_file": 291.9357142857143,
-      "commits_per_file": 0.21428571428571427,
-      "files_per_commit": 4.666666666666667
+      "loc_per_file": 290.7464788732394,
+      "commits_per_file": 0.2887323943661972,
+      "files_per_commit": 3.4634146341463414
     },
     "repository_diversity": {
       "languages_used": 2,
@@ -136,26 +136,26 @@
   },
   "raw_data": {
     "guillermo_unified": {
-      "loc": 40840,
-      "commits": 29,
-      "files": 138
+      "loc": 41255,
+      "commits": 40,
+      "files": 140
     },
     "repository_breakdown": {
       "TypeScript Backend": {
         "display_name": "TypeScript Backend",
         "guillermo_stats": {
-          "loc": 40840,
-          "commits": 29,
-          "files": 138
+          "loc": 41255,
+          "commits": 40,
+          "files": 140
         },
         "repo_totals": {
-          "loc": 40871,
-          "commits": 30,
-          "files": 140
+          "loc": 41286,
+          "commits": 41,
+          "files": 142
         },
         "language_stats": {
           "Unknown": {
-            "loc": 3867,
+            "loc": 3870,
             "commits": 0,
             "files": 12
           },
@@ -165,7 +165,7 @@
             "files": 54
           },
           "TypeScript": {
-            "loc": 9579,
+            "loc": 9991,
             "commits": 0,
             "files": 19
           },
@@ -179,7 +179,7 @@
     },
     "language_breakdown": {
       "Unknown": {
-        "loc": 3867,
+        "loc": 3870,
         "commits": 0,
         "files": 12
       },
@@ -189,7 +189,7 @@
         "files": 54
       },
       "TypeScript": {
-        "loc": 9579,
+        "loc": 9991,
         "commits": 0,
         "files": 19
       },
