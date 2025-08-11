@@ -1,12 +1,12 @@
 {
-  "total_loc": 219919,
-  "total_commits": 982,
-  "total_files": 2090,
+  "total_loc": 241437,
+  "total_commits": 1020,
+  "total_files": 2162,
   "repos_processed": 5,
   "guillermo_unified": {
-    "loc": 194133,
-    "commits": 375,
-    "files": 1523
+    "loc": 205823,
+    "commits": 392,
+    "files": 1565
   },
   "repo_breakdown": {
     "FacturaIA": {
@@ -56,6 +56,86 @@
           "loc": 5920,
           "commits": 0,
           "files": 12
+        }
+      }
+    },
+    "InmoIA Frontend": {
+      "display_name": "InmoIA Frontend",
+      "guillermo_stats": {
+        "loc": 105615,
+        "commits": 309,
+        "files": 1009
+      },
+      "repo_totals": {
+        "loc": 141198,
+        "commits": 936,
+        "files": 1604
+      },
+      "language_stats": {
+        "Unknown": {
+          "loc": 24235,
+          "commits": 0,
+          "files": 58
+        },
+        "Markdown": {
+          "loc": 125,
+          "commits": 0,
+          "files": 1
+        },
+        "JavaScript": {
+          "loc": 109,
+          "commits": 0,
+          "files": 1
+        },
+        "HTML": {
+          "loc": 202,
+          "commits": 0,
+          "files": 1
+        },
+        "TypeScript": {
+          "loc": 113860,
+          "commits": 0,
+          "files": 227
+        },
+        "CSS": {
+          "loc": 1357,
+          "commits": 0,
+          "files": 2
+        },
+        "SQL": {
+          "loc": 438,
+          "commits": 0,
+          "files": 1
+        }
+      }
+    },
+    "Python AI MCP Backend": {
+      "display_name": "Python AI MCP Backend",
+      "guillermo_stats": {
+        "loc": 17666,
+        "commits": 2,
+        "files": 28
+      },
+      "repo_totals": {
+        "loc": 17666,
+        "commits": 2,
+        "files": 28
+      },
+      "language_stats": {
+        "Unknown": {
+          "loc": 46,
+          "commits": 0,
+          "files": 2
+        },
+        "Markdown": {
+          "loc": 25,
+          "commits": 0,
+          "files": 1
+        },
+        "Python": {
+          "loc": 1553,
+          "commits": 0,
+          "files": 3
         }
       }
     },
@@ -133,88 +213,13 @@
           "files": 1
         }
       }
-    },
-    "InmoIA Frontend": {
-      "display_name": "InmoIA Frontend",
-      "guillermo_stats": {
-        "loc": 93925,
-        "commits": 292,
-        "files": 967
-      },
-      "repo_totals": {
-        "loc": 119680,
-        "commits": 898,
-        "files": 1532
-      },
-      "language_stats": {
-        "Unknown": {
-          "loc": 20463,
-          "commits": 0,
-          "files": 50
-        },
-        "Markdown": {
-          "loc": 125,
-          "commits": 0,
-          "files": 1
-        },
-        "JavaScript": {
-          "loc": 109,
-          "commits": 0,
-          "files": 1
-        },
-        "HTML": {
-          "loc": 202,
-          "commits": 0,
-          "files": 1
-        },
-        "TypeScript": {
-          "loc": 96592,
-          "commits": 0,
-          "files": 192
-        },
-        "CSS": {
-          "loc": 1357,
-          "commits": 0,
-          "files": 2
-        }
-      }
-    },
-    "Python AI MCP Backend": {
-      "display_name": "Python AI MCP Backend",
-      "guillermo_stats": {
-        "loc": 17666,
-        "commits": 2,
-        "files": 28
-      },
-      "repo_totals": {
-        "loc": 17666,
-        "commits": 2,
-        "files": 28
-      },
-      "language_stats": {
-        "Unknown": {
-          "loc": 46,
-          "commits": 0,
-          "files": 2
-        },
-        "Markdown": {
-          "loc": 25,
-          "commits": 0,
-          "files": 1
-        },
-        "Python": {
-          "loc": 1553,
-          "commits": 0,
-          "files": 3
-        }
-      }
     }
   },
   "unified_language_stats": {
     "Unknown": {
-      "loc": 26112,
+      "loc": 29884,
       "commits": 0,
-      "files": 75
+      "files": 83
     },
     "Markdown": {
       "loc": 29311,
@@ -242,9 +247,14 @@
       "files": 4
     },
     "TypeScript": {
-      "loc": 120503,
+      "loc": 137771,
       "commits": 0,
-      "files": 238
+      "files": 273
+    },
+    "SQL": {
+      "loc": 438,
+      "commits": 0,
+      "files": 1
     }
   },
   "other_unknown_breakdown": {},
@@ -253,28 +263,40 @@
     "frontend": {
       "technologies": [
         "js",
-        "supabase",
+        "nextjs",
+        "react",
+        "tailwind",
         "ts"
       ],
-      "count": 3
+      "count": 5
     },
     "backend": {
       "technologies": [
         "express",
         "jest",
-        "nodejs",
-        "prometheus",
-        "redis",
         "ts"
       ],
-      "count": 6
+      "count": 3
+    },
+    "database": {
+      "technologies": [
+        "postgres",
+        "sequelize"
+      ],
+      "count": 2
     },
     "devops": {
       "technologies": [
-        "github"
+        "docker"
+      ],
+      "count": 1
+    },
+    "ai_ml": {
+      "technologies": [
+        "tensorflow"
       ],
       "count": 1
     }
   },
-  "last_updated": "2025-08-04T03:41:10.471374"
+  "last_updated": "2025-08-11T03:34:18.589559"
 }
