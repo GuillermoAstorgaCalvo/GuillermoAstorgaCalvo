@@ -1,12 +1,12 @@
 {
-  "total_loc": 241437,
-  "total_commits": 1020,
-  "total_files": 2162,
+  "total_loc": 263153,
+  "total_commits": 1050,
+  "total_files": 2205,
   "repos_processed": 5,
   "guillermo_unified": {
-    "loc": 205823,
-    "commits": 392,
-    "files": 1565
+    "loc": 227407,
+    "commits": 412,
+    "files": 1611
   },
   "repo_breakdown": {
     "FacturaIA": {
@@ -62,20 +62,20 @@
     "InmoIA Frontend": {
       "display_name": "InmoIA Frontend",
       "guillermo_stats": {
-        "loc": 105615,
-        "commits": 309,
-        "files": 1009
+        "loc": 127199,
+        "commits": 329,
+        "files": 1055
       },
       "repo_totals": {
-        "loc": 141198,
-        "commits": 936,
-        "files": 1604
+        "loc": 162914,
+        "commits": 966,
+        "files": 1647
       },
       "language_stats": {
         "Unknown": {
-          "loc": 24235,
+          "loc": 35221,
           "commits": 0,
-          "files": 58
+          "files": 80
         },
         "Markdown": {
           "loc": 125,
@@ -93,9 +93,9 @@
           "files": 1
         },
         "TypeScript": {
-          "loc": 113860,
+          "loc": 117490,
           "commits": 0,
-          "files": 227
+          "files": 234
         },
         "CSS": {
           "loc": 1357,
@@ -103,9 +103,9 @@
           "files": 2
         },
         "SQL": {
-          "loc": 438,
+          "loc": 7521,
           "commits": 0,
-          "files": 1
+          "files": 15
         }
       }
     },
@@ -217,9 +217,9 @@
   },
   "unified_language_stats": {
     "Unknown": {
-      "loc": 29884,
+      "loc": 40870,
       "commits": 0,
-      "files": 83
+      "files": 105
     },
     "Markdown": {
       "loc": 29311,
@@ -247,14 +247,14 @@
       "files": 4
     },
     "TypeScript": {
-      "loc": 137771,
+      "loc": 141401,
       "commits": 0,
-      "files": 273
+      "files": 280
     },
     "SQL": {
-      "loc": 438,
+      "loc": 7521,
       "commits": 0,
-      "files": 1
+      "files": 15
     }
   },
   "other_unknown_breakdown": {},
@@ -298,5 +298,5 @@
       "count": 1
     }
   },
-  "last_updated": "2025-08-11T03:34:18.589559"
+  "last_updated": "2025-08-18T03:33:22.656151"
 }
