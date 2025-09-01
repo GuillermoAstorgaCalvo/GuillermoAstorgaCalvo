@@ -9,56 +9,6 @@
     "files": 1623
   },
   "repo_breakdown": {
-    "FacturaIA": {
-      "display_name": "FacturaIA",
-      "guillermo_stats": {
-        "loc": 16151,
-        "commits": 3,
-        "files": 148
-      },
-      "repo_totals": {
-        "loc": 16151,
-        "commits": 3,
-        "files": 148
-      },
-      "language_stats": {
-        "Unknown": {
-          "loc": 1548,
-          "commits": 0,
-          "files": 6
-        },
-        "Markdown": {
-          "loc": 1841,
-          "commits": 0,
-          "files": 3
-        },
-        "Python": {
-          "loc": 6106,
-          "commits": 0,
-          "files": 12
-        },
-        "JavaScript": {
-          "loc": 35,
-          "commits": 0,
-          "files": 1
-        },
-        "HTML": {
-          "loc": 24,
-          "commits": 0,
-          "files": 1
-        },
-        "CSS": {
-          "loc": 298,
-          "commits": 0,
-          "files": 1
-        },
-        "TypeScript": {
-          "loc": 5920,
-          "commits": 0,
-          "files": 12
-        }
-      }
-    },
     "InmoIA Frontend": {
       "display_name": "InmoIA Frontend",
       "guillermo_stats": {
@@ -139,41 +89,6 @@
         }
       }
     },
-    "TypeScript Backend": {
-      "display_name": "TypeScript Backend",
-      "guillermo_stats": {
-        "loc": 41255,
-        "commits": 40,
-        "files": 140
-      },
-      "repo_totals": {
-        "loc": 41286,
-        "commits": 41,
-        "files": 142
-      },
-      "language_stats": {
-        "Unknown": {
-          "loc": 3870,
-          "commits": 0,
-          "files": 12
-        },
-        "Markdown": {
-          "loc": 27148,
-          "commits": 0,
-          "files": 54
-        },
-        "TypeScript": {
-          "loc": 9991,
-          "commits": 0,
-          "files": 19
-        },
-        "JavaScript": {
-          "loc": 83,
-          "commits": 0,
-          "files": 1
-        }
-      }
-    },
     "Restaurant App": {
       "display_name": "Restaurant App",
       "guillermo_stats": {
@@ -213,6 +128,91 @@
           "files": 1
         }
       }
+    },
+    "FacturaIA": {
+      "display_name": "FacturaIA",
+      "guillermo_stats": {
+        "loc": 16151,
+        "commits": 3,
+        "files": 148
+      },
+      "repo_totals": {
+        "loc": 16151,
+        "commits": 3,
+        "files": 148
+      },
+      "language_stats": {
+        "Unknown": {
+          "loc": 1548,
+          "commits": 0,
+          "files": 6
+        },
+        "Markdown": {
+          "loc": 1841,
+          "commits": 0,
+          "files": 3
+        },
+        "Python": {
+          "loc": 6106,
+          "commits": 0,
+          "files": 12
+        },
+        "JavaScript": {
+          "loc": 35,
+          "commits": 0,
+          "files": 1
+        },
+        "HTML": {
+          "loc": 24,
+          "commits": 0,
+          "files": 1
+        },
+        "CSS": {
+          "loc": 298,
+          "commits": 0,
+          "files": 1
+        },
+        "TypeScript": {
+          "loc": 5920,
+          "commits": 0,
+          "files": 12
+        }
+      }
+    },
+    "TypeScript Backend": {
+      "display_name": "TypeScript Backend",
+      "guillermo_stats": {
+        "loc": 41255,
+        "commits": 40,
+        "files": 140
+      },
+      "repo_totals": {
+        "loc": 41286,
+        "commits": 41,
+        "files": 142
+      },
+      "language_stats": {
+        "Unknown": {
+          "loc": 3870,
+          "commits": 0,
+          "files": 12
+        },
+        "Markdown": {
+          "loc": 27148,
+          "commits": 0,
+          "files": 54
+        },
+        "TypeScript": {
+          "loc": 9991,
+          "commits": 0,
+          "files": 19
+        },
+        "JavaScript": {
+          "loc": 83,
+          "commits": 0,
+          "files": 1
+        }
+      }
     }
   },
   "unified_language_stats": {
@@ -226,11 +226,6 @@
       "commits": 0,
       "files": 60
     },
-    "Python": {
-      "loc": 7659,
-      "commits": 0,
-      "files": 15
-    },
     "JavaScript": {
       "loc": 411,
       "commits": 0,
@@ -241,18 +236,23 @@
       "commits": 0,
       "files": 2
     },
-    "CSS": {
-      "loc": 1769,
-      "commits": 0,
-      "files": 4
-    },
     "TypeScript": {
       "loc": 144041,
       "commits": 0,
       "files": 286
     },
+    "CSS": {
+      "loc": 1769,
+      "commits": 0,
+      "files": 4
+    },
     "SQL": {
       "loc": 7606,
+      "commits": 0,
+      "files": 15
+    },
+    "Python": {
+      "loc": 7659,
       "commits": 0,
       "files": 15
     }
@@ -263,40 +263,28 @@
     "frontend": {
       "technologies": [
         "js",
-        "nextjs",
-        "react",
-        "tailwind",
+        "supabase",
         "ts"
       ],
-      "count": 5
+      "count": 3
     },
     "backend": {
       "technologies": [
         "express",
         "jest",
+        "nodejs",
+        "prometheus",
+        "redis",
         "ts"
       ],
-      "count": 3
-    },
-    "database": {
-      "technologies": [
-        "postgres",
-        "sequelize"
-      ],
-      "count": 2
+      "count": 6
     },
     "devops": {
       "technologies": [
-        "docker"
-      ],
-      "count": 1
-    },
-    "ai_ml": {
-      "technologies": [
-        "tensorflow"
+        "github"
       ],
       "count": 1
     }
   },
-  "last_updated": "2025-08-25T03:25:55.295775"
+  "last_updated": "2025-09-01T03:29:31.360262"
 }
