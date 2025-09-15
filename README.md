@@ -41,21 +41,21 @@ I started coding because I wanted to build things that could actually help peopl
 
 <!-- Dynamic Stats Overview -->
 <div align="center">
-  <img src="https://img.shields.io/badge/📈_Lines_of_Code-298,169-58A6FF?style=for-the-badge&logo=github&logoColor=white" alt="Lines of Code" />  <img src="https://img.shields.io/badge/📝_Commits-1,078-4ECDC4?style=for-the-badge&logo=github&logoColor=white" alt="Total Commits" />  <img src="https://img.shields.io/badge/📁_Files-2,537-FF6B6B?style=for-the-badge&logo=github&logoColor=white" alt="Total Files" />  <img src="https://img.shields.io/badge/🏢_Repositories-5-9C27B0?style=for-the-badge&logo=github&logoColor=white" alt="Repositories" />
+  <img src="https://img.shields.io/badge/📈_Lines_of_Code-313,274-58A6FF?style=for-the-badge&logo=github&logoColor=white" alt="Lines of Code" />  <img src="https://img.shields.io/badge/📝_Commits-1,098-4ECDC4?style=for-the-badge&logo=github&logoColor=white" alt="Total Commits" />  <img src="https://img.shields.io/badge/📁_Files-2,664-FF6B6B?style=for-the-badge&logo=github&logoColor=white" alt="Total Files" />  <img src="https://img.shields.io/badge/🏢_Repositories-5-9C27B0?style=for-the-badge&logo=github&logoColor=white" alt="Repositories" />
 </div>
 
 
 ### **👨‍💻 My Contributions**
-🎯 **88.0% of all code** (262,540 lines)
-📝 **430 commits** across all projects
-📁 **1,928 files** created or modified
+🎯 **86.1% of all code** (269,829 lines)
+📝 **437 commits** across all projects
+📁 **2,031 files** created or modified
 
 
 
 ### **⚡ Productivity Metrics**
-🚀 **611 lines per commit**
-📊 **4.5 files per commit**
-💡 **136 lines per file**
+🚀 **617 lines per commit**
+📊 **4.7 files per commit**
+💡 **133 lines per file**
 
 
 
@@ -70,16 +70,16 @@ I started coding because I wanted to build things that could actually help peopl
 
 
 ### **🏢 Top Projects**
-• **InmoIA Frontend** - 133,762 lines (79.0% contribution)
-• **TypeScript Backend** - 69,825 lines (100.0% contribution)
+• **InmoIA Frontend** - 133,661 lines (75.5% contribution)
+• **TypeScript Backend** - 69,188 lines (100.0% contribution)
 • **Restaurant App** - 25,136 lines (100.0% contribution)
 
 
 
 ### **💡 Key Insights**
 🏆 **Achievements:**
-• Built 262,540 lines of code across 5 projects
-• Made 430 commits demonstrating consistent development
+• Built 269,829 lines of code across 5 projects
+• Made 437 commits demonstrating consistent development
 
 💪 **Strengths:**
 • High commit frequency indicates consistent development activity
@@ -274,4 +274,4 @@ I'm always up for connecting with fellow developers, discussing interesting proj
 
 ---
 
-*Last updated: September 08, 2025 at 03:23 UTC*
+*Last updated: September 15, 2025 at 03:23 UTC*

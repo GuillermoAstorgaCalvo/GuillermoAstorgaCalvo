@@ -1,29 +1,29 @@
 {
-  "total_loc": 298169,
-  "total_commits": 1078,
-  "total_files": 2537,
+  "total_loc": 313274,
+  "total_commits": 1098,
+  "total_files": 2664,
   "repos_processed": 5,
   "guillermo_unified": {
-    "loc": 262540,
-    "commits": 430,
-    "files": 1928
+    "loc": 269829,
+    "commits": 437,
+    "files": 2031
   },
   "repo_breakdown": {
     "InmoIA Frontend": {
       "display_name": "InmoIA Frontend",
       "guillermo_stats": {
-        "loc": 133762,
-        "commits": 345,
-        "files": 1154
+        "loc": 133661,
+        "commits": 348,
+        "files": 1151
       },
       "repo_totals": {
-        "loc": 169360,
-        "commits": 992,
-        "files": 1761
+        "loc": 177075,
+        "commits": 1008,
+        "files": 1782
       },
       "language_stats": {
         "Unknown": {
-          "loc": 35222,
+          "loc": 35223,
           "commits": 0,
           "files": 80
         },
@@ -43,9 +43,9 @@
           "files": 1
         },
         "TypeScript": {
-          "loc": 123841,
+          "loc": 131555,
           "commits": 0,
-          "files": 247
+          "files": 262
         },
         "CSS": {
           "loc": 1357,
@@ -132,63 +132,63 @@
     "FacturaIA": {
       "display_name": "FacturaIA",
       "guillermo_stats": {
-        "loc": 16151,
-        "commits": 3,
-        "files": 148
+        "loc": 24178,
+        "commits": 6,
+        "files": 254
       },
       "repo_totals": {
-        "loc": 16151,
-        "commits": 3,
-        "files": 148
+        "loc": 24178,
+        "commits": 6,
+        "files": 254
       },
       "language_stats": {
         "Unknown": {
-          "loc": 1548,
+          "loc": 2578,
+          "commits": 0,
+          "files": 10
+        },
+        "Markdown": {
+          "loc": 3149,
           "commits": 0,
           "files": 6
         },
-        "Markdown": {
-          "loc": 1841,
-          "commits": 0,
-          "files": 3
-        },
         "Python": {
-          "loc": 6106,
+          "loc": 7659,
           "commits": 0,
-          "files": 12
+          "files": 15
         },
         "JavaScript": {
-          "loc": 35,
+          "loc": 1463,
           "commits": 0,
-          "files": 1
+          "files": 2
         },
         "HTML": {
-          "loc": 24,
+          "loc": 59,
           "commits": 0,
           "files": 1
         },
         "CSS": {
-          "loc": 298,
+          "loc": 272,
           "commits": 0,
           "files": 1
         },
         "TypeScript": {
-          "loc": 5920,
+          "loc": 7819,
           "commits": 0,
-          "files": 12
+          "files": 15
         }
       }
     },
     "TypeScript Backend": {
       "display_name": "TypeScript Backend",
       "guillermo_stats": {
-        "loc": 69825,
-        "commits": 42,
+        "loc": 69188,
+        "commits": 43,
         "files": 358
       },
       "repo_totals": {
-        "loc": 69856,
-        "commits": 43,
+        "loc": 69219,
+        "commits": 44,
         "files": 360
       },
       "language_stats": {
@@ -203,9 +203,9 @@
           "files": 1
         },
         "TypeScript": {
-          "loc": 28644,
+          "loc": 28007,
           "commits": 0,
-          "files": 57
+          "files": 56
         },
         "Markdown": {
           "loc": 160,
@@ -217,32 +217,32 @@
   },
   "unified_language_stats": {
     "Unknown": {
-      "loc": 77803,
+      "loc": 78834,
       "commits": 0,
-      "files": 175
+      "files": 179
     },
     "Markdown": {
-      "loc": 2323,
+      "loc": 3631,
       "commits": 0,
-      "files": 7
+      "files": 10
     },
     "JavaScript": {
-      "loc": 416,
+      "loc": 1844,
       "commits": 0,
-      "files": 5
+      "files": 6
     },
     "HTML": {
-      "loc": 226,
+      "loc": 261,
       "commits": 0,
       "files": 2
     },
     "TypeScript": {
-      "loc": 166405,
+      "loc": 175381,
       "commits": 0,
-      "files": 331
+      "files": 348
     },
     "CSS": {
-      "loc": 1769,
+      "loc": 1743,
       "commits": 0,
       "files": 4
     },
@@ -252,9 +252,9 @@
       "files": 15
     },
     "Python": {
-      "loc": 7659,
+      "loc": 9212,
       "commits": 0,
-      "files": 15
+      "files": 18
     }
   },
   "other_unknown_breakdown": {},
@@ -285,5 +285,5 @@
       "count": 1
     }
   },
-  "last_updated": "2025-09-08T03:23:06.106101"
+  "last_updated": "2025-09-15T03:23:21.194718"
 }
