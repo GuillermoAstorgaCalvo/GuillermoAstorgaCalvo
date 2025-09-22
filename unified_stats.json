@@ -1,11 +1,11 @@
 {
-  "total_loc": 313274,
-  "total_commits": 1098,
+  "total_loc": 313299,
+  "total_commits": 1101,
   "total_files": 2664,
   "repos_processed": 5,
   "guillermo_unified": {
-    "loc": 269829,
-    "commits": 437,
+    "loc": 269847,
+    "commits": 439,
     "files": 2031
   },
   "repo_breakdown": {
@@ -13,12 +13,12 @@
       "display_name": "InmoIA Frontend",
       "guillermo_stats": {
         "loc": 133661,
-        "commits": 348,
+        "commits": 349,
         "files": 1151
       },
       "repo_totals": {
-        "loc": 177075,
-        "commits": 1008,
+        "loc": 177082,
+        "commits": 1010,
         "files": 1782
       },
       "language_stats": {
@@ -43,7 +43,7 @@
           "files": 1
         },
         "TypeScript": {
-          "loc": 131555,
+          "loc": 131562,
           "commits": 0,
           "files": 262
         },
@@ -182,13 +182,13 @@
     "TypeScript Backend": {
       "display_name": "TypeScript Backend",
       "guillermo_stats": {
-        "loc": 69188,
-        "commits": 43,
+        "loc": 69206,
+        "commits": 44,
         "files": 358
       },
       "repo_totals": {
-        "loc": 69219,
-        "commits": 44,
+        "loc": 69237,
+        "commits": 45,
         "files": 360
       },
       "language_stats": {
@@ -203,7 +203,7 @@
           "files": 1
         },
         "TypeScript": {
-          "loc": 28007,
+          "loc": 28025,
           "commits": 0,
           "files": 56
         },
@@ -237,7 +237,7 @@
       "files": 2
     },
     "TypeScript": {
-      "loc": 175381,
+      "loc": 175406,
       "commits": 0,
       "files": 348
     },
@@ -285,5 +285,5 @@
       "count": 1
     }
   },
-  "last_updated": "2025-09-15T03:23:21.194718"
+  "last_updated": "2025-09-22T03:21:42.847896"
 }
