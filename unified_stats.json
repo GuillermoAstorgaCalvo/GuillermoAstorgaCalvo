@@ -1,29 +1,29 @@
 {
-  "total_loc": 390552,
-  "total_commits": 1165,
-  "total_files": 2848,
+  "total_loc": 400407,
+  "total_commits": 1194,
+  "total_files": 2916,
   "repos_processed": 5,
   "guillermo_unified": {
-    "loc": 338341,
-    "commits": 492,
-    "files": 2183
+    "loc": 342782,
+    "commits": 512,
+    "files": 2209
   },
   "repo_breakdown": {
     "InmoIA Frontend": {
       "display_name": "InmoIA Frontend",
       "guillermo_stats": {
-        "loc": 202155,
-        "commits": 402,
-        "files": 1303
+        "loc": 206596,
+        "commits": 422,
+        "files": 1329
       },
       "repo_totals": {
-        "loc": 254335,
-        "commits": 1074,
-        "files": 1966
+        "loc": 264190,
+        "commits": 1103,
+        "files": 2034
       },
       "language_stats": {
         "Unknown": {
-          "loc": 56067,
+          "loc": 56335,
           "commits": 0,
           "files": 123
         },
@@ -33,19 +33,19 @@
           "files": 1
         },
         "JavaScript": {
-          "loc": 109,
+          "loc": 889,
           "commits": 0,
           "files": 1
         },
         "HTML": {
-          "loc": 202,
+          "loc": 217,
           "commits": 0,
           "files": 1
         },
         "TypeScript": {
-          "loc": 185093,
+          "loc": 193835,
           "commits": 0,
-          "files": 369
+          "files": 387
         },
         "CSS": {
           "loc": 1544,
@@ -217,7 +217,7 @@
   },
   "unified_language_stats": {
     "Unknown": {
-      "loc": 99678,
+      "loc": 99946,
       "commits": 0,
       "files": 222
     },
@@ -227,19 +227,19 @@
       "files": 10
     },
     "JavaScript": {
-      "loc": 1844,
+      "loc": 2624,
       "commits": 0,
       "files": 6
     },
     "HTML": {
-      "loc": 261,
+      "loc": 276,
       "commits": 0,
       "files": 2
     },
     "TypeScript": {
-      "loc": 228937,
+      "loc": 237679,
       "commits": 0,
-      "files": 455
+      "files": 473
     },
     "CSS": {
       "loc": 1930,
@@ -285,5 +285,5 @@
       "count": 1
     }
   },
-  "last_updated": "2025-09-29T03:29:26.547327"
+  "last_updated": "2025-10-06T03:20:27.502479"
 }
