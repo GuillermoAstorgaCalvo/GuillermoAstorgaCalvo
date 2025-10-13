@@ -1,31 +1,31 @@
 {
-  "total_loc": 400407,
-  "total_commits": 1194,
-  "total_files": 2916,
+  "total_loc": 410965,
+  "total_commits": 1299,
+  "total_files": 3287,
   "repos_processed": 5,
   "guillermo_unified": {
-    "loc": 342782,
-    "commits": 512,
-    "files": 2209
+    "loc": 357751,
+    "commits": 601,
+    "files": 2575
   },
   "repo_breakdown": {
     "InmoIA Frontend": {
       "display_name": "InmoIA Frontend",
       "guillermo_stats": {
-        "loc": 206596,
-        "commits": 422,
-        "files": 1329
+        "loc": 221565,
+        "commits": 511,
+        "files": 1695
       },
       "repo_totals": {
-        "loc": 264190,
-        "commits": 1103,
-        "files": 2034
+        "loc": 274748,
+        "commits": 1208,
+        "files": 2405
       },
       "language_stats": {
         "Unknown": {
-          "loc": 56335,
+          "loc": 56519,
           "commits": 0,
-          "files": 123
+          "files": 126
         },
         "Markdown": {
           "loc": 125,
@@ -33,29 +33,24 @@
           "files": 1
         },
         "JavaScript": {
-          "loc": 889,
+          "loc": 2124,
           "commits": 0,
-          "files": 1
+          "files": 4
         },
         "HTML": {
-          "loc": 217,
+          "loc": 281,
           "commits": 0,
           "files": 1
         },
         "TypeScript": {
-          "loc": 193835,
+          "loc": 213427,
           "commits": 0,
-          "files": 387
+          "files": 426
         },
         "CSS": {
-          "loc": 1544,
+          "loc": 1571,
           "commits": 0,
           "files": 3
-        },
-        "SQL": {
-          "loc": 10253,
-          "commits": 0,
-          "files": 20
         }
       }
     },
@@ -217,9 +212,9 @@
   },
   "unified_language_stats": {
     "Unknown": {
-      "loc": 99946,
+      "loc": 100130,
       "commits": 0,
-      "files": 222
+      "files": 225
     },
     "Markdown": {
       "loc": 3631,
@@ -227,29 +222,24 @@
       "files": 10
     },
     "JavaScript": {
-      "loc": 2624,
+      "loc": 3859,
       "commits": 0,
-      "files": 6
+      "files": 9
     },
     "HTML": {
-      "loc": 276,
+      "loc": 340,
       "commits": 0,
       "files": 2
     },
     "TypeScript": {
-      "loc": 237679,
+      "loc": 257271,
       "commits": 0,
-      "files": 473
+      "files": 512
     },
     "CSS": {
-      "loc": 1930,
+      "loc": 1957,
       "commits": 0,
       "files": 5
-    },
-    "SQL": {
-      "loc": 10253,
-      "commits": 0,
-      "files": 20
     },
     "Python": {
       "loc": 9212,
@@ -285,5 +275,5 @@
       "count": 1
     }
   },
-  "last_updated": "2025-10-06T03:20:27.502479"
+  "last_updated": "2025-10-13T03:30:57.061560"
 }
