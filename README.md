@@ -41,20 +41,20 @@ I started coding because I wanted to build things that could actually help peopl
 
 <!-- Dynamic Stats Overview -->
 <div align="center">
-  <img src="https://img.shields.io/badge/📈_Lines_of_Code-410,965-58A6FF?style=for-the-badge&logo=github&logoColor=white" alt="Lines of Code" />  <img src="https://img.shields.io/badge/📝_Commits-1,299-4ECDC4?style=for-the-badge&logo=github&logoColor=white" alt="Total Commits" />  <img src="https://img.shields.io/badge/📁_Files-3,287-FF6B6B?style=for-the-badge&logo=github&logoColor=white" alt="Total Files" />  <img src="https://img.shields.io/badge/🏢_Repositories-5-9C27B0?style=for-the-badge&logo=github&logoColor=white" alt="Repositories" />
+  <img src="https://img.shields.io/badge/📈_Lines_of_Code-411,924-58A6FF?style=for-the-badge&logo=github&logoColor=white" alt="Lines of Code" />  <img src="https://img.shields.io/badge/📝_Commits-1,329-4ECDC4?style=for-the-badge&logo=github&logoColor=white" alt="Total Commits" />  <img src="https://img.shields.io/badge/📁_Files-3,305-FF6B6B?style=for-the-badge&logo=github&logoColor=white" alt="Total Files" />  <img src="https://img.shields.io/badge/🏢_Repositories-5-9C27B0?style=for-the-badge&logo=github&logoColor=white" alt="Repositories" />
 </div>
 
 
 ### **👨‍💻 My Contributions**
-🎯 **87.0% of all code** (357,751 lines)
-📝 **601 commits** across all projects
+🎯 **86.7% of all code** (357,292 lines)
+📝 **615 commits** across all projects
 📁 **2,575 files** created or modified
 
 
 
 ### **⚡ Productivity Metrics**
-🚀 **595 lines per commit**
-📊 **4.3 files per commit**
+🚀 **581 lines per commit**
+📊 **4.2 files per commit**
 💡 **139 lines per file**
 
 
@@ -70,16 +70,16 @@ I started coding because I wanted to build things that could actually help peopl
 
 
 ### **🏢 Top Projects**
-• **InmoIA Frontend** - 221,565 lines (80.6% contribution)
-• **TypeScript Backend** - 69,206 lines (100.0% contribution)
+• **InmoIA Frontend** - 221,108 lines (80.2% contribution)
+• **TypeScript Backend** - 69,204 lines (100.0% contribution)
 • **Restaurant App** - 25,136 lines (100.0% contribution)
 
 
 
 ### **💡 Key Insights**
 🏆 **Achievements:**
-• Built 357,751 lines of code across 5 projects
-• Made 601 commits demonstrating consistent development
+• Built 357,292 lines of code across 5 projects
+• Made 615 commits demonstrating consistent development
 
 💪 **Strengths:**
 • High commit frequency indicates consistent development activity
@@ -273,4 +273,4 @@ I'm always up for connecting with fellow developers, discussing interesting proj
 
 ---
 
-*Last updated: October 13, 2025 at 03:31 UTC*
+*Last updated: October 20, 2025 at 03:28 UTC*
