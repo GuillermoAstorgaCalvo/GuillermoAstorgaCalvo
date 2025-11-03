@@ -41,14 +41,14 @@ I started coding because I wanted to build things that could actually help peopl
 
 <!-- Dynamic Stats Overview -->
 <div align="center">
-  <img src="https://img.shields.io/badge/📈_Lines_of_Code-430,184-58A6FF?style=for-the-badge&logo=github&logoColor=white" alt="Lines of Code" />  <img src="https://img.shields.io/badge/📝_Commits-1,360-4ECDC4?style=for-the-badge&logo=github&logoColor=white" alt="Total Commits" />  <img src="https://img.shields.io/badge/📁_Files-3,377-FF6B6B?style=for-the-badge&logo=github&logoColor=white" alt="Total Files" />  <img src="https://img.shields.io/badge/🏢_Repositories-5-9C27B0?style=for-the-badge&logo=github&logoColor=white" alt="Repositories" />
+  <img src="https://img.shields.io/badge/📈_Lines_of_Code-432,492-58A6FF?style=for-the-badge&logo=github&logoColor=white" alt="Lines of Code" />  <img src="https://img.shields.io/badge/📝_Commits-1,364-4ECDC4?style=for-the-badge&logo=github&logoColor=white" alt="Total Commits" />  <img src="https://img.shields.io/badge/📁_Files-3,393-FF6B6B?style=for-the-badge&logo=github&logoColor=white" alt="Total Files" />  <img src="https://img.shields.io/badge/🏢_Repositories-5-9C27B0?style=for-the-badge&logo=github&logoColor=white" alt="Repositories" />
 </div>
 
 
 ### **👨‍💻 My Contributions**
-🎯 **87.8% of all code** (377,470 lines)
-📝 **639 commits** across all projects
-📁 **2,660 files** created or modified
+🎯 **87.8% of all code** (379,782 lines)
+📝 **643 commits** across all projects
+📁 **2,676 files** created or modified
 
 
 
@@ -70,7 +70,7 @@ I started coding because I wanted to build things that could actually help peopl
 
 
 ### **🏢 Top Projects**
-• **InmoIA Frontend** - 241,286 lines (82.1% contribution)
+• **InmoIA Frontend** - 243,598 lines (82.2% contribution)
 • **TypeScript Backend** - 69,204 lines (100.0% contribution)
 • **Restaurant App** - 25,136 lines (100.0% contribution)
 
@@ -78,8 +78,8 @@ I started coding because I wanted to build things that could actually help peopl
 
 ### **💡 Key Insights**
 🏆 **Achievements:**
-• Built 377,470 lines of code across 5 projects
-• Made 639 commits demonstrating consistent development
+• Built 379,782 lines of code across 5 projects
+• Made 643 commits demonstrating consistent development
 
 💪 **Strengths:**
 • High commit frequency indicates consistent development activity
@@ -274,4 +274,4 @@ I'm always up for connecting with fellow developers, discussing interesting proj
 
 ---
 
-*Last updated: October 27, 2025 at 03:31 UTC*
+*Last updated: November 03, 2025 at 03:27 UTC*

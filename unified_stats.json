@@ -1,25 +1,25 @@
 {
-  "total_loc": 430184,
-  "total_commits": 1360,
-  "total_files": 3377,
+  "total_loc": 432492,
+  "total_commits": 1364,
+  "total_files": 3393,
   "repos_processed": 5,
   "guillermo_unified": {
-    "loc": 377470,
-    "commits": 639,
-    "files": 2660
+    "loc": 379782,
+    "commits": 643,
+    "files": 2676
   },
   "repo_breakdown": {
     "InmoIA Frontend": {
       "display_name": "InmoIA Frontend",
       "guillermo_stats": {
-        "loc": 241286,
-        "commits": 548,
-        "files": 1780
+        "loc": 243598,
+        "commits": 552,
+        "files": 1796
       },
       "repo_totals": {
-        "loc": 293969,
-        "commits": 1268,
-        "files": 2495
+        "loc": 296277,
+        "commits": 1272,
+        "files": 2511
       },
       "language_stats": {
         "Unknown": {
@@ -33,7 +33,7 @@
           "files": 1
         },
         "JavaScript": {
-          "loc": 2126,
+          "loc": 2186,
           "commits": 0,
           "files": 4
         },
@@ -43,9 +43,9 @@
           "files": 1
         },
         "TypeScript": {
-          "loc": 220974,
+          "loc": 223143,
           "commits": 0,
-          "files": 441
+          "files": 445
         },
         "CSS": {
           "loc": 1571,
@@ -53,7 +53,7 @@
           "files": 3
         },
         "SQL": {
-          "loc": 11527,
+          "loc": 11585,
           "commits": 0,
           "files": 23
         }
@@ -227,7 +227,7 @@
       "files": 10
     },
     "JavaScript": {
-      "loc": 3861,
+      "loc": 3921,
       "commits": 0,
       "files": 9
     },
@@ -237,9 +237,9 @@
       "files": 2
     },
     "TypeScript": {
-      "loc": 264816,
+      "loc": 266985,
       "commits": 0,
-      "files": 527
+      "files": 531
     },
     "CSS": {
       "loc": 1957,
@@ -247,7 +247,7 @@
       "files": 5
     },
     "SQL": {
-      "loc": 11527,
+      "loc": 11585,
       "commits": 0,
       "files": 23
     },
@@ -285,5 +285,5 @@
       "count": 1
     }
   },
-  "last_updated": "2025-10-27T03:31:28.192022"
+  "last_updated": "2025-11-03T03:27:33.373408"
 }
