@@ -1,25 +1,25 @@
 {
-  "total_loc": 433745,
-  "total_commits": 1379,
-  "total_files": 3400,
+  "total_loc": 434251,
+  "total_commits": 1400,
+  "total_files": 3411,
   "repos_processed": 5,
   "guillermo_unified": {
-    "loc": 379508,
-    "commits": 650,
+    "loc": 377589,
+    "commits": 660,
     "files": 2675
   },
   "repo_breakdown": {
     "InmoIA Frontend": {
       "display_name": "InmoIA Frontend",
       "guillermo_stats": {
-        "loc": 243324,
-        "commits": 559,
+        "loc": 241405,
+        "commits": 569,
         "files": 1795
       },
       "repo_totals": {
-        "loc": 297530,
-        "commits": 1287,
-        "files": 2518
+        "loc": 298036,
+        "commits": 1308,
+        "files": 2529
       },
       "language_stats": {
         "Unknown": {
@@ -43,9 +43,9 @@
           "files": 1
         },
         "TypeScript": {
-          "loc": 224396,
+          "loc": 224902,
           "commits": 0,
-          "files": 448
+          "files": 449
         },
         "CSS": {
           "loc": 1571,
@@ -237,9 +237,9 @@
       "files": 2
     },
     "TypeScript": {
-      "loc": 268238,
+      "loc": 268744,
       "commits": 0,
-      "files": 534
+      "files": 535
     },
     "CSS": {
       "loc": 1957,
@@ -285,5 +285,5 @@
       "count": 1
     }
   },
-  "last_updated": "2025-11-10T03:29:04.875106"
+  "last_updated": "2025-11-17T03:26:12.174254"
 }

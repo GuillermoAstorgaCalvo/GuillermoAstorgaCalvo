@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-11-10T03:29:04.875780Z",
+  "timestamp": "2025-11-17T03:26:12.174928Z",
   "metadata": {
     "version": "2.0",
     "generated_by": "Enhanced JSON Report Generator",
@@ -7,26 +7,26 @@
   },
   "global_summary": {
     "repositories_processed": 5,
-    "total_commits": 1379,
-    "total_files": 3400,
-    "total_loc": 433745,
+    "total_commits": 1400,
+    "total_files": 3411,
+    "total_loc": 434251,
     "guillermo_contribution": {
-      "loc": 379508,
-      "commits": 650,
+      "loc": 377589,
+      "commits": 660,
       "files": 2675,
       "percentages": {
-        "loc": 87.5,
+        "loc": 86.95,
         "commits": 47.14,
-        "files": 78.68
+        "files": 78.42
       }
     }
   },
   "productivity_metrics": {
-    "avg_loc_per_commit": 583.86,
-    "avg_files_per_commit": 4.12,
+    "avg_loc_per_commit": 572.1,
+    "avg_files_per_commit": 4.05,
     "code_efficiency": {
-      "loc_per_file": 141.87214953271027,
-      "commits_per_file": 0.24299065420560748
+      "loc_per_file": 141.1547663551402,
+      "commits_per_file": 0.2467289719626168
     }
   },
   "language_analysis": {
@@ -34,7 +34,7 @@
       "lines": 100202,
       "commits": 0,
       "files": 225,
-      "percentage": 23.1,
+      "percentage": 23.07,
       "avg_loc_per_commit": 0
     },
     "Markdown": {
@@ -59,10 +59,10 @@
       "avg_loc_per_commit": 0
     },
     "TypeScript": {
-      "lines": 268238,
+      "lines": 268744,
       "commits": 0,
-      "files": 534,
-      "percentage": 61.84,
+      "files": 535,
+      "percentage": 61.89,
       "avg_loc_per_commit": 0
     },
     "CSS": {
@@ -90,23 +90,23 @@
   "repository_analysis": {
     "InmoIA Frontend": {
       "guillermo_stats": {
-        "loc": 243324,
-        "commits": 559,
+        "loc": 241405,
+        "commits": 569,
         "files": 1795
       },
       "repo_totals": {
-        "loc": 297530,
-        "commits": 1287,
-        "files": 2518
+        "loc": 298036,
+        "commits": 1308,
+        "files": 2529
       },
       "percentages": {
-        "loc": 81.78,
-        "commits": 43.43,
-        "files": 71.29
+        "loc": 81.0,
+        "commits": 43.5,
+        "files": 70.98
       },
       "productivity": {
-        "avg_loc_per_commit": 435.28443649373884,
-        "avg_files_per_commit": 3.211091234347048
+        "avg_loc_per_commit": 424.26186291739896,
+        "avg_files_per_commit": 3.154657293497364
       }
     },
     "TypeScript Backend": {
@@ -223,14 +223,14 @@
   "complexity_analysis": {
     "project_scale": {
       "total_projects": 5,
-      "avg_loc_per_project": 86749.0,
-      "avg_commits_per_project": 275.8,
-      "avg_files_per_project": 680.0
+      "avg_loc_per_project": 86850.2,
+      "avg_commits_per_project": 280.0,
+      "avg_files_per_project": 682.2
     },
     "code_distribution": {
-      "loc_per_file": 127.57205882352942,
-      "commits_per_file": 0.40558823529411764,
-      "files_per_commit": 2.4655547498187094
+      "loc_per_file": 127.30900029316916,
+      "commits_per_file": 0.4104368220463207,
+      "files_per_commit": 2.4364285714285714
     },
     "repository_diversity": {
       "languages_used": 6,
@@ -246,29 +246,29 @@
       "Large codebase suggests complex, enterprise-level projects"
     ],
     "achievements": [
-      "Built 379,508 lines of code across 5 projects",
-      "Made 650 commits demonstrating consistent development"
+      "Built 377,589 lines of code across 5 projects",
+      "Made 660 commits demonstrating consistent development"
     ],
     "recommendations": []
   },
   "raw_data": {
     "guillermo_unified": {
-      "loc": 379508,
-      "commits": 650,
+      "loc": 377589,
+      "commits": 660,
       "files": 2675
     },
     "repository_breakdown": {
       "InmoIA Frontend": {
         "display_name": "InmoIA Frontend",
         "guillermo_stats": {
-          "loc": 243324,
-          "commits": 559,
+          "loc": 241405,
+          "commits": 569,
           "files": 1795
         },
         "repo_totals": {
-          "loc": 297530,
-          "commits": 1287,
-          "files": 2518
+          "loc": 298036,
+          "commits": 1308,
+          "files": 2529
         },
         "language_stats": {
           "Unknown": {
@@ -292,9 +292,9 @@
             "files": 1
           },
           "TypeScript": {
-            "loc": 224396,
+            "loc": 224902,
             "commits": 0,
-            "files": 448
+            "files": 449
           },
           "CSS": {
             "loc": 1571,
@@ -486,9 +486,9 @@
         "files": 2
       },
       "TypeScript": {
-        "loc": 268238,
+        "loc": 268744,
         "commits": 0,
-        "files": 534
+        "files": 535
       },
       "CSS": {
         "loc": 1957,
