@@ -41,19 +41,19 @@ I started coding because I wanted to build things that could actually help peopl
 
 <!-- Dynamic Stats Overview -->
 <div align="center">
-  <img src="https://img.shields.io/badge/📈_Lines_of_Code-434,251-58A6FF?style=for-the-badge&logo=github&logoColor=white" alt="Lines of Code" />  <img src="https://img.shields.io/badge/📝_Commits-1,400-4ECDC4?style=for-the-badge&logo=github&logoColor=white" alt="Total Commits" />  <img src="https://img.shields.io/badge/📁_Files-3,411-FF6B6B?style=for-the-badge&logo=github&logoColor=white" alt="Total Files" />  <img src="https://img.shields.io/badge/🏢_Repositories-5-9C27B0?style=for-the-badge&logo=github&logoColor=white" alt="Repositories" />
+  <img src="https://img.shields.io/badge/📈_Lines_of_Code-437,068-58A6FF?style=for-the-badge&logo=github&logoColor=white" alt="Lines of Code" />  <img src="https://img.shields.io/badge/📝_Commits-1,410-4ECDC4?style=for-the-badge&logo=github&logoColor=white" alt="Total Commits" />  <img src="https://img.shields.io/badge/📁_Files-3,432-FF6B6B?style=for-the-badge&logo=github&logoColor=white" alt="Total Files" />  <img src="https://img.shields.io/badge/🏢_Repositories-5-9C27B0?style=for-the-badge&logo=github&logoColor=white" alt="Repositories" />
 </div>
 
 
 ### **👨‍💻 My Contributions**
-🎯 **87.0% of all code** (377,589 lines)
-📝 **660 commits** across all projects
+🎯 **86.3% of all code** (377,230 lines)
+📝 **665 commits** across all projects
 📁 **2,675 files** created or modified
 
 
 
 ### **⚡ Productivity Metrics**
-🚀 **572 lines per commit**
+🚀 **567 lines per commit**
 📊 **4.0 files per commit**
 💡 **141 lines per file**
 
@@ -70,7 +70,7 @@ I started coding because I wanted to build things that could actually help peopl
 
 
 ### **🏢 Top Projects**
-• **InmoIA Frontend** - 241,405 lines (81.0% contribution)
+• **InmoIA Frontend** - 241,046 lines (80.1% contribution)
 • **TypeScript Backend** - 69,204 lines (100.0% contribution)
 • **Restaurant App** - 25,136 lines (100.0% contribution)
 
@@ -78,8 +78,8 @@ I started coding because I wanted to build things that could actually help peopl
 
 ### **💡 Key Insights**
 🏆 **Achievements:**
-• Built 377,589 lines of code across 5 projects
-• Made 660 commits demonstrating consistent development
+• Built 377,230 lines of code across 5 projects
+• Made 665 commits demonstrating consistent development
 
 💪 **Strengths:**
 • High commit frequency indicates consistent development activity
@@ -156,7 +156,7 @@ Here are some projects I'm pretty proud of. Each one taught me something differe
 ### 🏆 **InmoIA Frontend**
 🟢 Active Development • A real estate platform that actually helps people find their perfect home. Started as a simple listing site and grew into something much bigger.
 
-**Tech Stack:** ![JavaScript](https://img.shields.io/badge/-JavaScript-58A6FF?style=for-the-badge&logo=javascript&logoColor=white) ![Next.js](https://img.shields.io/badge/-Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white) ![React](https://img.shields.io/badge/-React-61DAFB?style=for-the-badge&logo=react&logoColor=white) ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+**Tech Stack:** ![React](https://img.shields.io/badge/-React-61DAFB?style=for-the-badge&logo=react&logoColor=white) ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white) ![TailwindCSS](https://img.shields.io/badge/-TailwindCSS-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white) ![Next.js](https://img.shields.io/badge/-Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
 
 **What it does:**
 - AI Property Matching
@@ -171,7 +171,7 @@ Here are some projects I'm pretty proud of. Each one taught me something differe
 ### 🏆 **TypeScript Backend**
 🟢 Active Development • The engine that powers everything. Built this microservices architecture to handle the heavy lifting - authentication, data processing, you name it.
 
-**Tech Stack:** ![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white) ![Docker](https://img.shields.io/badge/-Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+**Tech Stack:** ![Node.js](https://img.shields.io/badge/-Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white) ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white) ![Docker](https://img.shields.io/badge/-Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
 **What it does:**
 - REST APIs
@@ -201,7 +201,7 @@ Here are some projects I'm pretty proud of. Each one taught me something differe
 ### 🏆 **FacturaIA**
 🟡 In Development • Got tired of manually processing invoices, so I built something to do it for me. Sometimes the best projects come from solving your own problems.
 
-**Tech Stack:** ![JavaScript](https://img.shields.io/badge/-JavaScript-58A6FF?style=for-the-badge&logo=javascript&logoColor=white) ![Next.js](https://img.shields.io/badge/-Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white) ![React](https://img.shields.io/badge/-React-61DAFB?style=for-the-badge&logo=react&logoColor=white) ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+**Tech Stack:** ![Python](https://img.shields.io/badge/-Python-3776AB?style=for-the-badge&logo=python&logoColor=white) ![React](https://img.shields.io/badge/-React-61DAFB?style=for-the-badge&logo=react&logoColor=white) ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)
 
 **What it does:**
 - OCR Processing
@@ -216,7 +216,7 @@ Here are some projects I'm pretty proud of. Each one taught me something differe
 ### 🏆 **Restaurant App**
 🟢 Live • My first full-stack project that actually went live. Built it for a friend's restaurant and it's still running today.
 
-**Tech Stack:** ![JavaScript](https://img.shields.io/badge/-JavaScript-58A6FF?style=for-the-badge&logo=javascript&logoColor=white) ![Next.js](https://img.shields.io/badge/-Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white) ![React](https://img.shields.io/badge/-React-61DAFB?style=for-the-badge&logo=react&logoColor=white) ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)
+**Tech Stack:** ![React](https://img.shields.io/badge/-React-61DAFB?style=for-the-badge&logo=react&logoColor=white) ![Node.js](https://img.shields.io/badge/-Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white) ![MongoDB](https://img.shields.io/badge/-MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white) ![Express.js](https://img.shields.io/badge/-Express.js-000000?style=for-the-badge&logo=express.js&logoColor=white)
 
 **What it does:**
 - Order Management
@@ -274,4 +274,4 @@ I'm always up for connecting with fellow developers, discussing interesting proj
 
 ---
 
-*Last updated: November 17, 2025 at 03:26 UTC*
+*Last updated: November 24, 2025 at 03:31 UTC*
