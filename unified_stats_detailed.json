@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-12-01T03:34:13.773851Z",
+  "timestamp": "2025-12-08T03:30:50.106750Z",
   "metadata": {
     "version": "2.0",
     "generated_by": "Enhanced JSON Report Generator",
@@ -7,26 +7,26 @@
   },
   "global_summary": {
     "repositories_processed": 5,
-    "total_commits": 1410,
+    "total_commits": 1413,
     "total_files": 3432,
-    "total_loc": 437068,
+    "total_loc": 437098,
     "guillermo_contribution": {
       "loc": 377230,
-      "commits": 665,
+      "commits": 667,
       "files": 2675,
       "percentages": {
-        "loc": 86.31,
-        "commits": 47.16,
+        "loc": 86.3,
+        "commits": 47.2,
         "files": 77.94
       }
     }
   },
   "productivity_metrics": {
-    "avg_loc_per_commit": 567.26,
-    "avg_files_per_commit": 4.02,
+    "avg_loc_per_commit": 565.56,
+    "avg_files_per_commit": 4.01,
     "code_efficiency": {
       "loc_per_file": 141.02056074766355,
-      "commits_per_file": 0.2485981308411215
+      "commits_per_file": 0.24934579439252336
     }
   },
   "language_analysis": {
@@ -34,7 +34,7 @@
       "lines": 100202,
       "commits": 0,
       "files": 225,
-      "percentage": 22.93,
+      "percentage": 22.92,
       "avg_loc_per_commit": 0
     },
     "Markdown": {
@@ -59,10 +59,10 @@
       "avg_loc_per_commit": 0
     },
     "TypeScript": {
-      "lines": 271561,
+      "lines": 271591,
       "commits": 0,
       "files": 540,
-      "percentage": 62.13,
+      "percentage": 62.14,
       "avg_loc_per_commit": 0
     },
     "CSS": {
@@ -91,22 +91,22 @@
     "InmoIA Frontend": {
       "guillermo_stats": {
         "loc": 241046,
-        "commits": 574,
+        "commits": 576,
         "files": 1795
       },
       "repo_totals": {
-        "loc": 300853,
-        "commits": 1318,
+        "loc": 300883,
+        "commits": 1321,
         "files": 2550
       },
       "percentages": {
-        "loc": 80.12,
-        "commits": 43.55,
+        "loc": 80.11,
+        "commits": 43.6,
         "files": 70.39
       },
       "productivity": {
-        "avg_loc_per_commit": 419.94076655052265,
-        "avg_files_per_commit": 3.1271777003484322
+        "avg_loc_per_commit": 418.4826388888889,
+        "avg_files_per_commit": 3.1163194444444446
       }
     },
     "TypeScript Backend": {
@@ -223,14 +223,14 @@
   "complexity_analysis": {
     "project_scale": {
       "total_projects": 5,
-      "avg_loc_per_project": 87413.6,
-      "avg_commits_per_project": 282.0,
+      "avg_loc_per_project": 87419.6,
+      "avg_commits_per_project": 282.6,
       "avg_files_per_project": 686.4
     },
     "code_distribution": {
-      "loc_per_file": 127.35081585081585,
-      "commits_per_file": 0.41083916083916083,
-      "files_per_commit": 2.4340425531914893
+      "loc_per_file": 127.35955710955712,
+      "commits_per_file": 0.4117132867132867,
+      "files_per_commit": 2.4288747346072186
     },
     "repository_diversity": {
       "languages_used": 6,
@@ -247,14 +247,14 @@
     ],
     "achievements": [
       "Built 377,230 lines of code across 5 projects",
-      "Made 665 commits demonstrating consistent development"
+      "Made 667 commits demonstrating consistent development"
     ],
     "recommendations": []
   },
   "raw_data": {
     "guillermo_unified": {
       "loc": 377230,
-      "commits": 665,
+      "commits": 667,
       "files": 2675
     },
     "repository_breakdown": {
@@ -262,12 +262,12 @@
         "display_name": "InmoIA Frontend",
         "guillermo_stats": {
           "loc": 241046,
-          "commits": 574,
+          "commits": 576,
           "files": 1795
         },
         "repo_totals": {
-          "loc": 300853,
-          "commits": 1318,
+          "loc": 300883,
+          "commits": 1321,
           "files": 2550
         },
         "language_stats": {
@@ -292,7 +292,7 @@
             "files": 1
           },
           "TypeScript": {
-            "loc": 227719,
+            "loc": 227749,
             "commits": 0,
             "files": 454
           },
@@ -486,7 +486,7 @@
         "files": 2
       },
       "TypeScript": {
-        "loc": 271561,
+        "loc": 271591,
         "commits": 0,
         "files": 540
       },
